@@ -1,0 +1,38 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    
+    <dimen name="padding">16dp</dimen>
+    <dimen name="listview_item_padding">16dp</dimen>
+    
+     <!-- NaVIGATION VIEW -->
+    <dimen name="header_left_padding">16dp</dimen>
+    <dimen name="header_height">192dp</dimen>
+    <dimen name="perfil_image_size">64dp</dimen>
+
+    <dimen name="pin_margin">7dp</dimen>
+    <dimen name="pin_size">20dp</dimen>
+    <dimen name="pin_button_text_size">30sp</dimen>
+    <dimen name="pin_button_size">70dp</dimen>
+    <dimen name="pin_button_top">15dp</dimen>
+
+    <!-- Toolbar elevation-->
+    <dimen name="toolbarElevation">5dp</dimen>
+    <dimen name="tabLayoutElevation">6dp</dimen>
+
+    <!-- Sub Items Floatting button-->
+    <dimen name="itemFab3MarginBottom">160dp</dimen>
+    <dimen name="itemFab2MarginBottom">115dp</dimen>
+    <dimen name="itemFab1MarginBottom">70dp</dimen>
+    <dimen name="itemFabMarginRight">15dp</dimen>
+    <dimen name="itemFabButtonElevation">1dp</dimen>
+    <dimen name="itemFabCardElevation">4dp</dimen>
+    <dimen name="itemFabCardCornerRadius">4dp</dimen>
+    <dimen name="itemFabTextPadding">5dp</dimen>
+
+    <dimen name="cardviewHintTextSize">11sp</dimen>
+    <dimen name="cardviewTitleTextSize">18sp</dimen>
+
+</resources>
