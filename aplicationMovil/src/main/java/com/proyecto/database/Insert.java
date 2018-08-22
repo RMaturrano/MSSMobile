@@ -643,9 +643,10 @@ public class Insert {
 					db.execSQL(
 							"INSERT or IGNORE into "
 									+contexto.getResources().getString(R.string.T_ALMACEN)+
-							" values(?,?)",
+							" values(?,?,?)",
 							new Object[] { almacenBean.getCodigo(),
-										   almacenBean.getDescripcion()});
+										   almacenBean.getDescripcion(),
+											almacenBean.getDescuento()});
 					
 
 				}
@@ -672,14 +673,15 @@ public class Insert {
 					db.execSQL(
 							"INSERT or IGNORE into "
 									+contexto.getResources().getString(R.string.T_ARTICULO)+
-							" values(?,?,?,?,?,?,?)",
+							" values(?,?,?,?,?,?,?,?)",
 							new Object[] { 	bean.getCod(),
 											bean.getDesc(),
 											bean.getFabricante(),
 											bean.getGrupoArticulo(),
 											bean.getCodUM(),
 											bean.getUnidadMedidaVenta(),
-											bean.getAlmacenDefecto()});
+											bean.getAlmacenDefecto(),
+							bean.getArticuloMuestra()});
 					
 				}
 				db.setTransactionSuccessful();

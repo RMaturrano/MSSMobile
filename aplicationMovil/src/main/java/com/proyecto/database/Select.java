@@ -959,7 +959,8 @@ public class Select {
 
 		Cursor data= db.rawQuery("select "
 							+ contexto.getResources().getString(R.string.C_ALMACEN_COD) +","
-							+ contexto.getResources().getString(R.string.C_ALMACEN_NOM) +" "
+							+ contexto.getResources().getString(R.string.C_ALMACEN_NOM) +","
+							+ contexto.getResources().getString(R.string.C_ALMACEN_DES) +" "
 							+ "from " 
 							+ contexto.getResources().getString(R.string.T_ALMACEN) , null); 
 		
@@ -969,6 +970,7 @@ public class Select {
 				almacen = new AlmacenBean();
 				almacen.setCodigo(data.getString(0));
 				almacen.setDescripcion(data.getString(1));
+				almacen.setDescuento(data.getDouble(2));
 				listaAlmacen.add(almacen);
 			}
 			

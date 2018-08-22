@@ -356,6 +356,7 @@ public class SyncRestMaestros {
                         bean.setCodUM(jsonObj.getString("GrupoUnidadMedida"));
                         bean.setUnidadMedidaVenta(jsonObj.getString("UnidadMedidaVenta"));
                         bean.setAlmacenDefecto(jsonObj.getString("AlmacenDefecto"));
+                        bean.setArticuloMuestra(jsonObj.getString("ArticuloMuestra"));
                         mList.add(bean);
                     }
 
@@ -399,6 +400,7 @@ public class SyncRestMaestros {
                         bean = new AlmacenBean();
                         bean.setCodigo(jsonObj.getString("Codigo"));
                         bean.setDescripcion(jsonObj.getString("Nombre"));
+                        bean.setDescuento(jsonObj.getDouble("Descuento"));
                         mList.add(bean);
                     }
 

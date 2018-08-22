@@ -474,6 +474,7 @@ public class MyDataBase extends SQLiteOpenHelper {
 				+ contexto.getResources().getString(R.string.C_ART_GRUPO_UM) +" TEXT, " 
 				+ contexto.getResources().getString(R.string.C_ART_UM_VENTA) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_ART_ALM_DEF) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_ART_MUESTRA) +" TEXT, "
 				+ "UNIQUE("+ contexto.getResources().getString(R.string.C_ART_COD) +"))");
 		db.execSQL(Q_CREATE_TB_ART);
 		
@@ -595,8 +596,9 @@ public class MyDataBase extends SQLiteOpenHelper {
 					+ contexto.getResources().getString(R.string.T_ALMACEN) 
 					+ "(" 
 					+ contexto.getResources().getString(R.string.C_ALMACEN_COD) +" TEXT, " 
-					+ contexto.getResources().getString(R.string.C_ALMACEN_NOM) +" TEXT, " 
-					+ "UNIQUE("+ contexto.getResources().getString(R.string.C_ALMACEN_COD) +"))");
+					+ contexto.getResources().getString(R.string.C_ALMACEN_NOM) +" TEXT, "
+					+ contexto.getResources().getString(R.string.C_ALMACEN_DES) +" REAL, "
+				+ "UNIQUE("+ contexto.getResources().getString(R.string.C_ALMACEN_COD) +"))");
 		db.execSQL(Q_CREATE_TB_ALMACEN);
 		
 		

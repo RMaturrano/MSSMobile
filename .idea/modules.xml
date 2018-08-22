@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MSSMobileHANA.iml" filepath="$PROJECT_DIR$/MSSMobileHANA.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MSSMobile.iml" filepath="$PROJECT_DIR$/MSSMobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/aplicationMovil/aplicationMovil.iml" filepath="$PROJECT_DIR$/aplicationMovil/aplicationMovil.iml" />
     </modules>
   </component>

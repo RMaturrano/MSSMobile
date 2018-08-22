@@ -3,7 +3,9 @@ package com.proyecto.bean;
 
 public class AlmacenBean {
 	
-	private String codigo, descripcion;
+	private String codigo;
+	private String descripcion;
+	private Double descuento;
 
 	@Override
 	public String toString() {
@@ -26,4 +28,12 @@ public class AlmacenBean {
 		this.descripcion = descripcion;
 	}
 
+
+	public Double getDescuento() {
+		return descuento;
+	}
+
+	public void setDescuento(Double descuento) {
+		this.descuento = descuento;
+	}
 }
