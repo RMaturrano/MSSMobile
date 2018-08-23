@@ -78,6 +78,7 @@ public class ArticuloOrdVenta extends Fragment {
     private ListViewCustomAdapterTwoLinesAndImg adapter;
 
     private FormatCustomListView fullObject = null;
+    private FormatCustomListView fullObjectDescuento = null;
     private int posicion = 0;
     private double preBruto = 0;
     private double total = 0;
@@ -85,6 +86,8 @@ public class ArticuloOrdVenta extends Fragment {
     private double descuento = 0;
     private double impuesto = 0;
     private double cantidad = 0;
+
+    Boolean articuloMuestraBoolean = false;
 
     //Precio venta original
     private String precioVenta;
@@ -111,6 +114,10 @@ public class ArticuloOrdVenta extends Fragment {
                     String descp = bundle.getString("desc");
                     String almacenDefecto = bundle.getString("almacen");
                     String[] extras = bundle.getString("extras").toString().split("#");
+
+                    Double descuentoAlmacen = 0.0;
+                    //String articuloMuestra = bundle.getString("muestraString");
+                     articuloMuestraBoolean = bundle.getBoolean("muestraBoolean");
 
                     if (!extras[2].equals("") && !extras[2].equalsIgnoreCase("anytype{}") &&
                             !extras[4].equals("") && !extras[4].equalsIgnoreCase("anytype{}")) {
@@ -183,6 +190,7 @@ public class ArticuloOrdVenta extends Fragment {
                             fullObject = (FormatCustomListView) lvPrincipal.getItemAtPosition(4);
                             fullObject.setData(almacenSel.toString());
                             searchResults.set(4, fullObject);
+                            descuentoAlmacen = almacenSel.getDescuento();
                         }
                     }
 
@@ -202,10 +210,19 @@ public class ArticuloOrdVenta extends Fragment {
                     fullObject.setData(precioVenta);
                     searchResults.set(7, fullObject);
 
+                    //TODO; Descuento aplicado al seleccionar articulo
                     Object o6 = lvPrincipal.getItemAtPosition(8);
                     fullObject = new FormatCustomListView();
                     fullObject = (FormatCustomListView) o6;
-                    fullObject.setData("0.00");
+
+                    if(descuentoAlmacen > 0 && !articuloMuestraBoolean){
+                        fullObject.setData(descuentoAlmacen.toString());
+                    }
+
+                    if(articuloMuestraBoolean){
+                        fullObject.setData("100.00");
+                    }
+                    //fullObject.setData("0.00");
                     searchResults.set(8, fullObject);
 
                     doMaths();
@@ -246,6 +263,11 @@ public class ArticuloOrdVenta extends Fragment {
             if(MainVentas.position < OrdenVentaFragment.listaDetalleArticulos.size()) {
                 articuloActualizar = OrdenVentaFragment.listaDetalleArticulos.get(MainVentas.position);
                 actualizar = "True";
+
+                if(articuloActualizar != null){
+                    articuloMuestraBoolean = articuloActualizar.getArticuloMuestraBoolean();
+                }
+
                 //MainVentas.position = -1;
             /*for (ArticuloBean a : OrdenVentaFragment.listaDetalleArticulos) {
                 if (a.getCod().equals(MainVentas.codigoArticulo)) {
@@ -615,6 +637,10 @@ public class ArticuloOrdVenta extends Fragment {
 
                 posicion = position;
 
+                Object oDescuento = lvPrincipal.getItemAtPosition(8);
+                fullObjectDescuento = new FormatCustomListView();
+                fullObjectDescuento = (FormatCustomListView) oDescuento;
+
                 //Capturar el objeto
                 Object o = lvPrincipal.getItemAtPosition(position);
                 fullObject = new FormatCustomListView();
@@ -658,6 +684,22 @@ public class ArticuloOrdVenta extends Fragment {
                         // Do something with value!
                         fullObject.setData(almacenSel.toString());
                         searchResults.set(posicion, fullObject);
+                        lvPrincipal.invalidateViews();
+
+                        //TODO: Cambiar el descuento aplicado según almacen seleccionado
+                        if(almacenSel.getDescuento() > 0 && !articuloMuestraBoolean){
+                            fullObjectDescuento.setData(almacenSel.getDescuento().toString());
+                        }
+
+                        if(articuloMuestraBoolean){
+                            fullObjectDescuento.setData("100.00");
+                        }
+
+                        if(almacenSel.getDescuento() == 0 && !articuloMuestraBoolean){
+                            fullObjectDescuento.setData("0.00");
+                        }
+                        //fullObjectDescuento.setData(almacenSel.getDescuento().toString());
+                        searchResults.set(8, fullObjectDescuento);
                         lvPrincipal.invalidateViews();
 
                     }
@@ -1112,6 +1154,10 @@ public class ArticuloOrdVenta extends Fragment {
                             Toast.makeText(contexto,"Seleccione la lista de precios",Toast.LENGTH_SHORT).show();
                             return true;
                         }
+
+                        //TODO: Artículo Descuentos almacenados en el arreglo
+                        art_bean.setArticuloMuestraBoolean(articuloMuestraBoolean);
+
 
                         if (MainVentas.codigoArticulo.equals(""))
                             OrdenVentaFragment.listaDetalleArticulos.add(art_bean);

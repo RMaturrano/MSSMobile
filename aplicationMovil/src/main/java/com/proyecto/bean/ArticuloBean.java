@@ -10,6 +10,7 @@ public class ArticuloBean {
     private String nombreFabricante, nombreGrupoArt, nombreUnidadMedida, nombreUnidadMedidaVenta;
 
     private  String ArticuloMuestra;
+    private Double descuentoAlmacenSeleccionado;
 
     public String getCodigoListaPrecio() {
         return codigoListaPrecio;
@@ -298,5 +299,22 @@ public class ArticuloBean {
             }
         }
         return  false;
+    }
+
+    public void setArticuloMuestraBoolean(boolean articuloMuestra) {
+        if(articuloMuestra){
+            ArticuloMuestra = "S";
+        }else{
+            ArticuloMuestra = "N";
+        }
+    }
+
+
+    public Double getDescuentoAlmacenSeleccionado() {
+        return descuentoAlmacenSeleccionado;
+    }
+
+    public void setDescuentoAlmacenSeleccionado(Double descuentoAlmacenSeleccionado) {
+        this.descuentoAlmacenSeleccionado = descuentoAlmacenSeleccionado;
     }
 }

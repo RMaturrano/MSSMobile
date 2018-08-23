@@ -210,7 +210,7 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
                 .rawQuery(
                         "select DISTINCT A.Codigo,A.Nombre,A.Fabricante,A.GrupoArticulo, " +
                                 "A.GrupoUnidadMedida,A.UnidadMedidaVenta," +
-                                "GUM.Nombre,GA.NOMBRE as Grupo, A.AlmacenDefecto " +
+                                "GUM.Nombre,GA.NOMBRE as Grupo, A.AlmacenDefecto, A.ArticuloMuestra " +
                                 "from TB_ARTICULO A JOIN TB_GRUPO_UNIDAD_MEDIDA GUM " +
                                 "ON A.GrupoUnidadMedida = GUM.Codigo " +
                                 " JOIN TB_GRUPO_ARTICULO GA ON A.GrupoArticulo = GA.CODIGO " +
@@ -242,6 +242,8 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
                 customListObjet.setIcon(icon);
                 customListObjet.setGrupo(rs.getString(rs.getColumnIndex("Grupo")));
                 customListObjet.setAlmacenDefecto(rs.getString(rs.getColumnIndex("AlmacenDefecto")));
+                customListObjet.setArticuloMuestra(rs.getString(rs.getColumnIndex("ArticuloMuestra")));
+
                 if (!rs.getString(0).equals(""))
                     customListObjet.setTitulo(rs.getString(0));
                 else
@@ -405,6 +407,8 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
             arguments.putString("almacen", item.element.getAlmacenDefecto());
             arguments.putString("extras", item.element.getExtra());
             arguments.putInt("position", position);
+            arguments.putString("muestraString", item.element.getArticuloMuestra());
+            arguments.putBoolean("muestraBoolean", item.element.getArticuloMuestraBoolean());
 
             //	openBottomSheet(view, item);
 

@@ -18,6 +18,7 @@ public class FormatCustomListView {
 	private String almacenDefecto;
 	private int icon, id;
 	private boolean chck;
+	private String articuloMuestra;
 
 	public String getTipo() {
 		return tipo;
@@ -141,4 +142,22 @@ public class FormatCustomListView {
 	public void setAlmacenDefecto(String almacenDefecto) {
 		this.almacenDefecto = almacenDefecto;
 	}
+
+	public String getArticuloMuestra() {
+		return articuloMuestra;
+	}
+
+	public void setArticuloMuestra(String articuloMuestra) {
+		this.articuloMuestra = articuloMuestra;
+	}
+
+	public Boolean getArticuloMuestraBoolean() {
+		if(articuloMuestra != null){
+			if(articuloMuestra.equals("S")){
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
