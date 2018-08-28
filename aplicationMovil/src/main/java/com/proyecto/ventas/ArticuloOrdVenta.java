@@ -214,6 +214,7 @@ public class ArticuloOrdVenta extends Fragment {
                     Object o6 = lvPrincipal.getItemAtPosition(8);
                     fullObject = new FormatCustomListView();
                     fullObject = (FormatCustomListView) o6;
+                    fullObject.setData("0.00");
 
                     if(descuentoAlmacen > 0 && !articuloMuestraBoolean){
                         fullObject.setData(descuentoAlmacen.toString());
