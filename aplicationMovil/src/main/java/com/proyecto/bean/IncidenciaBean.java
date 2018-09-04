@@ -8,6 +8,9 @@ import com.proyecto.utils.StringDateCast;
 
 import org.json.JSONObject;
 
+import static com.proyecto.dao.IncidenciaDAO.getBitmapAsByteArray;
+import static com.proyecto.dao.IncidenciaDAO.getObtenerImagenBase64;
+
 public class IncidenciaBean implements Parcelable {
 
     private Integer id;
@@ -272,7 +275,9 @@ public class IncidenciaBean implements Parcelable {
                     StringDateCast.castDatetoDateWithoutSlash(bean.getFechaCompromisoPago()) : "");
             object.put("Empresa", Integer.parseInt(sociedad));
             object.put("Rango", bean.getRango());
-
+            object.put("Foto", bean.getFoto() != null ? getBitmapAsByteArray(bean.getFoto()).toString() : null);
+            object.put("Foto64", bean.getFoto() != null ? getObtenerImagenBase64(bean.getFoto()).toString() : null);
+            // cv.put("Foto", incidencia.getFoto() != null ? getBitmapAsByteArray(incidencia.getFoto()) : null);
         }catch (Exception e){
             return  null;
         }

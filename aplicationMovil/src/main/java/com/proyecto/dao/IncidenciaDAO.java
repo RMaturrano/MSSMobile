@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Base64;
 
 import com.proyecto.bean.IncidenciaBean;
 import com.proyecto.database.DataBaseHelper;
@@ -143,6 +144,7 @@ public class IncidenciaDAO {
         cv.put("TipoIncidencia", incidencia.getTipoIncidencia());
         cv.put("FechaPago", incidencia.getFechaCompromisoPago());
         cv.put("Foto", incidencia.getFoto() != null ? getBitmapAsByteArray(incidencia.getFoto()) : null);
+        cv.put("Foto64", incidencia.getFoto() != null ? getObtenerImagenBase64(incidencia.getFoto()) : null);
         cv.put("Rango", incidencia.getRango());
         cv.put("Sincronizado", incidencia.getSincronizado());
 
@@ -153,10 +155,17 @@ public class IncidenciaDAO {
         return inserto != -1;
     }
 
-    private static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
         return outputStream.toByteArray();
+    }
+
+    public static String getObtenerImagenBase64(Bitmap ourbitmap){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ourbitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] b = baos.toByteArray();
+        return Base64.encodeToString(b, Base64.DEFAULT);
     }
 
     public Bitmap getImage(byte[] imageBytes){
