@@ -238,6 +238,15 @@
         <activity android:name="com.proyecto.notacredito.NotaCreditoArticulosActivity" android:screenOrientation="portrait"/>
         <activity android:name="com.proyecto.notacredito.NotaCreditoDetalleActivity" android:screenOrientation="portrait"/>
         <activity android:name="com.proyecto.inventario.ListaArticuloPrecioActivity" android:screenOrientation="portrait"></activity>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.proyect.movil"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
     </application>
 
 </manifest>

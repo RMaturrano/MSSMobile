@@ -15,54 +15,7 @@ import java.util.List;
 
 public class IncidenciaDAO {
 
-    public List<IncidenciaBean> listar(String origen){
-
-      List<IncidenciaBean> mList = new ArrayList<>();
-
-        Cursor cursor = DataBaseHelper
-                .getHelper(null)
-                .getDataBase()
-                .rawQuery("select T0.Id, " +
-                        "T0.ClaveMovil, " +
-                        "T0.Origen, " +
-                        "T0.IdCliente, " +
-                        "T0.NombreCliente, " +
-                        "T0.CodigoContacto, " +
-                        "T0.NombreContacto, " +
-                        "T0.CodigoDireccion, " +
-                        "T0.DetalleDireccion, " +
-                        "T0.Motivo, " +
-                        "T0.DescripcionMotivo, " +
-                        "T0.Comentarios, " +
-                        "T0.CodigoVendedor, " +
-                        "T0.Latitud, " +
-                        "T0.Longitud, " +
-                        "T0.FechaCreacion, " +
-                        "T0.HoraCreacion, " +
-                        "T0.ModoOffline, " +
-                        "T0.SerieFactura, " +
-                        "T0.CorrelativoFactura, " +
-                        "T0.TipoIncidencia, " +
-                        "T0.FechaPago, " +
-                        "T0.Sincronizado, " +
-                        "T0.Rango, " +
-                        "T0.Foto " +
-                        " FROM TB_INCIDENCIA T0 " +
-                        " where T0.Origen = '" + origen + "'", null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                mList.add(transformCursorToIncidencia(cursor));
-            } while (cursor.moveToNext());
-        }
-
-        if (cursor != null && !cursor.isClosed())
-            cursor.close();
-
-      return mList;
-    };
-
-    public List<IncidenciaBean> listar(){
+    public List<IncidenciaBean> listar(String origen) {
 
         List<IncidenciaBean> mList = new ArrayList<>();
 
@@ -92,7 +45,61 @@ public class IncidenciaDAO {
                         "T0.TipoIncidencia, " +
                         "T0.FechaPago, " +
                         "T0.Sincronizado, " +
-                        "T0.Foto " +
+                        "T0.Rango, " +
+                        "T0.Foto, " +
+                        "T0.Foto64 " +
+                        " FROM TB_INCIDENCIA T0 " +
+                        " where T0.Origen = '" + origen + "'", null);
+
+        if (cursor.moveToFirst()) {
+            if (cursor.getCount() > 0) {
+                do {
+                    mList.add(transformCursorToIncidencia(cursor));
+                } while (cursor.moveToNext());
+            }
+        }
+
+        if (cursor != null && !cursor.isClosed())
+            cursor.close();
+
+        return mList;
+    }
+
+    ;
+
+    public List<IncidenciaBean> listar() {
+
+        List<IncidenciaBean> mList = new ArrayList<>();
+
+        Cursor cursor = DataBaseHelper
+                .getHelper(null)
+                .getDataBase()
+                .rawQuery("select " +
+                        "T0.Id, " +
+                        "T0.ClaveMovil, " +
+                        "T0.Origen, " +
+                        "T0.IdCliente, " +
+                        "T0.NombreCliente, " +
+                        "T0.CodigoContacto, " +
+                        "T0.NombreContacto, " +
+                        "T0.CodigoDireccion, " +
+                        "T0.DetalleDireccion, " +
+                        "T0.Motivo, " +
+                        "T0.DescripcionMotivo, " +
+                        "T0.Comentarios, " +
+                        "T0.CodigoVendedor, " +
+                        "T0.Latitud, " +
+                        "T0.Longitud, " +
+                        "T0.FechaCreacion, " +
+                        "T0.HoraCreacion, " +
+                        "T0.ModoOffline, " +
+                        "T0.SerieFactura, " +
+                        "T0.CorrelativoFactura, " +
+                        "T0.TipoIncidencia, " +
+                        "T0.FechaPago, " +
+                        "T0.Sincronizado, " +
+                        "T0.Foto, " +
+                        "T0.Foto64 " +
                         " FROM TB_INCIDENCIA T0 " +
                         " where T0.Sincronizado = 'N'", null);
 
@@ -106,7 +113,9 @@ public class IncidenciaDAO {
             cursor.close();
 
         return mList;
-    };
+    }
+
+    ;
 
     public boolean actualizarSincronizado(String clave) {
         ContentValues cv = new ContentValues();
@@ -143,7 +152,7 @@ public class IncidenciaDAO {
         cv.put("CorrelativoFactura", incidencia.getCorrelativoFactura());
         cv.put("TipoIncidencia", incidencia.getTipoIncidencia());
         cv.put("FechaPago", incidencia.getFechaCompromisoPago());
-        cv.put("Foto", incidencia.getFoto() != null ? getBitmapAsByteArray(incidencia.getFoto()) : null);
+        //cv.put("Foto", incidencia.getFoto() != null ? getBitmapAsByteArray(incidencia.getFoto()) : null);
         cv.put("Foto64", incidencia.getFoto() != null ? getObtenerImagenBase64(incidencia.getFoto()) : null);
         cv.put("Rango", incidencia.getRango());
         cv.put("Sincronizado", incidencia.getSincronizado());
@@ -161,23 +170,50 @@ public class IncidenciaDAO {
         return outputStream.toByteArray();
     }
 
-    public static String getObtenerImagenBase64(Bitmap ourbitmap){
+    public static String getObtenerImagenBase64(Bitmap ourbitmap) {
+
+        ourbitmap = scaleDown(ourbitmap, (float) 1024, true);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ourbitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] b = baos.toByteArray();
         return Base64.encodeToString(b, Base64.DEFAULT);
     }
 
-    public Bitmap getImage(byte[] imageBytes){
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
 
-        try{
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        return newBitmap;
+    }
+
+    public Bitmap getImage(byte[] imageBytes) {
+
+        try {
             return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-        }catch (Exception e){
-            return null ;
+        } catch (Exception e) {
+            return null;
         }
     }
 
-    private IncidenciaBean transformCursorToIncidencia(Cursor cursor){
+    public Bitmap getImage(String encodedImage) {
+
+        try {
+            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            return decodedByte;
+        } catch (Exception e) {
+            String x = e.toString();
+            return null;
+        }
+    }
+
+    private IncidenciaBean transformCursorToIncidencia(Cursor cursor) {
 
         IncidenciaBean incidenciaBean = new IncidenciaBean();
         incidenciaBean.setClaveMovil(cursor.getString(cursor.getColumnIndex("ClaveMovil")));
@@ -201,7 +237,8 @@ public class IncidenciaDAO {
         incidenciaBean.setCorrelativoFactura(cursor.getInt(cursor.getColumnIndex("CorrelativoFactura")));
         incidenciaBean.setTipoIncidencia(cursor.getString(cursor.getColumnIndex("TipoIncidencia")));
         incidenciaBean.setFechaCompromisoPago(cursor.getString(cursor.getColumnIndex("FechaPago")));
-        incidenciaBean.setFoto(getImage(cursor.getBlob(cursor.getColumnIndex("Foto"))));
+        //incidenciaBean.setFoto(getImage(cursor.getString(cursor.getColumnIndex("Foto64"))));
+        //incidenciaBean.setFoto64(getImage(cursor.getBlob(cursor.getColumnIndex("Foto64"))));
         incidenciaBean.setRango(cursor.getString(cursor.getColumnIndex("Rango")));
         incidenciaBean.setSincronizado(cursor.getString(cursor.getColumnIndex("Sincronizado")));
         return incidenciaBean;
