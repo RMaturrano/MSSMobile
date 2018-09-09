@@ -46,7 +46,7 @@ public class IncidenciaDAO {
                         "T0.FechaPago, " +
                         "T0.Sincronizado, " +
                         "T0.Rango, " +
-                        "T0.Foto, " +
+                        //"T0.Foto, " +
                         "T0.Foto64 " +
                         " FROM TB_INCIDENCIA T0 " +
                         " where T0.Origen = '" + origen + "'", null);
@@ -98,7 +98,8 @@ public class IncidenciaDAO {
                         "T0.TipoIncidencia, " +
                         "T0.FechaPago, " +
                         "T0.Sincronizado, " +
-                        "T0.Foto, " +
+                        "T0.Rango, " +
+                        //"T0.Foto, " +
                         "T0.Foto64 " +
                         " FROM TB_INCIDENCIA T0 " +
                         " where T0.Sincronizado = 'N'", null);
@@ -166,7 +167,7 @@ public class IncidenciaDAO {
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         return outputStream.toByteArray();
     }
 
@@ -192,7 +193,7 @@ public class IncidenciaDAO {
         return newBitmap;
     }
 
-    public Bitmap getImage(byte[] imageBytes) {
+    public static Bitmap getImage(byte[] imageBytes) {
 
         try {
             return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
@@ -237,7 +238,7 @@ public class IncidenciaDAO {
         incidenciaBean.setCorrelativoFactura(cursor.getInt(cursor.getColumnIndex("CorrelativoFactura")));
         incidenciaBean.setTipoIncidencia(cursor.getString(cursor.getColumnIndex("TipoIncidencia")));
         incidenciaBean.setFechaCompromisoPago(cursor.getString(cursor.getColumnIndex("FechaPago")));
-        //incidenciaBean.setFoto(getImage(cursor.getString(cursor.getColumnIndex("Foto64"))));
+        incidenciaBean.setFoto(getImage(cursor.getString(cursor.getColumnIndex("Foto64"))));
         //incidenciaBean.setFoto64(getImage(cursor.getBlob(cursor.getColumnIndex("Foto64"))));
         incidenciaBean.setRango(cursor.getString(cursor.getColumnIndex("Rango")));
         incidenciaBean.setSincronizado(cursor.getString(cursor.getColumnIndex("Sincronizado")));

@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.proyecto.dao.IncidenciaDAO.getBitmapAsByteArray;
+
 public class ListaEntregaFragment extends Fragment implements IRVAdapterListIncidencia {
 
     private View mView;
@@ -45,7 +48,7 @@ public class ListaEntregaFragment extends Fragment implements IRVAdapterListInci
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mView =  inflater.inflate(R.layout.fragment_lista_incidencia_tab_entrega, container, false);
+        mView = inflater.inflate(R.layout.fragment_lista_incidencia_tab_entrega, container, false);
 
         mRVListaIncidencia = (RecyclerView) mView.findViewById(R.id.rvListaIncidenciaEntrega);
         mRefresh = (SwipeRefreshLayout) mView.findViewById(R.id.swpListaIncidenciaEntrega);
@@ -69,14 +72,20 @@ public class ListaEntregaFragment extends Fragment implements IRVAdapterListInci
 
     @Override
     public void onItemClick(IncidenciaBean incidencia) {
-        Intent intent = new Intent(mView.getContext(), IncidenciaDetalleActivity.class);
-        intent.putExtra(IncidenciaDetalleActivity.KEY_PARM_INCIDENCIA, incidencia);
-        startActivity(intent);
+        try {
+            Intent intent = new Intent(mView.getContext(), IncidenciaDetalleActivity.class);
+            intent.putExtra(IncidenciaDetalleActivity.KEY_PARM_INCIDENCIA_FOTO, getBitmapAsByteArray(incidencia.getFoto()));
+            incidencia.setFoto(null);
+            intent.putExtra(IncidenciaDetalleActivity.KEY_PARM_INCIDENCIA, incidencia);
+            startActivity(intent);
+        } catch (Exception ex) {
+            Log.e("ERROR_MOBILE", ex.getMessage(), ex);
+        }
     }
 
     @Override
     public void onItemLongClick(IncidenciaBean incidencia) {
-        if(incidencia.getSincronizado().equals("N")){
+        if (incidencia.getSincronizado().equals("N")) {
             showMessage("Enviando al servidor...");
             enviarIncidenciaAServidor(incidencia);
         }
@@ -90,16 +99,16 @@ public class ListaEntregaFragment extends Fragment implements IRVAdapterListInci
         }
     };
 
-    private void obtenerIncidencias(){
+    private void obtenerIncidencias() {
         mRVAdapterListIncidencia.clearAndAddAll(new IncidenciaDAO().listar(IncidenciaActivity.ENTREGA));
     }
 
-    private void showMessage(String message){
-        if(message != null)
+    private void showMessage(String message) {
+        if (message != null)
             Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    private void enviarIncidenciaAServidor(final IncidenciaBean incidencia){
+    private void enviarIncidenciaAServidor(final IncidenciaBean incidencia) {
         boolean wifi = Connectivity.isConnectedWifi(getActivity().getApplicationContext());
         boolean movil = Connectivity.isConnectedMobile(getActivity().getApplicationContext());
         boolean isConnectionFast = Connectivity.isConnectedFast(getActivity().getApplicationContext());
@@ -116,31 +125,32 @@ public class ListaEntregaFragment extends Fragment implements IRVAdapterListInci
 
             JSONObject jsonObject = IncidenciaBean.transformIncidenciaToJSON(incidencia, sociedad);
 
-            if(jsonObject != null){
+            if (jsonObject != null) {
                 JsonObjectRequest jsonObjectRequest =
                         new JsonObjectRequest(Request.Method.POST, ruta + "activity/addActivity.xsjs", jsonObject,
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject response) {
-                                        try
-                                        {
-                                            if(response.getString("ResponseStatus").equals("Success")){
+                                        try {
+                                            if (response.getString("ResponseStatus").equals("Success")) {
                                                 new IncidenciaDAO().actualizarSincronizado(incidencia.getClaveMovil());
-                                            }else{
+                                            } else {
                                                 showMessage(response.getJSONObject("Response")
                                                         .getJSONObject("message")
                                                         .getString("value"));
                                             }
 
-                                        }catch (Exception e){
+                                        } catch (Exception e) {
                                             showMessage("Response - " + e.getMessage());
                                         }
                                     }
                                 },
                                 new Response.ErrorListener() {
                                     @Override
-                                    public void onErrorResponse(VolleyError error) {showMessage("VolleyError - " + error.getMessage());}
-                                }){
+                                    public void onErrorResponse(VolleyError error) {
+                                        showMessage("VolleyError - " + error.getMessage());
+                                    }
+                                }) {
                             @Override
                             public Map<String, String> getHeaders() throws AuthFailureError {
                                 HashMap<String, String> headers = new HashMap<String, String>();
@@ -149,7 +159,7 @@ public class ListaEntregaFragment extends Fragment implements IRVAdapterListInci
                             }
                         };
                 VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-            }else
+            } else
                 showMessage("No se pudo construir el objeto de envío...");
 
         }

@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -415,6 +416,7 @@ public class SyncRestDocumentos {
             //endregion
 
         }catch (Exception e){
+            Log.e("ERROR_MOBILE", e.getMessage(), e);
             result = false;
         }
 
