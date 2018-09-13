@@ -165,6 +165,11 @@ public class IncidenciaDAO {
         return inserto != -1;
     }
 
+    public static byte[] getBitmapAsByteArrayShow(Bitmap bitmap) {
+        bitmap = scaleDown(bitmap, (float) 420, true);
+        return getBitmapAsByteArray(bitmap);
+    }
+
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);

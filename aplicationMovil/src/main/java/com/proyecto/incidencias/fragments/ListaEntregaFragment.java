@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.proyecto.dao.IncidenciaDAO.getBitmapAsByteArray;
+import static com.proyecto.dao.IncidenciaDAO.getBitmapAsByteArrayShow;
 
 public class ListaEntregaFragment extends Fragment implements IRVAdapterListIncidencia {
 
@@ -74,7 +75,7 @@ public class ListaEntregaFragment extends Fragment implements IRVAdapterListInci
     public void onItemClick(IncidenciaBean incidencia) {
         try {
             Intent intent = new Intent(mView.getContext(), IncidenciaDetalleActivity.class);
-            intent.putExtra(IncidenciaDetalleActivity.KEY_PARM_INCIDENCIA_FOTO, getBitmapAsByteArray(incidencia.getFoto()));
+            intent.putExtra(IncidenciaDetalleActivity.KEY_PARM_INCIDENCIA_FOTO, getBitmapAsByteArrayShow(incidencia.getFoto()));
             incidencia.setFoto(null);
             intent.putExtra(IncidenciaDetalleActivity.KEY_PARM_INCIDENCIA, incidencia);
             startActivity(intent);
