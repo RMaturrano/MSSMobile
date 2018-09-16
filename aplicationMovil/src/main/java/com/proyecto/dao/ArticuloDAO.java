@@ -16,12 +16,12 @@ public class ArticuloDAO {
 
         String filterPriceList = "", filterAlmacen = "", columnStock = "";
 
-        if(listaPrecio != null  && !listaPrecio.equals("") && !listaPrecio.equals("-1")){
+        if (listaPrecio != null && !listaPrecio.equals("") && !listaPrecio.equals("-1")) {
             //filterPriceList = " AND P.CodigoLista = " + listaPrecio;
             filterPriceList = " AND T3.CodigoLista = " + listaPrecio;
         }
 
-        if(almacen != null  && !almacen.equals("") && !almacen.equals("-1")) {
+        if (almacen != null && !almacen.equals("") && !almacen.equals("-1")) {
             //filterAlmacen = " AND (SELECT COUNT(*) FROM TB_CANTIDAD WHERE ARTICULO = A.Codigo AND ALMACEN = '" + almacen + "') > 0 ";
             filterAlmacen = " where T0.Almacen = '" + almacen + "'";
         }
@@ -55,7 +55,7 @@ public class ArticuloDAO {
         Cursor cursor = DataBaseHelper
                 .getHelper(null)
                 .getDataBase()
-                .rawQuery(query , null);
+                .rawQuery(query, null);
 
         List<ArticuloBean> lst = new ArrayList<>();
 
@@ -84,10 +84,10 @@ public class ArticuloDAO {
                         "IFNULL(P.PrecioVenta, '0') as Precio "
                         + "from TB_ARTICULO A join TB_GRUPO_ARTICULO G " +
                         "ON A.GrupoArticulo = G.CODIGO left join TB_PRECIO P on " +
-                        " P.Articulo = A.Codigo "+
+                        " P.Articulo = A.Codigo " +
                         " where P.CodigoLista = " + listaPrecio +
-                        " AND CAST(IFNULL(P.PrecioVenta, '0') AS DECIMAL) > 0"+
-                        " order by G.NOMBRE,A.Nombre " , null);
+                        " AND CAST(IFNULL(P.PrecioVenta, '0') AS DECIMAL) > 0" +
+                        " order by G.NOMBRE,A.Nombre ", null);
 
         List<ArticuloBean> lst = new ArrayList<>();
 
@@ -103,7 +103,7 @@ public class ArticuloDAO {
         return lst;
     }
 
-    private ArticuloBean transformCursorToArticulo(Cursor cursor){
+    private ArticuloBean transformCursorToArticulo(Cursor cursor) {
         ArticuloBean bean = new ArticuloBean();
         bean.setCod(cursor.getString(0));
         bean.setDesc(cursor.getString(1));
@@ -112,7 +112,7 @@ public class ArticuloDAO {
         return bean;
     }
 
-    private ArticuloBean transformCursorToArticuloxPrecio(Cursor cursor){
+    private ArticuloBean transformCursorToArticuloxPrecio(Cursor cursor) {
         ArticuloBean bean = new ArticuloBean();
         bean.setCod(cursor.getString(cursor.getColumnIndex("Codigo")));
         bean.setDesc(cursor.getString(cursor.getColumnIndex("Nombre")));

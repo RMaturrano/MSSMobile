@@ -44,13 +44,13 @@ public class SyncRestMaestros {
     private SharedPreferences mSharedPreferences;
     private int MY_SOCKET_TIMEOUT_MS = 50000;
 
-    public SyncRestMaestros(Context contexto, ProgressDialog progressDialog){
+    public SyncRestMaestros(Context contexto, ProgressDialog progressDialog) {
         mProgressDialog = progressDialog;
         mContext = contexto;
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(contexto);
     }
 
-    public boolean syncFromServer(){
+    public boolean syncFromServer() {
 
         boolean result = true;
 
@@ -72,10 +72,10 @@ public class SyncRestMaestros {
             //region socios_nuevos
             List<SocioNegocioBean> listToSend = mSelect.listaSocioNegocio();
 
-            if(listToSend.size() > 0){
+            if (listToSend.size() > 0) {
                 mProgressDialog.setMessage("Enviando socios de negocio...");
 
-                for (final SocioNegocioBean sn : listToSend){
+                for (final SocioNegocioBean sn : listToSend) {
                     try {
 
                         JSONObject jsonObject = SocioNegocioBean.transformBPToJSON(sn, sociedad);
@@ -86,23 +86,24 @@ public class SyncRestMaestros {
                                         new Response.Listener<JSONObject>() {
                                             @Override
                                             public void onResponse(JSONObject response) {
-                                                try
-                                                {
-                                                    if(response.getString("ResponseStatus").equals("Success")){
+                                                try {
+                                                    if (response.getString("ResponseStatus").equals("Success")) {
                                                         mInsert.updateEstadoSocioNegocio(sn.getClaveMovil());
-                                                    }else{
+                                                    } else {
                                                         showToast(response.getJSONObject("Response")
                                                                 .getJSONObject("message")
                                                                 .getString("value"));
                                                     }
 
-                                                }catch (Exception e){}
+                                                } catch (Exception e) {
+                                                }
                                             }
                                         },
                                         new Response.ErrorListener() {
                                             @Override
-                                            public void onErrorResponse(VolleyError error) {}
-                                        }){
+                                            public void onErrorResponse(VolleyError error) {
+                                            }
+                                        }) {
                                     @Override
                                     public Map<String, String> getHeaders() throws AuthFailureError {
                                         HashMap<String, String> headers = new HashMap<String, String>();
@@ -112,7 +113,7 @@ public class SyncRestMaestros {
                                 };
                         VolleySingleton.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
 
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         showToast("Enviando socios de negocio: " + ex.getMessage());
                     }
                 }
@@ -128,7 +129,7 @@ public class SyncRestMaestros {
             mProgressDialog.setMessage("Registrando socios de negocio...");
             String urlGetBP = esCobrador.equals("N") ? "getBusinessPartner" : "getBusinessPartnerDispatcher";
             JsonObjectRequest mJSONRequest = new JsonObjectRequest(Request.Method.GET,
-                    ruta + "businesspartner/"+urlGetBP+".xsjs?empId=" + sociedad +"&cove=" + codigoEmpleado, null,
+                    ruta + "businesspartner/" + urlGetBP + ".xsjs?empId=" + sociedad + "&cove=" + codigoEmpleado, null,
                     listenerGetSocios, errorListenerGetSocios);
             mJSONRequest.setRetryPolicy(new DefaultRetryPolicy(
                     MY_SOCKET_TIMEOUT_MS,
@@ -152,7 +153,7 @@ public class SyncRestMaestros {
             //region REQUEST ALMACENES
             mProgressDialog.setMessage("Registrando almacenes...");
             mJSONRequest = new JsonObjectRequest(Request.Method.GET,
-                    ruta + "warehouse/getWarehouse.xsjs?empId=" + sociedad + "&uid=" +codigoEmpleado, null,
+                    ruta + "warehouse/getWarehouse.xsjs?empId=" + sociedad + "&uid=" + codigoEmpleado, null,
                     listenerGetAlmacen, errorListenerGetAlmacen);
             VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
             //endregion
@@ -189,7 +190,7 @@ public class SyncRestMaestros {
             VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
             //endregion
 
-        }catch (Exception e){
+        } catch (Exception e) {
             result = false;
         }
 
@@ -197,13 +198,13 @@ public class SyncRestMaestros {
     }
 
     //region RESPONSE SOCIOS DE NEGOCIO
-    Response.Listener listenerGetSocios = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetSocios = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -212,7 +213,7 @@ public class SyncRestMaestros {
                     ArrayList<SocioNegocioBean> lstResults = new ArrayList<>();
                     SocioNegocioBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new SocioNegocioBean();
                         bean.setCodigo(jsonObj.getString("Codigo"));
@@ -253,7 +254,7 @@ public class SyncRestMaestros {
                         ContactoBean detalle;
                         ArrayList<ContactoBean> listDet1 = new ArrayList<>();
 
-                        for (int j = 0; j < contacts.length(); j++){
+                        for (int j = 0; j < contacts.length(); j++) {
                             JSONObject detail = contacts.getJSONObject(j);
                             detalle = new ContactoBean();
                             detalle.setIdCon(detail.getString("Codigo"));
@@ -276,7 +277,7 @@ public class SyncRestMaestros {
                         DireccionBean direccionBean;
                         ArrayList<DireccionBean> listDet2 = new ArrayList<>();
 
-                        for (int j = 0; j < directions.length(); j++){
+                        for (int j = 0; j < directions.length(); j++) {
                             JSONObject detail = directions.getJSONObject(j);
                             direccionBean = new DireccionBean();
                             direccionBean.setIDDireccion(detail.getString("Codigo"));
@@ -313,10 +314,10 @@ public class SyncRestMaestros {
 
                     mInsert.insertSocioNegocio(lstResults, "ALL");
 
-                }else{
+                } else {
                     showToast("SOCIOS - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetSocios() > " + e.getMessage());
             }
         }
@@ -331,13 +332,13 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE ARTICULOS
-    Response.Listener listenerGetItem = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetItem = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -346,7 +347,7 @@ public class SyncRestMaestros {
                     List<ArticuloBean> mList = new ArrayList<>();
                     ArticuloBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new ArticuloBean();
                         bean.setCod(jsonObj.getString("Codigo"));
@@ -355,17 +356,21 @@ public class SyncRestMaestros {
                         bean.setGrupoArticulo(jsonObj.getString("GrupoArticulo"));
                         bean.setCodUM(jsonObj.getString("GrupoUnidadMedida"));
                         bean.setUnidadMedidaVenta(jsonObj.getString("UnidadMedidaVenta"));
-                        bean.setAlmacenDefecto(jsonObj.getString("AlmacenDefecto"));
-                        bean.setArticuloMuestra(jsonObj.getString("ArticuloMuestra"));
+
+                        if (jsonObj.has("AlmacenDefecto"))
+                            bean.setAlmacenDefecto(jsonObj.getString("AlmacenDefecto"));
+                        if (jsonObj.has("ArticuloMuestra"))
+                            bean.setArticuloMuestra(jsonObj.getString("ArticuloMuestra"));
+
                         mList.add(bean);
                     }
 
                     mInsert.insertArticulo(mList);
 
-                }else{
+                } else {
                     showToast("ARTICULOS - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetItem() > " + e.getMessage());
             }
         }
@@ -380,13 +385,13 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE ALMACENES
-    Response.Listener listenerGetAlmacen = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetAlmacen = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -395,21 +400,24 @@ public class SyncRestMaestros {
                     List<AlmacenBean> mList = new ArrayList<>();
                     AlmacenBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new AlmacenBean();
                         bean.setCodigo(jsonObj.getString("Codigo"));
                         bean.setDescripcion(jsonObj.getString("Nombre"));
-                        bean.setDescuento(jsonObj.getDouble("Descuento"));
+
+                        if (jsonObj.has("Descuento"))
+                            bean.setDescuento(jsonObj.getDouble("Descuento"));
+
                         mList.add(bean);
                     }
 
                     mInsert.insertAlmacen(mList);
 
-                }else{
+                } else {
                     showToast("ALMACENES - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetAlmacen() > " + e.getMessage());
             }
         }
@@ -424,13 +432,13 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE CANTIDADES
-    Response.Listener listenerGetCantidad = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetCantidad = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -439,7 +447,7 @@ public class SyncRestMaestros {
                     List<CantidadBean> mList = new ArrayList<>();
                     CantidadBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new CantidadBean();
                         bean.setAlmacen(jsonObj.getString("Almacen"));
@@ -453,10 +461,10 @@ public class SyncRestMaestros {
 
                     mInsert.insertCantidad(mList);
 
-                }else{
+                } else {
                     showToast("CANTIDADES - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetCantidad() > " + e.getMessage());
             }
         }
@@ -471,13 +479,13 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE LISTAS DE PRECIO
-    Response.Listener listenerGetListaPrecio = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetListaPrecio = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -486,7 +494,7 @@ public class SyncRestMaestros {
                     List<ListaPrecioBean> mList = new ArrayList<>();
                     ListaPrecioBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new ListaPrecioBean();
                         bean.setCodigo(jsonObj.getString("Codigo"));
@@ -496,10 +504,10 @@ public class SyncRestMaestros {
 
                     mInsert.insertListaPrecio(mList);
 
-                }else{
+                } else {
                     showToast("LISTA PRECIO - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetListaPrecio() > " + e.getMessage());
             }
         }
@@ -514,14 +522,14 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE PRECIOS
-    Response.Listener listenerGetPrecios= new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetPrecios = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
                 mProgressDialog.dismiss();
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -530,7 +538,7 @@ public class SyncRestMaestros {
                     List<PrecioBean> mList = new ArrayList<>();
                     PrecioBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new PrecioBean();
                         bean.setListaPrecio(jsonObj.getString("ListaPrecio"));
@@ -542,10 +550,10 @@ public class SyncRestMaestros {
 
                     mInsert.insertPrecios(mList);
 
-                }else{
+                } else {
                     showToast("PRECIOS - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetPrecios() > " + e.getMessage());
             }
         }
@@ -559,7 +567,7 @@ public class SyncRestMaestros {
     };
     //endregion
 
-    private  void showToast(String message){
+    private void showToast(String message) {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
 
