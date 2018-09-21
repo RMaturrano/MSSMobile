@@ -1,6 +1,8 @@
 package com.proyecto.incidencias;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,9 +21,12 @@ import com.proyecto.sociosnegocio.DetalleSocioNegocioMain;
 import com.proyecto.utils.Constantes;
 import com.proyecto.ventas.DetalleVentaMain;
 
+import static com.proyecto.dao.IncidenciaDAO.getImage;
+
 public class IncidenciaDetalleActivity extends AppCompatActivity {
 
     public final static String KEY_PARM_INCIDENCIA = "incidencia";
+    public final static String KEY_PARM_INCIDENCIA_FOTO = "incidencia_foto";
     private IncidenciaBean mIncidencia;
     private TextView mtvCodigoCliente, mtvNombreCliente, mtvDireccion, mtvContacto,
             mtvOrigen, mtvMotivo, mtvComentario, mtvFechaRegistro, mtvFueraLinea,
@@ -65,17 +70,18 @@ public class IncidenciaDetalleActivity extends AppCompatActivity {
         fbFactura = (FloatingActionButton) findViewById(R.id.fabDetalleIncidenciaGoFactura);
         fbFactura.setOnClickListener(fabGoFacturaOnClickListener);
 
-        if(getIntent().getExtras() != null){
-            if(getIntent().getExtras().containsKey(KEY_PARM_INCIDENCIA)){
+        if (getIntent().getExtras() != null) {
+            if (getIntent().getExtras().containsKey(KEY_PARM_INCIDENCIA)) {
                 mIncidencia = getIntent().getExtras().getParcelable(KEY_PARM_INCIDENCIA);
+                mIncidencia.setFoto(getImage(getIntent().getExtras().getByteArray(KEY_PARM_INCIDENCIA_FOTO)));
             }
-        }else
+        } else
             showMessage("No se ha recibido el parámetro para obtener el detalle de la incidencia.");
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -89,14 +95,14 @@ public class IncidenciaDetalleActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(mIncidencia != null){
+        if (mIncidencia != null) {
 
-            if(mIncidencia.getOrigen().equals(IncidenciaActivity.ORDEN))
+            if (mIncidencia.getOrigen().equals(IncidenciaActivity.ORDEN))
                 cdvDatosFactura.setVisibility(View.GONE);
             else
                 cdvDatosFactura.setVisibility(View.VISIBLE);
 
-            if(mIncidencia.getOrigen().equals(IncidenciaActivity.FACTURA))
+            if (mIncidencia.getOrigen().equals(IncidenciaActivity.FACTURA))
                 cdvDatosFoto.setVisibility(View.GONE);
             else
                 cdvDatosFoto.setVisibility(View.VISIBLE);
@@ -109,18 +115,18 @@ public class IncidenciaDetalleActivity extends AppCompatActivity {
             mtvMotivo.setText(getStringValid(mIncidencia.getMotivo()));
             mtvComentario.setText(getStringValid(mIncidencia.getComentarios()));
             mtvFechaRegistro.setText(mIncidencia.getFechaCreacion());
-            mtvFueraLinea.setText(mIncidencia.getModoOffline().equals("Y")? "NO" : "SI");
+            mtvFueraLinea.setText(mIncidencia.getModoOffline().equals("Y") ? "NO" : "SI");
 
-            if(mIncidencia.getCorrelativoFactura() != null &&
+            if (mIncidencia.getCorrelativoFactura() != null &&
                     mIncidencia.getCorrelativoFactura() > 0)
                 mtvNumeroFactura.setText(mIncidencia.getSerieFactura() + " - " + mIncidencia.getCorrelativoFactura());
             else
                 mtvNumeroFactura.setText("-");
 
-            if(mIncidencia.getTipoIncidencia() != null &&
+            if (mIncidencia.getTipoIncidencia() != null &&
                     !mIncidencia.getTipoIncidencia().equals(""))
                 mtvTipoIncidencia.setText(mIncidencia.getTipoIncidencia().equals(IncidenciaActivity.CODIGO_PARCIALMENTE_RECHAZADO) ?
-                   IncidenciaActivity.PARCIALMENTE_RECHAZADO.toUpperCase() : IncidenciaActivity.TOTALMENTE_RECHAZADO.toUpperCase());
+                        IncidenciaActivity.PARCIALMENTE_RECHAZADO.toUpperCase() : IncidenciaActivity.TOTALMENTE_RECHAZADO.toUpperCase());
             else
                 mtvTipoIncidencia.setText("-");
 
@@ -135,7 +141,7 @@ public class IncidenciaDetalleActivity extends AppCompatActivity {
     private View.OnClickListener fabGoClienteOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(mIncidencia != null) {
+            if (mIncidencia != null) {
                 Intent myIntent = new Intent(v.getContext(),
                         DetalleSocioNegocioMain.class);
                 myIntent.putExtra("id", mIncidencia.getCodigoCliente());
@@ -147,7 +153,7 @@ public class IncidenciaDetalleActivity extends AppCompatActivity {
     private View.OnClickListener fabGoFacturaOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(mIncidencia != null) {
+            if (mIncidencia != null) {
                 Intent myIntent = new Intent(v.getContext(),
                         DetalleFacturaMain.class);
                 myIntent.putExtra("id", mIncidencia.getClaveFactura());
@@ -156,15 +162,15 @@ public class IncidenciaDetalleActivity extends AppCompatActivity {
         }
     };
 
-    private void showMessage(String message){
-        if(message != null)
+    private void showMessage(String message) {
+        if (message != null)
             Toast.makeText(IncidenciaDetalleActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private String getStringValid(String string){
-        if(string != null && !string.equals("")){
+    private String getStringValid(String string) {
+        if (string != null && !string.equals("")) {
             return string.toUpperCase();
-        }else
+        } else
             return "-";
     }
 }

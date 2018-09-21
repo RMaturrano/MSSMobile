@@ -8,6 +8,9 @@ import com.proyecto.utils.StringDateCast;
 
 import org.json.JSONObject;
 
+import static com.proyecto.dao.IncidenciaDAO.getBitmapAsByteArray;
+import static com.proyecto.dao.IncidenciaDAO.getObtenerImagenBase64;
+
 public class IncidenciaBean implements Parcelable {
 
     private Integer id;
@@ -37,7 +40,10 @@ public class IncidenciaBean implements Parcelable {
     private String sincronizado;
     private String rango;
 
-    public IncidenciaBean(){};
+    public IncidenciaBean() {
+    }
+
+    ;
 
     public Integer getId() {
         return id;
@@ -247,16 +253,16 @@ public class IncidenciaBean implements Parcelable {
         this.rango = rango;
     }
 
-    public static JSONObject transformIncidenciaToJSON(IncidenciaBean bean, String sociedad){
+    public static JSONObject transformIncidenciaToJSON(IncidenciaBean bean, String sociedad) {
         JSONObject object = new JSONObject();
 
-        try{
+        try {
             object.put("ClaveMovil", bean.getClaveMovil());
             object.put("Origen", bean.getOrigen());
             object.put("CodigoCliente", bean.getCodigoCliente() != null ? bean.getCodigoCliente() : "");
             object.put("CodigoContacto", String.valueOf(bean.getCodigoContacto() != null ? bean.getCodigoContacto() : ""));
             object.put("CodigoDireccion", String.valueOf(bean.getCodigoDireccion() != null ? bean.getCodigoDireccion() : ""));
-            object.put("CodigoMotivo",bean.getMotivo() != null ? Integer.parseInt(bean.getMotivo()) : -1);
+            object.put("CodigoMotivo", bean.getMotivo() != null ? Integer.parseInt(bean.getMotivo()) : -1);
             object.put("Comentarios", bean.getComentarios() != null ? bean.getComentarios() : "");
             object.put("Vendedor", bean.getCodigoVendedor());
             object.put("Latitud", bean.getLatitud());
@@ -272,12 +278,14 @@ public class IncidenciaBean implements Parcelable {
                     StringDateCast.castDatetoDateWithoutSlash(bean.getFechaCompromisoPago()) : "");
             object.put("Empresa", Integer.parseInt(sociedad));
             object.put("Rango", bean.getRango());
-
-        }catch (Exception e){
-            return  null;
+            //object.put("Foto", bean.getFoto() != null ? getBitmapAsByteArray(bean.getFoto()).toString() : null);
+            object.put("Foto64", bean.getFoto() != null ? getObtenerImagenBase64(bean.getFoto()).toString() : null);
+            // cv.put("Foto", incidencia.getFoto() != null ? getBitmapAsByteArray(incidencia.getFoto()) : null);
+        } catch (Exception e) {
+            return null;
         }
 
-        return  object;
+        return object;
     }
 
 

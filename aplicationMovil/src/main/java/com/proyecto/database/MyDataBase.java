@@ -915,6 +915,7 @@ public class MyDataBase extends SQLiteOpenHelper {
 				"TipoIncidencia TEXT NULL,  " +
 				"FechaPago TEXT NULL,  " +
 				"Foto BLOB NULL, " +
+				"Foto64 TEXT NULL, " +
 				"Rango TEXT NULL,  " +
 				"Sincronizado TEXT NOT NULL) ");
 		db.execSQL(Q_CREATE_TB_INCIDENCIA);
