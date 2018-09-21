@@ -365,10 +365,15 @@ public class ReporteFragment extends Fragment implements OnItemClickListener{
 
 				if(reporte != null){
 
-					assert pdfManagerPM != null;
-					pdfManagerPM.createPdfDocument(reporte);
+					if(reporte.getMarcas() != null && reporte.getMarcas().size() > 0) {
+						assert pdfManagerPM != null;
+						pdfManagerPM.createPdfDocument(reporte);
 
-					return true;
+						return true;
+					}else {
+						Toast.makeText(contexto, "No hay datos para mostrar el reporte", Toast.LENGTH_LONG).show();
+						return false;
+					}
 
 				}else
 					return false;

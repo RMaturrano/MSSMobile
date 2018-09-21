@@ -282,6 +282,10 @@ public class FacturaDAO {
             DataBaseHelper.getHelper(null)
                     .getDataBase()
                     .execSQL("delete from TB_FACTURA_DETALLE");
+
+            DataBaseHelper.getHelper(null)
+                    .getDataBase()
+                    .execSQL("delete from TB_FACTURA_DETALLE_LOTE");
         }catch (Exception e){
         }
     }

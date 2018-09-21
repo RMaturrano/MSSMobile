@@ -75,7 +75,7 @@ public class PdfManagerProductosPorMarca {
 
                 document.close();
 
-                Toast.makeText(mContext, "Archivo PDF generado con éxito.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, "Archivo PDF generado con éxito.", Toast.LENGTH_SHORT).show();
             }
 
         } catch (Exception e) {
@@ -208,8 +208,10 @@ public class PdfManagerProductosPorMarca {
 
         table.setHeaderRows(1);
 
-        for (ReportFormatObjectProductoXMarca_Marcas_Detalles detalle : detallesReporte.getDetalles()) {
-            createLine(detalle, table);
+        if(detallesReporte.getDetalles() != null) {
+            for (ReportFormatObjectProductoXMarca_Marcas_Detalles detalle : detallesReporte.getDetalles()) {
+                createLine(detalle, table);
+            }
         }
 
         tableSection.add(table);

@@ -164,6 +164,10 @@ public class Delete {
 		db.execSQL("delete from "+ contexto.getResources().getString(R.string.TD_FACTURA2));
 		
 	}
+
+	public void deleteLotes(){
+		db.execSQL("delete from "+ contexto.getResources().getString(R.string.TD_FACTURA2));
+	}
 	
 	public void deletePagos(ArrayList<PagoBean> lista){
 		

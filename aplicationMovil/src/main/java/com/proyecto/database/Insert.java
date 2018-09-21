@@ -999,7 +999,34 @@ public class Insert {
 		return res;
 		
 	}
-		
+
+	public boolean insertLotes(ArrayList<FacturaDetalleLoteBean> lista){
+
+		boolean res = false;
+
+		if(lista != null && lista.size() > 0){
+			res = true;
+
+			delete.deleteLotes();
+
+			for (FacturaDetalleLoteBean lote: lista) {
+				db.execSQL(
+						"insert into "
+								+contexto.getResources().getString(R.string.TD_FACTURA2)+
+								" values(?,?,?,?)",
+						new Object[] {
+								lote.getClaveBase(),
+								lote.getLote(),
+								lote.getCantidad(),
+								lote.getLineaBase()});
+			}
+
+		}
+
+		return res;
+
+	}
+
 	
 	//Registro de grupos de articulo
 	public boolean insertGruposArticulo(List<GrupoArticuloBean> lista){

@@ -1178,7 +1178,6 @@ public class ArticuloOrdVenta extends Fragment {
                             MainVentas.position = -1;
                         }
 
-
                         //MANDAR LOS PAR�METROS EN LOCALBORADCAST INTENT
                         Intent localBroadcastIntent = new Intent("event-send-art-to-list");
                         localBroadcastIntent.putExtras(arguments);

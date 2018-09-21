@@ -364,6 +364,19 @@ public class SyncRestDocumentos {
             VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
             //endregion
 
+            //region REQUEST LOTES
+            mProgressDialog.setMessage("Registrando lotes...");
+            mJSONRequest = new JsonObjectRequest(Request.Method.GET,
+                    ruta + "invoice/getBatchNumbers.xsjs?empId=" + sociedad + "&cove=" +
+                            codigoEmpleado, null,
+                    listenerGetLotes, errorListenerGetLotes);
+            mJSONRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    MY_SOCKET_TIMEOUT_MS,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
+            //endregion
+
             //region REQUEST PAGO RECIBIDO
             mProgressDialog.setMessage("Registrando pagos...");
             mJSONRequest = new JsonObjectRequest(Request.Method.GET,
@@ -615,6 +628,51 @@ public class SyncRestDocumentos {
         @Override
         public void onErrorResponse(VolleyError error) {
             showToast("FACTURA > Ocurrio un error intentando conectar con el servidor, " + error.getMessage());
+        }
+    };
+    //endregion
+
+    //region RESPONSE LOTES
+    Response.Listener listenerGetLotes = new Response.Listener<JSONObject>(){
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                mProgressDialog.incrementProgressBy(1);
+
+                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                    JSONArray jsonArray = response.getJSONObject("Response")
+                            .getJSONObject("message")
+                            .getJSONArray("value");
+
+                    int size = jsonArray.length();
+                    ArrayList<FacturaDetalleLoteBean> lstResults = new ArrayList<>();
+                    FacturaDetalleLoteBean bean;
+
+                    for (int i = 0; i < size; i++ ) {
+                        JSONObject joLote = jsonArray.getJSONObject(i);
+                        bean = new FacturaDetalleLoteBean();
+                        bean.setClaveBase(joLote.getInt("ClaveFactura"));
+                        bean.setLote(joLote.getString("Lote"));
+                        bean.setCantidad(joLote.getDouble("Cantidad"));
+                        bean.setLineaBase(joLote.getInt("LineaBase"));
+                        lstResults.add(bean);
+                    }
+
+                    mInsert.insertLotes(lstResults);
+
+                }else{
+                    showToast("LOTES > " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
+                }
+            }catch (Exception e){
+                showToast("listenerGetLotes() > " + e.getMessage());
+            }
+        }
+    };
+
+    Response.ErrorListener errorListenerGetLotes = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            showToast("LOTES > Ocurrio un error intentando conectar con el servidor, " + error.getMessage());
         }
     };
     //endregion

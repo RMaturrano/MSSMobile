@@ -92,7 +92,7 @@ public class PdfManagerEstadoCuentaSocio {
 
                 document.close();
 
-                Toast.makeText(mContext, "Archivo PDF generado con éxito.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext, "Archivo PDF generado con éxito.", Toast.LENGTH_SHORT).show();
             }
 
         } catch (Exception e) {
@@ -262,7 +262,7 @@ public class PdfManagerEstadoCuentaSocio {
 
         table.setWidthPercentage(100);
 
-        PdfPCell cell = new PdfPCell(new Phrase("Clave", smallBold));
+        PdfPCell cell = new PdfPCell(new Phrase("Nro Interno", smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 
@@ -270,7 +270,7 @@ public class PdfManagerEstadoCuentaSocio {
         //cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         //table.addCell(cell);
 
-        cell = new PdfPCell(new Phrase("Sunat", smallBold));
+        cell = new PdfPCell(new Phrase("Nro fiscal", smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 

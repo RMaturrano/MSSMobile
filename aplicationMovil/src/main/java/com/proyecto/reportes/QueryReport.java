@@ -253,7 +253,8 @@ public class QueryReport {
 		ArrayList<ReporteEstadoCuenta> lista = null;
 		ReporteEstadoCuenta objeto;
 
-		Cursor data= db.rawQuery("select * from TB_ESTADO_CUENTA_SOCIO where Cliente = '"+claveSocio+"' " , null); 
+		Cursor data= db.rawQuery("select * from TB_ESTADO_CUENTA_SOCIO where Cliente = '"+claveSocio+"' order by " +
+				" TipoReporte, Emision, Sunat " , null);
 		
 		if(data.getCount()>0)
 		{
@@ -299,7 +300,7 @@ public class QueryReport {
 		List<ReportFormatObjectProductoXMarca_Marcas_Detalles> listaDetalles = null;
 		ReportFormatObjectProductoXMarca_Marcas_Detalles detalle = null;
 		
-		Cursor data= db.rawQuery("select CODIGO, NOMBRE from TB_FABRICANTE " , null); 
+		Cursor data= db.query("TB_FABRICANTE " ,new String[]{"CODIGO","NOMBRE"}, null, null, null,null, "NOMBRE");
 		
 		if(data.getCount() > 0){
 			

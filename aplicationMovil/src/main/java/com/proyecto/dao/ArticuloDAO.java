@@ -23,7 +23,7 @@ public class ArticuloDAO {
 
         if(almacen != null  && !almacen.equals("") && !almacen.equals("-1")) {
             //filterAlmacen = " AND (SELECT COUNT(*) FROM TB_CANTIDAD WHERE ARTICULO = A.Codigo AND ALMACEN = '" + almacen + "') > 0 ";
-            filterAlmacen = " where T0.Almacen = '" + almacen + "'";
+            filterAlmacen = " where T0.Almacen = '" + almacen + "' AND T0.Stock > 0 ";
         }
 
         /*"select " +
