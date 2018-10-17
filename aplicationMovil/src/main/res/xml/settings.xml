@@ -14,7 +14,7 @@
             android:title="Puerto"
             android:summary="Puerto del servidor web"
             android:dialogTitle="Puerto"
-            android:defaultValue="80"/>
+            android:defaultValue="8000"/>
         
         
  <!--       <SwitchPreference android:key="servicio"
