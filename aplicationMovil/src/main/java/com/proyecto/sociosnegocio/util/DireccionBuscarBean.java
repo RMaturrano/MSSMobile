@@ -31,6 +31,8 @@ public class DireccionBuscarBean implements Parcelable {
     private String visitaDomingo;
     private String personaContacto;
     private String telefonoContacto;
+    private String zona;
+    private String ruta;
     private boolean isSelected = false;
 
     public DireccionBuscarBean(){};
@@ -259,6 +261,28 @@ public class DireccionBuscarBean implements Parcelable {
         this.telefonoContacto = telefonoContacto;
     }
 
+    public String getZona() {
+        return zona;
+    }
+
+    public void setZona(String zona) {
+        this.zona = zona;
+    }
+
+    public String getRuta() {
+        return ruta;
+    }
+
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
+    }
+
+    public String obtenerDescripcion(){
+        if(this.calle == null || this.calle.equals("")){
+            return this.departamentoNombre + " " + this.provincia + " " + this.distrito;
+        }else
+            return this.calle;
+    }
 
     protected DireccionBuscarBean(Parcel in) {
         codigoCliente = in.readString();
@@ -288,6 +312,8 @@ public class DireccionBuscarBean implements Parcelable {
         visitaDomingo = in.readString();
         personaContacto = in.readString();
         telefonoContacto = in.readString();
+        zona = in.readString();
+        ruta = in.readString();
         isSelected = in.readByte() != 0x00;
     }
 
@@ -325,6 +351,8 @@ public class DireccionBuscarBean implements Parcelable {
         dest.writeString(visitaDomingo);
         dest.writeString(personaContacto);
         dest.writeString(telefonoContacto);
+        dest.writeString(zona);
+        dest.writeString(ruta);
         dest.writeByte((byte) (isSelected ? 0x01 : 0x00));
     }
 

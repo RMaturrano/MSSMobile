@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ORDR_NRO_DOCUMENTO">Document number</string>
+    <string name="ORDR_COD_SOCIO_NEGOCIO">Business Partner Code</string>
+    <string name="ORDR_NOM_SOCIO_NEGOCIO">Business Partner Name</string>
+    <string name="ORDR_CONTACTO_SOCIO">Contact</string>
+    <string name="ORDR_MONEDA">Currency</string>
+    <string name="ORDR_EMPLEADO">Sales employee</string>
+    <string name="ORDR_COMENTARIOS">Comments</string>
+    <string name="ORDR_FECHA_CONTABLE">Document date</string>
+    <string name="ORDR_FECHA_ENTREGA">Document ship date</string>
+    <string name="ORDR_OPCION_ARTICULOS">Items</string>
+    <string name="ORDR_DIRECCION_FISCAL">Bill to</string>
+    <string name="ORDR_DIRECCION_ENTREGA">Ship to</string>
+    <string name="ORDR_CONDICION_PAGO">Payment terms</string>
+    <string name="ORDR_INDICADOR">Indicator</string>
+    <string name="ORDR_TOTAL_SIN_DESCUENTO">Total before discount</string>
+    <string name="ORDR_PORCENTAJE_DESCUENTO">% discount</string>
+    <string name="ORDR_IMPORTE_DESCUENTO">Discount</string>
+    <string name="ORDR_IMPORTE_IMPUESTO">Tax amount</string>
+    <string name="ORDR_IMPORTE_TOTAL">Total</string>
+    <string name="ORDR_QTY_ARTICULOS">Items</string>
+    <string name="ORDR_SELECCION_DIRECCION_ENTREGA">The address %1$s is to %2$f
+    km\'s approx. It\'s default address ship to.</string>
+</resources>

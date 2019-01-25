@@ -20,6 +20,7 @@ import com.proyecto.devoluciones.DevolucionActivity;
 import com.proyecto.entregas.adapter.tablayout.TBAdapterEntregaDetalle;
 import com.proyecto.incidencias.IncidenciaActivity;
 import com.proyecto.notacredito.NotaCreditoActivity;
+import com.proyecto.utils.Constantes;
 
 public class EntregaDetalleActivity extends AppCompatActivity {
 
@@ -152,6 +153,8 @@ public class EntregaDetalleActivity extends AppCompatActivity {
             intent.putExtra(IncidenciaActivity.KEY_PAR_CLIENTE, mEntrega.getSocioNegocio());
             intent.putExtra(IncidenciaActivity.KEY_PAR_REFERENCIA, mEntrega.getReferencia());
             intent.putExtra(IncidenciaActivity.KEY_PAR_FACTURA, String.valueOf(mEntrega.getClave()));
+            intent.putExtra(IncidenciaActivity.KEY_PAR_COD_DIRECCION, mEntrega.getDireccionEntrega());
+            intent.putExtra(IncidenciaActivity.KEY_PAR_TIP_DIRECCION, Constantes.TIPO_DIRECCION_ENTREGA);
             startActivity(intent);
         }
     };

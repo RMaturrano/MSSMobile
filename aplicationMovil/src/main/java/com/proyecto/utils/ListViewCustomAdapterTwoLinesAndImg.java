@@ -62,7 +62,7 @@ public class ListViewCustomAdapterTwoLinesAndImg extends BaseAdapter{
         if(convertView==null)
         {
             holder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.custom_row_tworow_img, null);
+            convertView = inflater.inflate(R.layout.custom_row_tworow_img_register, null);
  
             holder.txtViewTitle = (TextView) convertView.findViewById(R.id.txtViewTitle);
             holder.txtViewDescription = (TextView) convertView.findViewById(R.id.txtViewDescription);

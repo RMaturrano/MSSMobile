@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.proyecto.database.Insert;
+import com.proyecto.utils.Constantes;
 import com.proyecto.utils.Variables;
 import com.proyecto.ws.InvocaWS;
 
@@ -39,9 +40,12 @@ public class SincManualTaskDocumentos extends AsyncTask<String, String, Object> 
 		
 		int contador = 0;
 		boolean res = false;
-		
-		//Envio
-		ws.EnviarPedidoCliente(codigoEmpleado);
+
+		//Envio de ordenes de venta
+		if(pref.getString(Variables.MODO_RECEPCION_ORDEN, "02")
+				.equals(Constantes.MODO_RECEPCION_AUTOMATICA)){
+			ws.EnviarPedidoCliente(codigoEmpleado);
+		}
 
 		//1. Lista ordenes de venta
 		String[] progress = new String[2];

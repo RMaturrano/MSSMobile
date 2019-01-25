@@ -82,52 +82,55 @@ public class SyncRestDocumentos {
             String esCobrador = mSharedPreferences.getString(Variables.COBRADOR, "N");
 
             //region POST ORDEN VENTA
-            List<OrdenVentaBean> listToSend = mSelect.listaOrdenesVentas();
+            if(mSharedPreferences.getString(Variables.MODO_RECEPCION_ORDEN, "02")
+                    .equals(Constantes.MODO_RECEPCION_AUTOMATICA)){
+                List<OrdenVentaBean> listToSend = mSelect.listaOrdenesVentas();
 
-            if(listToSend.size() > 0){
-                mProgressDialog.setMessage("Enviando órdenes de venta...");
+                if(listToSend.size() > 0){
+                    mProgressDialog.setMessage("Enviando órdenes de venta...");
 
-                for (final OrdenVentaBean ov : listToSend){
-                    try {
+                    for (final OrdenVentaBean ov : listToSend){
+                        try {
 
-                        JSONObject jsonObject = OrdenVentaBean.transformOVToJSON(ov, sociedad);
+                            JSONObject jsonObject = OrdenVentaBean.transformOVToJSON(ov, sociedad);
 
-                        //request to server
-                        JsonObjectRequest jsonObjectRequest =
-                                new JsonObjectRequest(Request.Method.POST, ruta + "salesorder/addSalesOrder.xsjs", jsonObject,
-                                        new Response.Listener<JSONObject>() {
-                                            @Override
-                                            public void onResponse(JSONObject response) {
-                                                try
-                                                {
-                                                    if(response.getString("ResponseStatus").equals("Success")){
-                                                        mInsert.updateEstadoOrdenVenta(ov.getClaveMovil());
-                                                    }else{
-                                                        showToast(response.getJSONObject("Response")
-                                                                .getJSONObject("message")
-                                                                .getString("value"));
-                                                    }
+                            //request to server
+                            JsonObjectRequest jsonObjectRequest =
+                                    new JsonObjectRequest(Request.Method.POST, ruta + "salesorder/addSalesOrder.xsjs", jsonObject,
+                                            new Response.Listener<JSONObject>() {
+                                                @Override
+                                                public void onResponse(JSONObject response) {
+                                                    try
+                                                    {
+                                                        if(response.getString("ResponseStatus").equals("Success")){
+                                                            mInsert.updateEstadoOrdenVenta(ov.getClaveMovil());
+                                                        }else{
+                                                            showToast(response.getJSONObject("Response")
+                                                                    .getJSONObject("message")
+                                                                    .getString("value"));
+                                                        }
 
-                                                }catch (Exception e){showToast("Response - " + e.getMessage());}
-                                            }
-                                        },
-                                        new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-                                                showToast("VolleyError - " + error.getMessage());
-                                            }
-                                        }){
-                                    @Override
-                                    public Map<String, String> getHeaders() throws AuthFailureError {
-                                        HashMap<String, String> headers = new HashMap<String, String>();
-                                        headers.put("Content-Type", "application/json; charset=utf-8");
-                                        return headers;
-                                    }
-                                };
-                        VolleySingleton.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+                                                    }catch (Exception e){showToast("Response - " + e.getMessage());}
+                                                }
+                                            },
+                                            new Response.ErrorListener() {
+                                                @Override
+                                                public void onErrorResponse(VolleyError error) {
+                                                    showToast("VolleyError - " + error.getMessage());
+                                                }
+                                            }){
+                                        @Override
+                                        public Map<String, String> getHeaders() throws AuthFailureError {
+                                            HashMap<String, String> headers = new HashMap<String, String>();
+                                            headers.put("Content-Type", "application/json; charset=utf-8");
+                                            return headers;
+                                        }
+                                    };
+                            VolleySingleton.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
 
-                    }catch (Exception ex){
-                        showToast("Enviando ordenes de venta: " + ex.getMessage());
+                        }catch (Exception ex){
+                            showToast("Enviando ordenes de venta: " + ex.getMessage());
+                        }
                     }
                 }
             }
@@ -207,6 +210,12 @@ public class SyncRestDocumentos {
                                                     if(response.getString("ResponseStatus").equals("Success")){
                                                        new IncidenciaDAO().actualizarSincronizado(incidencia.getClaveMovil());
                                                     }else{
+
+                                                        String errorCode = response.getJSONObject("Response").getString("code");
+
+                                                        if(errorCode.equalsIgnoreCase("-201"))
+                                                            new IncidenciaDAO().actualizarSincronizado(incidencia.getClaveMovil());
+
                                                         showToast(response.getJSONObject("Response")
                                                                 .getJSONObject("message")
                                                                 .getString("value"));
@@ -340,7 +349,13 @@ public class SyncRestDocumentos {
 
             //region REQUEST ORDEN VENTA
             mProgressDialog.setMessage("Registrando órdenes de venta...");
-            String urlGETSO = esCobrador.equals("N") ? "getSalesOrder": "getSalesOrderDispatcher";
+            String urlGETSO = "getSalesOrder";
+
+            if(esCobrador.equals("Y"))
+                urlGETSO = "getSalesOrderDispatcher";
+            if(esSupervisor.equals("Y"))
+                urlGETSO = "getSalesOrderSupervisor";
+
             JsonObjectRequest mJSONRequest = new JsonObjectRequest(Request.Method.GET,
                     ruta + "salesorder/"+urlGETSO+".xsjs?empId=" + sociedad + "&usrId=" + codigoEmpleado, null,
                     listenerGetOrdenVenta, errorListenerGetOrdenVenta);
@@ -570,6 +585,9 @@ public class SyncRestDocumentos {
                         bean.setImpuesto(jsonObj.getString("Impuesto"));
                         bean.setTotal(jsonObj.getString("Total"));
                         bean.setSaldo(jsonObj.getString("Saldo"));
+
+                        if(jsonObj.has("Dias"))
+                            bean.setDias(jsonObj.getString("Dias"));
 
                         JSONArray lines = jsonObj.getJSONArray("Lineas");
                         FacturaDetalleBean detalle;

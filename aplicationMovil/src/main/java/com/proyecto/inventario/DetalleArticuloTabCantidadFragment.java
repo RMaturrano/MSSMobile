@@ -22,6 +22,7 @@ import android.widget.Spinner;
 
 import com.proyect.movil.R;
 import com.proyecto.bean.AlmacenBean;
+import com.proyecto.dao.AlmacenDAO;
 import com.proyecto.database.DataBaseHelper;
 import com.proyecto.database.Select;
 import com.proyecto.utils.DynamicHeight;
@@ -44,26 +45,31 @@ public class DetalleArticuloTabCantidadFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v =  inflater.inflate(R.layout.detalle_articulo_tab_cant_fragment, container, false);
-        
-        
         contexto = v.getContext();
-        Intent intent = getActivity().getIntent();
-        Bundle args = intent.getExtras();
-        cargarListas();
-        
-        if(args != null){
-        	idArticulo = args.getString("id");
-        	llenarListaInicial();
-        }
-        
-        lv_0.setOnItemClickListener(itemClick);
-        
         setHasOptionsMenu(true);
         return v;
-        
     }
-    
-    private OnItemClickListener itemClick = new OnItemClickListener() {
+
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		cargarListas();
+		Intent intent = getActivity().getIntent();
+		Bundle args = intent.getExtras();
+
+		if(args != null){
+			idArticulo = args.getString("id");
+			if(intent.hasExtra(DetalleArticuloMain.KEY_ALMACEN)){
+				almacenSel = (AlmacenBean) args.get(DetalleArticuloMain.KEY_ALMACEN);
+			}
+			llenarListaInicial();
+		}
+
+		lv_0.setOnItemClickListener(itemClick);
+	}
+
+	private OnItemClickListener itemClick = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {

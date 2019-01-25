@@ -57,7 +57,7 @@ public class PhoneContactsListFragment extends ListFragment implements
 	Context contexto;
 	
 	// Defines a tag for identifying log entries
-    private static final String TAG = "BusinessPartnerListFragment";
+    private static final String TAG = "BusinessPartnerList";
     
     // Bundle key for saving previously selected search result item
     private static final String STATE_PREVIOUSLY_SELECTED_KEY =
@@ -352,9 +352,27 @@ public class PhoneContactsListFragment extends ListFragment implements
             });
 
             if (Utils.hasICS()) {
-            	
-                
-                	MenuItemCompat.setOnActionExpandListener(searchItem,
+
+            /*    searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        // When the user collapses the SearchView the current search string is
+                        // cleared and the loader retstarted.
+                        if (!TextUtils.isEmpty(mSearchTerm)) {
+                            onSelectionCleared();
+                        }
+                        mSearchTerm = null;
+                        getLoaderManager().restartLoader(
+                                ContactsQuery.QUERY_ID, null, PhoneContactsListFragment.this);
+                        return true;
+                    }
+                }); */
+                /*	MenuItemCompat.setOnActionExpandListener(searchItem,
                         new MenuItemCompat.OnActionExpandListener() {
                             @Override
                             public boolean onMenuItemActionExpand(MenuItem menuItem) {
@@ -363,17 +381,9 @@ public class PhoneContactsListFragment extends ListFragment implements
                             }
                             @Override
                             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                            	// When the user collapses the SearchView the current search string is
-                                // cleared and the loader restarted.
-                                if (!TextUtils.isEmpty(mSearchTerm)) {
-                                    onSelectionCleared();
-                                }
-                                mSearchTerm = null;
-                                getLoaderManager().restartLoader(
-                                        ContactsQuery.QUERY_ID, null, PhoneContactsListFragment.this);
-                                return true;
+
                             }
-                        });
+                        });*/
                 
             }
 

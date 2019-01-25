@@ -44,6 +44,7 @@ import com.proyecto.database.Select;
 import com.proyecto.utils.DoubleRound;
 import com.proyecto.utils.FormatCustomListView;
 import com.proyecto.utils.ListViewCustomAdapterTwoLinesAndImg;
+import com.proyecto.utils.ListViewCustomAdapterTwoLinesAndImgOV;
 import com.proyecto.utils.Variables;
 
 import org.json.JSONObject;
@@ -75,7 +76,7 @@ public class ArticuloOrdVenta extends Fragment {
     //LIST VIEW PRINCIPAL QUE CONTIENE A TODO
     private ListView lvPrincipal = null;
     private ArrayList<FormatCustomListView> searchResults = null;
-    private ListViewCustomAdapterTwoLinesAndImg adapter;
+    private ListViewCustomAdapterTwoLinesAndImgOV adapter;
 
     private FormatCustomListView fullObject = null;
     private FormatCustomListView fullObjectDescuento = null;
@@ -217,19 +218,17 @@ public class ArticuloOrdVenta extends Fragment {
                     fullObject.setData("0.00");
 
                     if(descuentoAlmacen > 0 && !articuloMuestraBoolean){
-                        fullObject.setData(descuentoAlmacen.toString());
+                        fullObject.setData(String.valueOf(descuentoAlmacen));
                     }
 
                     if(articuloMuestraBoolean){
-                        fullObject.setData("100.00");
+                        fullObject.setData("100");
                     }
                     //fullObject.setData("0.00");
                     searchResults.set(8, fullObject);
 
                     doMaths();
                     lvPrincipal.invalidateViews();
-
-
                 }
             }
         }
@@ -480,7 +479,7 @@ public class ArticuloOrdVenta extends Fragment {
             sr = new FormatCustomListView();
             sr.setTitulo("Porcentaje descuento");
             if (articuloActualizar != null)
-                sr.setData(String.valueOf(articuloActualizar.getDescuento()* 100));
+                sr.setData(String.valueOf(articuloActualizar.getDescuento()));
             searchResults.add(sr);
 
             sr = new FormatCustomListView();
@@ -509,7 +508,7 @@ public class ArticuloOrdVenta extends Fragment {
                 sr.setData(String.valueOf(articuloActualizar.getTotal()));
             searchResults.add(sr);
 
-            adapter = new ListViewCustomAdapterTwoLinesAndImg(contexto, searchResults);
+            adapter = new ListViewCustomAdapterTwoLinesAndImgOV(contexto, searchResults);
             lvPrincipal.setAdapter(adapter);
         }catch (Exception e){
             showMessage("llenarListPrincipal() > " + e.getMessage() + " > " + e.getStackTrace()[0].getLineNumber());
@@ -689,20 +688,20 @@ public class ArticuloOrdVenta extends Fragment {
 
                         //TODO: Cambiar el descuento aplicado según almacen seleccionado
                         if(almacenSel.getDescuento() > 0 && !articuloMuestraBoolean){
-                            fullObjectDescuento.setData(almacenSel.getDescuento().toString());
+                            fullObjectDescuento.setData(String.valueOf(almacenSel.getDescuento()));
                         }
 
                         if(articuloMuestraBoolean){
-                            fullObjectDescuento.setData("100.00");
+                            fullObjectDescuento.setData("100");
                         }
 
                         if(almacenSel.getDescuento() == 0 && !articuloMuestraBoolean){
-                            fullObjectDescuento.setData("0.00");
+                            fullObjectDescuento.setData("0");
                         }
                         //fullObjectDescuento.setData(almacenSel.getDescuento().toString());
                         searchResults.set(8, fullObjectDescuento);
                         lvPrincipal.invalidateViews();
-
+                        doMaths();
                     }
                 });
 
@@ -880,7 +879,9 @@ public class ArticuloOrdVenta extends Fragment {
 
 
             } else if (position == 8) {
-                //PORCENTAJE DE DESCUENTO
+
+
+                //region PORCENTAJE DE DESCUENTO
 
                 posicion = position;
                 //Capturar el objeto (row - fila)
@@ -932,6 +933,7 @@ public class ArticuloOrdVenta extends Fragment {
                 imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
                 alert.show();
+                //endregion
 
             } else if (position == 9) {
                 //IMPUESTO
@@ -1034,7 +1036,7 @@ public class ArticuloOrdVenta extends Fragment {
             fullObject = new FormatCustomListView();
             fullObject = (FormatCustomListView) oDes;
             if (fullObject.getData() != null && !fullObject.getData().equals("")) {
-                descuento = (Double.parseDouble(fullObject.getData())) / 100;
+                descuento = (Double.parseDouble(fullObject.getData()) / 100);
             }
 
             if(listaImpuestoSel != null){

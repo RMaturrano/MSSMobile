@@ -20,6 +20,7 @@
     <string name="C_OV_COND_PAGO">CondicionPago</string>
     <string name="C_OV_INDICADOR">Indicador</string>
     <string name="C_OV_SUB_TOTAL">SubTotal</string>
+    <string name="C_OV_DESCUENTO">Descuento</string>
     <string name="C_OV_IMPUESTO">Impuesto</string>
     <string name="C_OV_TOTAL">Total</string>
     <string name="C_OV_CREAD_MOVIL">CreadMovil</string>

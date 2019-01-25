@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ORDR_NRO_DOCUMENTO">Número de documento</string>
+    <string name="ORDR_COD_SOCIO_NEGOCIO">Código de socio de negocios</string>
+    <string name="ORDR_NOM_SOCIO_NEGOCIO">Nombre de socio de negocios</string>
+    <string name="ORDR_CONTACTO_SOCIO">Contacto</string>
+    <string name="ORDR_MONEDA">Moneda</string>
+    <string name="ORDR_EMPLEADO">Empleado de ventas</string>
+    <string name="ORDR_COMENTARIOS">Comentarios</string>
+    <string name="ORDR_FECHA_CONTABLE">Fecha contable</string>
+    <string name="ORDR_FECHA_ENTREGA">Fecha de entrega</string>
+    <string name="ORDR_OPCION_ARTICULOS">Artículos</string>
+    <string name="ORDR_DIRECCION_FISCAL">Dirección Fiscal</string>
+    <string name="ORDR_DIRECCION_ENTREGA">Dirección de Entrega</string>
+    <string name="ORDR_CONDICION_PAGO">Condición de pago</string>
+    <string name="ORDR_INDICADOR">Indicador</string>
+    <string name="ORDR_TOTAL_SIN_DESCUENTO">Total antes de descuento</string>
+    <string name="ORDR_PORCENTAJE_DESCUENTO">Porcentaje de descuento</string>
+    <string name="ORDR_IMPORTE_DESCUENTO">Descuento</string>
+    <string name="ORDR_IMPORTE_IMPUESTO">Impuesto</string>
+    <string name="ORDR_IMPORTE_TOTAL">Total</string>
+    <string name="ORDR_QTY_ARTICULOS">Artículos</string>
+    <string name="ORDR_SELECCION_DIRECCION_ENTREGA">La dirección %1$s se encuentra a %2$d
+    kms aprox. Se autoselecciona como dirección de entrega.</string>
+</resources>

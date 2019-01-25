@@ -67,8 +67,9 @@ public class ReporteFragment extends Fragment implements OnItemClickListener{
     private String tipoReporteSel = "";
 
 	private ProgressDialog mPd;
+	private final String REPORTE_EFECTIVIDAD_VENTA = "Efectividad de Venta";
+	private final String REPORTE_EFECTIVIDAD_REPARTO = "Efectividad de Reparto";
 
-    
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v =  inflater.inflate(R.layout.reporte_saldos_vendedor_fragment, container, false);
@@ -106,42 +107,38 @@ public class ReporteFragment extends Fragment implements OnItemClickListener{
 		//Spinner
 		final Spinner spn = new Spinner(contexto);
 		
-		final String[] tipoPago = new String[4];
-		tipoPago[0] = "Saldos por Cobrar";
-		tipoPago[1] = "Estado de Cuenta";
-		tipoPago[2] = "Productos por marca";
-		tipoPago[3] = "Pre Cobranza";
+		final String[] tipoReporte = new String[6];
+		tipoReporte[0] = "Saldos por Cobrar";
+		tipoReporte[1] = "Estado de Cuenta";
+		tipoReporte[2] = "Productos por marca";
+		tipoReporte[3] = "Pre Cobranza";
+		tipoReporte[4] = REPORTE_EFECTIVIDAD_VENTA;
+		tipoReporte[5] = REPORTE_EFECTIVIDAD_REPARTO;
 		
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(contexto, 
 				android.R.layout.simple_list_item_1,
-				tipoPago);
+				tipoReporte);
 		spn.setAdapter(adapter);
 		spn.setOnItemSelectedListener(new OnItemSelectedListener() {
-			
 			@Override
 			public void onItemSelected(AdapterView<?> parent,
 					View arg1, int pos, long arg3) {
-			
 				tipoReporteSel = (String) parent.getItemAtPosition(pos);
-				
 			}
 
 			@Override
 			public void onNothingSelected(
 					AdapterView<?> arg0) {
-				
 			}
 		});
-		
-		
-		
+
 		AlertDialog.Builder alert = new AlertDialog.Builder(contexto);
 		alert.setTitle("Seleccione el reporte");
 //		alert.setView(spn);
-		alert.setSingleChoiceItems(tipoPago, -1, new OnClickListener() {
+		alert.setSingleChoiceItems(tipoReporte, -1, new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int item) {
-				tipoReporteSel = tipoPago[item];
+				tipoReporteSel = tipoReporte[item];
 			}
 		});
 		alert.setCancelable(false);
@@ -164,11 +161,10 @@ public class ReporteFragment extends Fragment implements OnItemClickListener{
 						new GenerarReporte().execute("2");
 
 				}else if(tipoReporteSel.equalsIgnoreCase("Pre Cobranza")){
-					
 					builDataReporte();
-					
+				}else if(tipoReporteSel.equalsIgnoreCase(REPORTE_EFECTIVIDAD_VENTA)){
+
 				}
-				
 		  }
 		});
 

@@ -17,4 +17,6 @@
     <color name="white">#FAFAFA</color>
     <color name="black">#586464</color>
 
+    <color name="tv_item_tittle_background">#2196f3</color>
+
 </resources>

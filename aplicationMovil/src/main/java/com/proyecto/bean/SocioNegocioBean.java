@@ -13,7 +13,8 @@ public class SocioNegocioBean {
 			condPago, comentario, personaContacto,
 			tipoCliente, empleadoVentas, limCre, prioridad, listaPrecio, indicador, zona,
 			creadoMovil, claveMovil, estadoRegistroMovil, direccionFiscal, TransaccionMovil,ValidoenPedido,
-			poseeActivos, codProyecto, tipoRegistro, numUltimaCompra, fecUtimaCompra, montoUltCompra, saldoCuenta;
+			poseeActivos, codProyecto, tipoRegistro, numUltimaCompra, fecUtimaCompra, montoUltCompra, saldoCuenta,
+			porcentajeDescuento;
 
 	public SocioNegocioBean(){
 		this.contactos = new ArrayList<>();
@@ -352,6 +353,14 @@ public class SocioNegocioBean {
 
 	public void setSaldoCuenta(String saldoCuenta) {
 		this.saldoCuenta = saldoCuenta;
+	}
+
+	public String getPorcentajeDescuento() {
+		return porcentajeDescuento;
+	}
+
+	public void setPorcentajeDescuento(String porcentajeDescuento) {
+		this.porcentajeDescuento = porcentajeDescuento;
 	}
 
 	public static JSONObject transformBPToJSON(SocioNegocioBean ov, String sociedad){

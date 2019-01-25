@@ -28,6 +28,7 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.proyect.movil.R;
 import com.proyecto.utils.Variables;
 
 @SuppressLint("SimpleDateFormat")
@@ -140,7 +141,7 @@ public class PdfManagerProductosPorMarca {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);
         final String empresa = pref.getString(Variables.DESCRIPCION_COMPANIA, "No Found");
 
-        preface.add(new Paragraph("Compañia: " + empresa, subFont));
+        preface.add(new Paragraph(mContext.getResources().getString(R.string.pref_company)  + empresa, subFont));
         //preface.add(new Paragraph("Direccion: Calle Tacna N° 330-Iquitos-Maynas-Loreto" , subFont));
         preface.add(new Paragraph("Fecha de impresion: " + currentDate, subFont));
 
@@ -198,11 +199,11 @@ public class PdfManagerProductosPorMarca {
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 
-        cell = new PdfPCell(new Phrase("Precio cobertura", smallBold));
+        cell = new PdfPCell(new Phrase(detallesReporte.getListaPrecio1(), smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 
-        cell = new PdfPCell(new Phrase("Precio mayorista", smallBold));
+        cell = new PdfPCell(new Phrase(detallesReporte.getListaPrecio2(), smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 

@@ -29,6 +29,7 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.proyect.movil.R;
 import com.proyecto.utils.DoubleRound;
 import com.proyecto.utils.StringDateCast;
 import com.proyecto.utils.Variables;
@@ -158,7 +159,7 @@ public class PdfManagerEstadoCuentaSocio {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);
         final String empresa = pref.getString(Variables.DESCRIPCION_COMPANIA, "No Found");
 
-        preface.add(new Paragraph("Compañia: " + empresa, subFont));
+        preface.add(new Paragraph(mContext.getResources().getString(R.string.pref_company) + empresa, subFont));
         //preface.add(new Paragraph("Direccion: Calle Tacna N° 330-Iquitos-Maynas-Loreto" , subFont));
         preface.add(new Paragraph("Fecha de impresion: " + currentDate, subFont));
 
@@ -255,22 +256,23 @@ public class PdfManagerEstadoCuentaSocio {
     private static double crearTablaCuerpoVentas(Paragraph tableSection, ArrayList<ReporteEstadoCuenta> listaObjecto)
             throws DocumentException {
 
-        int TABLE_COLUMNS = 8;
+        int TABLE_COLUMNS = 7;
         PdfPTable table = new PdfPTable(TABLE_COLUMNS);
-        float[] columnWidths = new float[]{60f, 110f, 90f, 100f, 85f, 60f, 120f, 120f};
+        //float[] columnWidths = new float[]{60f, 110f, 90f, 100f, 85f, 60f, 120f, 120f}; // HALLMARK
+        float[] columnWidths = new float[]{110f, 90f, 100f, 85f, 60f, 120f, 120f}; // HALLMARK
         table.setWidths(columnWidths);
 
         table.setWidthPercentage(100);
 
-        PdfPCell cell = new PdfPCell(new Phrase("Nro Interno", smallBold));
+       /* PdfPCell cell = new PdfPCell(new Phrase("Nro Interno", smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        table.addCell(cell);
+        table.addCell(cell); */
 
         //cell = new PdfPCell(new Phrase("Tipo",smallBold));
         //cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         //table.addCell(cell);
 
-        cell = new PdfPCell(new Phrase("Nro fiscal", smallBold));
+        PdfPCell cell = new PdfPCell(new Phrase("Nro fiscal", smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 
@@ -318,22 +320,23 @@ public class PdfManagerEstadoCuentaSocio {
     private static double crearTablaCuerpoCobranzas(Paragraph tableSection, ArrayList<ReporteEstadoCuenta> listaObjecto)
             throws DocumentException {
 
-        int TABLE_COLUMNS = 9;
+        int TABLE_COLUMNS = 8;
         PdfPTable table = new PdfPTable(TABLE_COLUMNS);
-        float[] columnWidths = new float[]{70f, 70f, 90f, 90f, 80f, 50f, 50f, 50f, 60f};
+        //float[] columnWidths = new float[]{70f, 70f, 90f, 90f, 80f, 50f, 50f, 50f, 60f}; // HALLMARK
+        float[] columnWidths = new float[]{70f, 90f, 90f, 80f, 50f, 50f, 50f, 60f}; // HALLMARK
         table.setWidths(columnWidths);
 
         table.setWidthPercentage(100);
 
-        PdfPCell cell = new PdfPCell(new Phrase("Clave", smallBold));
+       /* PdfPCell cell = new PdfPCell(new Phrase("Clave", smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        table.addCell(cell);
+        table.addCell(cell); */
 
         //cell = new PdfPCell(new Phrase("Tipo",smallBold));
         //cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         //table.addCell(cell);
 
-        cell = new PdfPCell(new Phrase("Sunat", smallBold));
+        PdfPCell cell = new PdfPCell(new Phrase("Nro Fiscal", smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 
@@ -401,9 +404,9 @@ public class PdfManagerEstadoCuentaSocio {
     private static void crearLineaCuerpoVenta(ReporteEstadoCuenta reporteLine, PdfPTable table) {
         PdfPCell cell = new PdfPCell();
 
-        cell.setPhrase(new Phrase(reporteLine.getClave(), smallFont));
+     /*   cell.setPhrase(new Phrase(reporteLine.getClave(), smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        table.addCell(cell);
+        table.addCell(cell); */
 
         //cell.setPhrase(new Phrase(reporteLine.getTipoReporte(),smallFont));
         //cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -429,11 +432,11 @@ public class PdfManagerEstadoCuentaSocio {
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 
-        cell.setPhrase(new Phrase(reporteLine.getTotal(), smallFont));
+        cell.setPhrase(new Phrase(String.format("%,.2f", Double.parseDouble(reporteLine.getTotal())), smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
 
-        cell.setPhrase(new Phrase(reporteLine.getSaldo(), smallFont));
+        cell.setPhrase(new Phrase(String.format("%,.2f", Double.parseDouble(reporteLine.getSaldo())), smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
 
@@ -443,9 +446,9 @@ public class PdfManagerEstadoCuentaSocio {
     private static void crearLineaCuerpoVenta2(ReporteEstadoCuenta reporteLine, PdfPTable table) {
         PdfPCell cell = new PdfPCell();
 
-        cell.setPhrase(new Phrase(reporteLine.getClave(), smallFont));
+      /*  cell.setPhrase(new Phrase(reporteLine.getClave(), smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        table.addCell(cell);
+        table.addCell(cell); */
 
         //cell.setPhrase(new Phrase(reporteLine.getTipoReporte(),smallFont));
         //cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -479,7 +482,7 @@ public class PdfManagerEstadoCuentaSocio {
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
 
-        cell.setPhrase(new Phrase(reporteLine.getPagado_Importe(), smallFont));
+        cell.setPhrase(new Phrase(String.format("%,.2f", Double.parseDouble(reporteLine.getPagado_Importe())), smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
 
@@ -501,7 +504,7 @@ public class PdfManagerEstadoCuentaSocio {
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
 
-        cell = new PdfPCell(new Phrase(String.valueOf(total)));
+        cell = new PdfPCell(new Phrase(String.format("%,.2f",total)));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
         table.addCell(cell);
@@ -534,7 +537,7 @@ public class PdfManagerEstadoCuentaSocio {
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
 
-        cell = new PdfPCell(new Phrase(String.valueOf(total)));
+        cell = new PdfPCell(new Phrase(String.format("%,.2f",total)));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
 

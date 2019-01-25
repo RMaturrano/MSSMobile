@@ -14,6 +14,8 @@ import com.proyecto.utils.PagerAdapterDetArticulo;
 
 public class DetalleArticuloMain extends AppCompatActivity{
 
+    public static String KEY_ALMACEN = "kAlmacen";
+
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

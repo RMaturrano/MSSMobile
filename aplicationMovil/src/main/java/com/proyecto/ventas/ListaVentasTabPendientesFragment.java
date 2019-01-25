@@ -36,11 +36,13 @@ import android.widget.Toast;
 import com.proyect.movil.R;
 import com.proyecto.bean.OrdenVentaBean;
 import com.proyecto.database.DataBaseHelper;
+import com.proyecto.ordenventa.OrdenVentaActivity;
 import com.proyecto.utils.CustomDialogPedido;
 import com.proyecto.utils.ListViewCustomAdapterFourRowAndImgORD;
 import com.proyecto.utils.StringDateCast;
 import com.proyecto.utils.Utils;
 import com.proyecto.utils.Variables;
+import com.proyecto.ventas.dialog.LongDialogOrder;
 
 import org.json.JSONObject;
 
@@ -130,6 +132,15 @@ public class ListaVentasTabPendientesFragment extends Fragment
                 startActivity(registrarVenta);
             }
         });
+        fabCrear.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent registrarVenta = new Intent(v.getContext(),
+                        OrdenVentaActivity.class);
+                startActivity(registrarVenta);
+                return false;
+            }
+        });
         fabCrear.setVisibility(View.INVISIBLE);
         // FLOATING BUTTON
 
@@ -187,12 +198,12 @@ public class ListaVentasTabPendientesFragment extends Fragment
 
 
         Cursor rs = db.rawQuery("select OV.Clave,IFNULL(SN.NombreRazonSocial, ''),Total,Tipo,OV.FechaVencimiento," +
-                "OV.EstadoMovil,OV.ClaveMovil, OV.TransaccionMovil " +
+                "OV.EstadoMovil,OV.ClaveMovil, OV.TransaccionMovil, ov.HoraCreacion " +
                 "from TB_ORDEN_VENTA OV left JOIN TB_SOCIO_NEGOCIO SN " +
                 "ON OV.SocioNegocio = SN.Codigo " +
                 "where Tipo ='P' " +
                 "AND SN.NombreRazonSocial IS NOT NULL " +
-                "ORDER BY OV.Clave DESC", null);
+                "ORDER BY OV.FechaVencimiento desc, OV.HoraCreacion DESC", null);
         while (rs.moveToNext()) {
 
             customListObjet = new OrdenVentaBean();
@@ -224,6 +235,7 @@ public class ListaVentasTabPendientesFragment extends Fragment
                 customListObjet.setUtilIcon2(icon_cloud_done_green);
             }
 
+            customListObjet.setEstadoRegistroMovil(rs.getString(rs.getColumnIndex("EstadoMovil")));
             customListObjet.setClaveMovil(rs.getString(6));
             customListObjet.setTransaccionMovil(rs.getString(7));
 
@@ -304,6 +316,7 @@ public class ListaVentasTabPendientesFragment extends Fragment
         myIntent.putExtra("id", ((OrdenVentaBean) adapter.getItem(position)).getNroDocOrdV());
         myIntent.putExtra("estado", ((OrdenVentaBean) adapter.getItem(position)).getEstadoDoc());
         myIntent.putExtra("estadoTransaccion", ((OrdenVentaBean) adapter.getItem(position)).getTransaccionMovil());
+        myIntent.putExtra(DetalleVentaMain.ESTADO_MOVIL, ((OrdenVentaBean) adapter.getItem(position)).getEstadoRegistroMovil());
         startActivity(myIntent);
     }
 
@@ -337,7 +350,14 @@ public class ListaVentasTabPendientesFragment extends Fragment
     public boolean onItemLongClick(AdapterView<?> parent, View view,
                                    int position, long id) {
 
-        if (((OrdenVentaBean) adapter.getItem(position)).getTransaccionMovil().equals("1") ||
+        if (((OrdenVentaBean) adapter.getItem(position)).getTransaccionMovil().equals("1")){
+            LongDialogOrder cd = new LongDialogOrder();
+            Dialog groupDialog = cd.CreateGroupDialog(contexto, listaAdapter.get(position).getNroDocOrdV());
+            groupDialog.show();
+        }else
+            Toast.makeText(contexto, "El documento ya fue enviado al servidor...", Toast.LENGTH_LONG).show();
+
+      /*  if (((OrdenVentaBean) adapter.getItem(position)).getTransaccionMovil().equals("1") ||
                 ((OrdenVentaBean) adapter.getItem(position)).getTransaccionMovil().equals("2")) {
             boolean crear = false;
             boolean actualizar = false;
@@ -368,7 +388,7 @@ public class ListaVentasTabPendientesFragment extends Fragment
 
             }
 
-        }
+        }  */
 
 
         return true;

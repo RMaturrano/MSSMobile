@@ -226,6 +226,8 @@ public class ListaArticulosTabTodosFragment extends Fragment
         Intent myIntent = new Intent(v.getContext(), DetalleArticuloMain.class);
         ArticuloBean bean = (ArticuloBean) adapter.getItem(position);
         myIntent.putExtra("id", bean.getCod());
+        if(mAlmacen != null && !mAlmacen.getCodigo().equals("-1"))
+            myIntent.putExtra(DetalleArticuloMain.KEY_ALMACEN, mAlmacen);
         startActivity(myIntent);
     }
 

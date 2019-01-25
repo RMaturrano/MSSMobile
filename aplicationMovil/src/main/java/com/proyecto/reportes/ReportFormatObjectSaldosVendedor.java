@@ -6,21 +6,21 @@ public class ReportFormatObjectSaldosVendedor {
 	
 	private String  empleado, empresa, direccion;
 	private List<ReportFormatObjectSaldosVendedorDetail> detalles;
-	private double total, pagado, saldo, totalRecibo;
+	private long total, pagado, saldo, totalRecibo;
 
 	public double getPagado() {
 		return pagado;
 	}
 
-	public void setPagado(double pagado) {
+	public void setPagado(long pagado) {
 		this.pagado = pagado;
 	}
 
-	public double getSaldo() {
+	public long getSaldo() {
 		return saldo;
 	}
 
-	public void setSaldo(double saldo) {
+	public void setSaldo(long saldo) {
 		this.saldo = saldo;
 	}
 
@@ -40,11 +40,11 @@ public class ReportFormatObjectSaldosVendedor {
 		this.empleado = empleado;
 	}
 
-	public double getTotal() {
+	public long getTotal() {
 		return total;
 	}
 
-	public void setTotal(double total) {
+	public void setTotal(long total) {
 		this.total = total;
 	}
 
@@ -64,11 +64,11 @@ public class ReportFormatObjectSaldosVendedor {
 		this.direccion = direccion;
 	}
 
-	public double getTotalRecibo() {
+	public long getTotalRecibo() {
 		return totalRecibo;
 	}
 
-	public void setTotalRecibo(double totalRecibo) {
+	public void setTotalRecibo(long totalRecibo) {
 		this.totalRecibo = totalRecibo;
 	}
 

@@ -13,7 +13,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MyDataBase extends SQLiteOpenHelper {
 
 	// VERSION DE BD
-	public static int DATABASE_VERSION = 99;
+	public static int DATABASE_VERSION = 110;
 
 	// DATABASE NAME
 	private static final String DATABASE_NAME = "BD_PRAGSA_SQLITE";
@@ -76,8 +76,10 @@ public class MyDataBase extends SQLiteOpenHelper {
 				+ contexto.getResources().getString(R.string.C_SN_FEC_ULT_COMPRA) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_SN_MON_ULT_COMPRA) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_SN_SALDO_CUENTA) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_SN_DESCUENTO) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_SN_PERSONA_CONTACTO) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_SN_CODIGO_EMPLEADO) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_SN_MONEDA) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_SN_VALIDO_EN_PEDIDO) +" TEXT)");
 		db.execSQL(QUERY_CREATE_BP);
 
@@ -131,7 +133,10 @@ public class MyDataBase extends SQLiteOpenHelper {
 				+ contexto.getResources().getString(R.string.C_SN2_CANAL) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_SN2_GIRO) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_SN2_FECHA_INICIO) +" TEXT, "
-				+ contexto.getResources().getString(R.string.C_SN2_VENDEDOR) +" TEXT "
+				+ contexto.getResources().getString(R.string.C_SN2_VENDEDOR) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_SN2_NUM_ULT_COMPRA) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_SN2_FEC_ULT_COMPRA) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_SN2_MON_ULT_COMPRA) +" TEXT "
 				+ ")");
 		db.execSQL(QUERY_CREATE_BP_DIRECC);
 		
@@ -172,6 +177,7 @@ public class MyDataBase extends SQLiteOpenHelper {
 				+ contexto.getResources().getString(R.string.C_OV_LONGITUD) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_OV_RANGO_CLIENTE) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_OV_HORA_CREACION) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_OV_DESCUENTO) +" NUMERIC, "
 				+ contexto.getResources().getString(R.string.C_OV_MODO_OFFLINE) +" TEXT )");
 		db.execSQL(QUERY_CREATE_ORD_VEN);
 
@@ -214,7 +220,8 @@ public class MyDataBase extends SQLiteOpenHelper {
 				+ contexto.getResources().getString(R.string.C_FACT_EMP_VENTA) +" TEXT, " 
 				+ contexto.getResources().getString(R.string.C_FACT_COMENT) +" TEXT, " 
 				+ contexto.getResources().getString(R.string.C_FACT_FEC_CONT) +" TEXT, " 
-				+ contexto.getResources().getString(R.string.C_FACT_FEC_VEN) +" TEXT, " 
+				+ contexto.getResources().getString(R.string.C_FACT_FEC_VEN) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_FACT_DIAS) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_FACT_DIR_FISCAL) +" TEXT, " 
 				+ contexto.getResources().getString(R.string.C_FACT_DIR_ENTREGA) +" TEXT, " 
 				+ contexto.getResources().getString(R.string.C_FACT_COND_PAGO) +" TEXT, " 
@@ -475,6 +482,7 @@ public class MyDataBase extends SQLiteOpenHelper {
 				+ contexto.getResources().getString(R.string.C_ART_UM_VENTA) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_ART_ALM_DEF) +" TEXT, "
 				+ contexto.getResources().getString(R.string.C_ART_MUESTRA) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_ART_CODBARRAS) +" TEXT, "
 				+ "UNIQUE("+ contexto.getResources().getString(R.string.C_ART_COD) +"))");
 		db.execSQL(Q_CREATE_TB_ART);
 		
@@ -720,8 +728,9 @@ public class MyDataBase extends SQLiteOpenHelper {
 					+ contexto.getResources().getString(R.string.T_LISTA_PRECIO) 
 					+ "(" 
 					+ contexto.getResources().getString(R.string.C_LST_PRE_COD) +" TEXT, " 
-			       	+ contexto.getResources().getString(R.string.C_LST_PRE_NOM) +" TEXT, " 
-					+ "UNIQUE("+ contexto.getResources().getString(R.string.C_LST_PRE_COD) +"))");
+			       	+ contexto.getResources().getString(R.string.C_LST_PRE_NOM) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_LST_PRE_CUR) +" TEXT, "
+				+ "UNIQUE("+ contexto.getResources().getString(R.string.C_LST_PRE_COD) +"))");
 		db.execSQL(Q_CREATE_TB_LISTA_PRECIO);
 				
 		// TABLA PRECIO
@@ -746,8 +755,16 @@ public class MyDataBase extends SQLiteOpenHelper {
 			       	+ contexto.getResources().getString(R.string.C_MONEDA_NOM) +" TEXT, " 
 					+ "UNIQUE("+ contexto.getResources().getString(R.string.C_MONEDA_COD) +"))");
 		db.execSQL(Q_CREATE_TB_MONEDA);
-				
-	
+
+		//TABLA TIPO DE CAMBIO
+		String Q_CREATE_TB_TIPO_CAMBIO;
+		Q_CREATE_TB_TIPO_CAMBIO = ("CREATE TABLE "
+				+ contexto.getResources().getString(R.string.T_TIPO_CAMBIO)
+				+ "("
+				+ contexto.getResources().getString(R.string.C_TC_FEC) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_TC_MON) +" TEXT, "
+				+ contexto.getResources().getString(R.string.C_TC_TAS) +" TEXT)");
+		db.execSQL(Q_CREATE_TB_TIPO_CAMBIO);
 		
 		// TABLA ZONA
 		String Q_CREATE_TB_ZONA;
@@ -758,6 +775,15 @@ public class MyDataBase extends SQLiteOpenHelper {
 			       	+ contexto.getResources().getString(R.string.C_ZONA_NOMBRE) +" TEXT, " 
 					+ "UNIQUE("+ contexto.getResources().getString(R.string.C_ZONA_CODIGO) +"))");
 		db.execSQL(Q_CREATE_TB_ZONA);
+
+		// TABLA RUTA
+		String Q_CREATE_TB_RUTA;
+		Q_CREATE_TB_RUTA = ("CREATE TABLE TB_RUTA "
+				+ "(CODIGO TEXT, "
+				+ " NOMBRE TEXT, "
+				+ " ZONA TEXT, "
+				+ "UNIQUE(CODIGO))");
+		db.execSQL(Q_CREATE_TB_RUTA);
 		
 		
 		// TABLA CUENTA
@@ -815,7 +841,7 @@ public class MyDataBase extends SQLiteOpenHelper {
 				"UNIQUE(COD_TIP))");
 		db.execSQL(Q_CREATE_TB_TIPO_PERSONA);
 		
-		// TABLA TIPO DE PERSONA
+		// TABLA TIPO DE direccion
 		String Q_CREATE_TB_TIPO_DIRECCION;
 		Q_CREATE_TB_TIPO_DIRECCION = ("CREATE TABLE TB_TIPO_DIRECCION (CODIGO TEXT, NOMBRE TEXT, " +
 				"UNIQUE(CODIGO))");
@@ -842,7 +868,7 @@ public class MyDataBase extends SQLiteOpenHelper {
 		db.execSQL(Q_CREATE_TB);
 
 		// TABLA GIRO
-		Q_CREATE_TB = ("CREATE TABLE TB_GIRO(CODIGO TEXT, DESCRIPCION TEXT, UNIQUE(CODIGO))");
+		Q_CREATE_TB = ("CREATE TABLE TB_GIRO(CODIGO TEXT, DESCRIPCION TEXT, CANAL TEXT, UNIQUE(CODIGO))");
 		db.execSQL(Q_CREATE_TB);
 
 		// TABLA REPORTE NC
@@ -1037,9 +1063,10 @@ public class MyDataBase extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS TB_PROYECTO");
 		db.execSQL("DROP TABLE IF EXISTS TB_CANAL");
 		db.execSQL("DROP TABLE IF EXISTS TB_GIRO");
+		db.execSQL("DROP TABLE IF EXISTS TB_RUTA");
+		db.execSQL("DROP TABLE IF EXISTS "+contexto.getResources().getString(R.string.T_TIPO_CAMBIO));
 
 		onCreate(db);
-
 	}
 	
 	

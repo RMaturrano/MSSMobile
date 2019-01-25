@@ -26,13 +26,14 @@ public class DetalleVentaMain extends AppCompatActivity{
 	
 	public static String idNroVenta = null;
 	public static String idSocioNegocio = null;
+	public final static String ESTADO_MOVIL = "estadoMovil";
 	private Context contexto;
 	private SharedPreferences pref;
 	private String movilEditar = "";
 	private String estado = "";
-	private String estadoTransaccion = "";
+	private String estadoTransaccion = "", estadoMovil = "";
 	private FloatingActionButton fabEditar;
-	
+
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,6 +51,10 @@ public class DetalleVentaMain extends AppCompatActivity{
 		
 		if(myIntent.getStringExtra("estadoTransaccion") != null){
 			estadoTransaccion = myIntent.getStringExtra("estadoTransaccion");
+		}
+
+		if(myIntent.hasExtra(ESTADO_MOVIL)){
+			estadoMovil = myIntent.getStringExtra(ESTADO_MOVIL);
 		}
 		
 		contexto = this;
@@ -133,7 +138,7 @@ public class DetalleVentaMain extends AppCompatActivity{
 
 				if(!estadoTransaccion.equals("") && !movilEditar.equals("")){
 					if(movilEditar.equalsIgnoreCase("Y")
-							&& Integer.parseInt(estadoTransaccion) <= 2){
+							&& estadoMovil.equals("L")){
 						fabEditar.setVisibility(FloatingActionButton.VISIBLE);
 					}
 				}

@@ -34,6 +34,7 @@ public class EntregaDAO {
                         "IFNULL(T5.Nombre,'') AS ListaPrecioNombre," +
                         "T0.Contacto," +
                         "IFNULL(T2.Nombre,'') AS ContactoNombre," +
+                        "IFNULL(T2.TelefonoMovil,'') AS ContactoTelefono," +
                         "T0.Moneda," +
                         "T0.EmpleadoVenta," +
                         "T0.Comentario," +
@@ -248,6 +249,7 @@ public class EntregaDAO {
         bean.setListaPrecioNombre(cursor.getString(cursor.getColumnIndex("ListaPrecioNombre")));
         bean.setContacto(cursor.getInt(cursor.getColumnIndex("Contacto")));
         bean.setContactoNombre(cursor.getString(cursor.getColumnIndex("ContactoNombre")));
+        bean.setContactoTelefono(cursor.getString(cursor.getColumnIndex("ContactoTelefono")));
         bean.setMoneda(cursor.getString(cursor.getColumnIndex("Moneda")));
         bean.setEmpleadoVenta(cursor.getString(cursor.getColumnIndex("EmpleadoVenta")));
         bean.setComentario(cursor.getString(cursor.getColumnIndex("Comentario")));

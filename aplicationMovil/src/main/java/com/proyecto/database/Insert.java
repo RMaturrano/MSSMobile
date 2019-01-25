@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.proyect.movil.R;
 import com.proyecto.bean.AlmacenBean;
@@ -43,7 +44,9 @@ import com.proyecto.bean.PrecioBean;
 import com.proyecto.bean.ProvinciaBean;
 import com.proyecto.bean.ProyectoBean;
 import com.proyecto.bean.ReporteModel;
+import com.proyecto.bean.RutaBean;
 import com.proyecto.bean.SocioNegocioBean;
+import com.proyecto.bean.TipoCambioBean;
 import com.proyecto.bean.UnidadMedidaBean;
 import com.proyecto.bean.ZonaBean;
 import com.proyecto.reportes.ReporteEstadoCuenta;
@@ -122,7 +125,9 @@ public class Insert {
 					objetForInsert.put(contexto.getResources().getString(R.string.C_SN_FEC_ULT_COMPRA), socioNegocio.getFecUtimaCompra());
 					objetForInsert.put(contexto.getResources().getString(R.string.C_SN_MON_ULT_COMPRA), socioNegocio.getMontoUltCompra());
 					objetForInsert.put(contexto.getResources().getString(R.string.C_SN_PERSONA_CONTACTO), socioNegocio.getPersonaContacto());
+					objetForInsert.put(contexto.getResources().getString(R.string.C_SN_MONEDA), socioNegocio.getMoneda());
 					objetForInsert.put(contexto.getResources().getString(R.string.C_SN_SALDO_CUENTA), socioNegocio.getSaldoCuenta());
+					objetForInsert.put(contexto.getResources().getString(R.string.C_SN_DESCUENTO), socioNegocio.getPorcentajeDescuento());
 
 					long respuestaInsert = db.insert(contexto.getResources().getString(R.string.T_SOCIO_NEGOCIO), 
 														null, objetForInsert);
@@ -172,7 +177,7 @@ public class Insert {
 									db.execSQL(
 											"insert into "
 													+contexto.getResources().getString(R.string.TD_DIRECCION_SOCIO_NEGOCIO)+
-											" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+											" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 											new Object[] {
 													socioNegocio.getCodigo(),
 													direccion.getIDDireccion(),
@@ -199,7 +204,10 @@ public class Insert {
 													direccion.getCanal(),
 													direccion.getGiro(),
 											direccion.getFechaInicioVisitas(),
-											direccion.getVendedor()});
+											direccion.getVendedor(),
+											direccion.getNumeroUltimaCompra(),
+											direccion.getFechaUltimaCompra(),
+											direccion.getMontoUltimaCompra()});
 
 								}
 
@@ -336,7 +344,7 @@ public class Insert {
 										+contexto.getResources().getString(R.string.TD_DIRECCION_SOCIO_NEGOCIO)+
 								" values(?,?,?,?,?,?,?,?,?,?,?,?, " +
 										"'N','N','N','N','N','N','N', " +
-										"'101',?,?,?,?,'', -1)",
+										"'101',?,?,?,?,'', -1, '', '', '')",
 								new Object[] {
 										socioNegocio.getCodigo(),
 										direccion.getIDDireccion(),
@@ -541,6 +549,7 @@ public class Insert {
 		objetForInsert.put(contexto.getResources().getString(R.string.C_OV_SUB_TOTAL), ordenVenta.getSubTotal());
 		objetForInsert.put(contexto.getResources().getString(R.string.C_OV_IMPUESTO), ordenVenta.getImpuesto());
 		objetForInsert.put(contexto.getResources().getString(R.string.C_OV_TOTAL), ordenVenta.getTotal());
+		objetForInsert.put(contexto.getResources().getString(R.string.C_OV_DESCUENTO), ordenVenta.getPorcDesc());
 		objetForInsert.put(contexto.getResources().getString(R.string.C_OV_CREAD_MOVIL), ordenVenta.getCreadoMovil());
 		objetForInsert.put(contexto.getResources().getString(R.string.C_OV_CLAVE_MOVIL), ordenVenta.getClaveMovil());
 		objetForInsert.put(contexto.getResources().getString(R.string.C_OV_ESTADO_REGISTRO_MOVIL), ordenVenta.getEstadoRegistroMovil());
@@ -673,7 +682,7 @@ public class Insert {
 					db.execSQL(
 							"INSERT or IGNORE into "
 									+contexto.getResources().getString(R.string.T_ARTICULO)+
-							" values(?,?,?,?,?,?,?,?)",
+							" values(?,?,?,?,?,?,?,?,?)",
 							new Object[] { 	bean.getCod(),
 											bean.getDesc(),
 											bean.getFabricante(),
@@ -681,7 +690,8 @@ public class Insert {
 											bean.getCodUM(),
 											bean.getUnidadMedidaVenta(),
 											bean.getAlmacenDefecto(),
-							bean.getArticuloMuestra()});
+											bean.getArticuloMuestra(),
+											bean.getCodigoBarras()});
 					
 				}
 				db.setTransactionSuccessful();
@@ -883,9 +893,10 @@ public class Insert {
 				for (GiroBean bean : lista) {
 
 					db.execSQL(
-							"INSERT or IGNORE into " +tabla+ " values(?,?)",
+							"INSERT or IGNORE into " +tabla+ " values(?,?,?)",
 							new Object[] { 	bean.getCodigo(),
-									bean.getDescripcion()});
+									bean.getDescripcion(),
+									bean.getCanal()});
 				}
 				db.setTransactionSuccessful();
 				db.endTransaction();
@@ -924,6 +935,7 @@ public class Insert {
 					objetForInsert.put(contexto.getResources().getString(R.string.C_FACT_COMENT), factura.getComentario());
 					objetForInsert.put(contexto.getResources().getString(R.string.C_FACT_FEC_CONT), factura.getFechaContable());
 					objetForInsert.put(contexto.getResources().getString(R.string.C_FACT_FEC_VEN), factura.getFechaVencimiento());
+					objetForInsert.put(contexto.getResources().getString(R.string.C_FACT_DIAS), factura.getDias());
 					objetForInsert.put(contexto.getResources().getString(R.string.C_FACT_DIR_FISCAL), factura.getDireccionFiscal());
 					objetForInsert.put(contexto.getResources().getString(R.string.C_FACT_DIR_ENTREGA), factura.getDireccionEntrega());
 					objetForInsert.put(contexto.getResources().getString(R.string.C_FACT_COND_PAGO), factura.getCondicionPago());
@@ -1220,6 +1232,7 @@ public class Insert {
 					ContentValues objetForInsert = new ContentValues();
 					objetForInsert.put(contexto.getResources().getString(R.string.C_LST_PRE_COD), bean.getCodigo());
 					objetForInsert.put(contexto.getResources().getString(R.string.C_LST_PRE_NOM), bean.getNombre());
+					objetForInsert.put(contexto.getResources().getString(R.string.C_LST_PRE_CUR), bean.getMoneda());
 	
 					long respuestaInsert = db.insert(contexto.getResources().getString(R.string.T_LISTA_PRECIO), 
 														null, objetForInsert);
@@ -1309,6 +1322,37 @@ public class Insert {
 		
 		return res;
 		
+	}
+
+	public boolean insertTipoCambio(List<TipoCambioBean> lista){
+
+		boolean res = false;
+		if(lista != null){
+
+			if(lista.size() > 0){
+				res = true;
+				db.beginTransaction();
+				db.execSQL("DELETE FROM " + contexto.getResources().getString(R.string.T_TIPO_CAMBIO));
+
+				for (TipoCambioBean bean : lista) {
+					db.execSQL(
+							"INSERT into "
+									+contexto.getResources().getString(R.string.T_TIPO_CAMBIO)
+									+ "("  + contexto.getResources().getString(R.string.C_TC_FEC) + ","
+									+ contexto.getResources().getString(R.string.C_TC_MON) + ","
+									+ contexto.getResources().getString(R.string.C_TC_TAS) + ") " +
+									" values(?, ?, ?)",
+							new Object[] { 	bean.getFecha(),
+									bean.getMoneda(),
+									bean.getTasa()});
+
+				}
+				db.setTransactionSuccessful();
+				db.endTransaction();
+			}
+		}
+
+		return res;
 	}
 
 	
@@ -1794,6 +1838,7 @@ public class Insert {
 			if(lista.size() > 0){
 				res = true;
 				db.beginTransaction();
+				db.execSQL("DELETE FROM TB_ZONA");
 				for (ZonaBean bean : lista) {
 	
 					db.execSQL(
@@ -1808,6 +1853,31 @@ public class Insert {
 				db.endTransaction();
 			}
 			
+		}
+		return res;
+	}
+
+	public boolean insertRutas(List<RutaBean> lista){
+
+		boolean res = false;
+		if(lista != null){
+
+			if(lista.size() > 0){
+				res = true;
+				db.beginTransaction();
+				db.execSQL("DELETE FROM TB_RUTA");
+
+				for (RutaBean bean : lista) {
+					db.execSQL(
+							"INSERT or IGNORE into TB_RUTA " +
+									"(Codigo,Nombre,Zona) values(?,?,?)",
+							new Object[] { bean.getCodigo(),
+									bean.getNombre(),
+							bean.getZona()});
+				}
+				db.setTransactionSuccessful();
+				db.endTransaction();
+			}
 		}
 		return res;
 	}

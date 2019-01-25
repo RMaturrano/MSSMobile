@@ -406,6 +406,7 @@ public class OrdenVentaBean {
             jsonObject.put("Longitud", ov.getLongitud());
             jsonObject.put("Hora", ov.getHoraCreacion());
             jsonObject.put("Conectado", ov.getModoOffLine());
+            jsonObject.put("Descuento", ov.getPorcDesc());
 
             JSONArray lines = new JSONArray();
 
@@ -419,8 +420,7 @@ public class OrdenVentaBean {
                 jsonLine.put("Cantidad", String.valueOf(line.getCantidad()));
                 jsonLine.put("ListaPrecio", line.getListaPrecio());
                 jsonLine.put("PrecioUnitario", String.valueOf(line.getPrecio()));
-
-                jsonLine.put("PorcentajeDescuento", String.valueOf(line.getDescuento() * 100));
+                jsonLine.put("PorcentajeDescuento", String.valueOf(line.getDescuento()));
                 jsonLine.put("Impuesto", String.valueOf(line.getCodImp()));
 
                 lines.put(jsonLine);

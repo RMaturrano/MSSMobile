@@ -20,6 +20,10 @@ public class FormatCustomListView {
 	private boolean chck;
 	private String articuloMuestra;
 
+	public String formatData(){
+		return String.valueOf(Double.parseDouble(data) * 100);
+	}
+
 	public String getTipo() {
 		return tipo;
 	}

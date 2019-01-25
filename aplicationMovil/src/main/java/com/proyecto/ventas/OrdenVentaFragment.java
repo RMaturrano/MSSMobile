@@ -75,6 +75,7 @@ import com.proyecto.bean.OrdenVentaBean;
 import com.proyecto.bean.OrdenVentaDetalleBean;
 import com.proyecto.conectividad.Connectivity;
 import com.proyecto.dao.ClienteDAO;
+import com.proyecto.dao.DireccionDAO;
 import com.proyecto.dao.ImpuestoDAO;
 import com.proyecto.database.DataBaseHelper;
 import com.proyecto.database.Insert;
@@ -86,6 +87,7 @@ import com.proyecto.sociosnegocio.util.ContactoBuscarBean;
 import com.proyecto.sociosnegocio.util.DireccionBuscarBean;
 import com.proyecto.utils.Constantes;
 import com.proyecto.utils.ConstruirAlert;
+import com.proyecto.utils.DoubleRound;
 import com.proyecto.utils.DynamicHeight;
 import com.proyecto.utils.FormatCustomListView;
 import com.proyecto.utils.ListViewCustomAdapterTwoLinesAndImg;
@@ -107,6 +109,7 @@ public class OrdenVentaFragment extends Fragment {
 	private String res = "";
 	private String action = "";
 	private String claveVenta = "";
+	private String modoRecepcionEnSAP;
 
 	//PARA EL REGISTRO LOCAL
 	private OrdenVentaBean ordBean = null;
@@ -371,6 +374,7 @@ public class OrdenVentaFragment extends Fragment {
 		nombreEmpleado = pref.getString(Variables.NOMBRE_EMPLEADO, "");
 		idDispositivo = Secure.getString(getActivity().getContentResolver(),
 				Secure.ANDROID_ID);
+		modoRecepcionEnSAP = pref.getString(Variables.MODO_RECEPCION_ORDEN, "02");
 
         //LLENAR EL LISTADO DE DATOS QUE COMPONEN LA ORDEN DE VENTA
         llenarListaOrdTit();
@@ -521,7 +525,7 @@ public class OrdenVentaFragment extends Fragment {
 				mDireccionFiscalSeleccionada.setCodigo(mClienteSeleccionado.getDireccionFiscalCodigo());
 				updateRowListDirecciones(0, mDireccionFiscalSeleccionada.getCalle());
 			}
-
+			porcentajeDescuento = mClienteSeleccionado.getPorcentajeDescuento();
 			autoSeleccionarDireccionMasCercana();
 			llenarListaContenido();
 
@@ -744,31 +748,31 @@ public class OrdenVentaFragment extends Fragment {
 		searchResults3 = new ArrayList<FormatCustomListView>();
 
 		lvCalculos = (ListView) v.findViewById(R.id.lvCalculos);
-		
-		
+
 		FormatCustomListView sr = new FormatCustomListView();
 		sr.setTitulo("Total antes del descuento");
-		sr.setData(String.valueOf(totalAntesDescuento));
+		sr.setData(String.valueOf(DoubleRound.round(totalAntesDescuento,2)));
 		searchResults3.add(sr);
-    	
+
     	sr = new FormatCustomListView();
     	sr.setTitulo("% descuento");
-    	sr.setData(String.valueOf(porcentajeDescuento));
+    	sr.setData(String.valueOf(DoubleRound.round(porcentajeDescuento,2)));
     	searchResults3.add(sr);
     	
     	sr = new FormatCustomListView();
     	sr.setTitulo("Descuento");
-    	sr.setData(String.valueOf(totalDescuento));
+    	sr.setData(String.valueOf(DoubleRound.round(totalDescuento, 2)));
     	searchResults3.add(sr);
     	
     	sr = new FormatCustomListView();
     	sr.setTitulo("Impuesto");
-    	sr.setData(String.valueOf(totalImpuesto));
+    	sr.setData(String.valueOf(DoubleRound.round(totalImpuesto,2)));
     	searchResults3.add(sr);
-    	
+
+    	//totalGeneral = totalGeneral - totalDescuento;
     	sr = new FormatCustomListView();
     	sr.setTitulo("Total");
-    	sr.setData(String.valueOf(totalGeneral));
+    	sr.setData(String.valueOf(DoubleRound.round(totalGeneral, 2)));
     	searchResults3.add(sr);
     	
     	adapter = new ListViewCustomAdapterTwoLinesAndImg( contexto, searchResults3);
@@ -1432,6 +1436,7 @@ public class OrdenVentaFragment extends Fragment {
 					Toast.makeText(contexto, "Confirme los articulos en el detalle para generar los totales del pedido.", Toast.LENGTH_SHORT).show();
 					return true;
 				}
+				ordBean.setPorcDesc(mClienteSeleccionado.getPorcentajeDescuento());
 				ordBean.setImpuesto(searchResults3.get(3).getData());
 				ordBean.setTotal(searchResults3.get(4).getData());
 				ordBean.setCreadoMovil("Y");
@@ -1462,7 +1467,6 @@ public class OrdenVentaFragment extends Fragment {
 					ordDetBean.setCodImp(art.getCodigoImpuesto());
 					ordDetBean.setLinea(art.getUtilLinea());
 					listaOrdDet.add(ordDetBean);
-
 				}
 
 				ordBean.setDetalles(listaOrdDet);
@@ -1491,13 +1495,13 @@ public class OrdenVentaFragment extends Fragment {
 							LocalBroadcastManager myLocalBroadcastManager = LocalBroadcastManager.getInstance(activity);
 							myLocalBroadcastManager.sendBroadcast(localBroadcastIntent);
 
-
 							if (wifi || movil && isConnectionFast) {
-
-								//new TareaRegistroOrd().execute();
-								showToast("Enviando al servidor...");
-								addDocument();
-
+								if(modoRecepcionEnSAP.equals(Constantes.MODO_RECEPCION_AUTOMATICA)){
+									//new TareaRegistroOrd().execute();
+									showToast("Enviando al servidor...");
+									addDocument();
+								}else
+									showToast("Debe enviar la orden al servidor manualmente.");
 							} else {
 								clearLists();
 							}
@@ -1505,10 +1509,7 @@ public class OrdenVentaFragment extends Fragment {
 							transaction.remove(this);
 							transaction.commit();
 							activity.finish();
-
 						}
-
-
 					} else {
 						insert.close();
 						Toast.makeText(contexto, "No se registro la orden de venta, compruebe los datos",
@@ -1544,7 +1545,7 @@ public class OrdenVentaFragment extends Fragment {
 
 							if (wifi || movil && isConnectionFast) {
 
-								new TareaActualizarOrd().execute();
+							//	new TareaActualizarOrd().execute();
 
 							} else {
 								clearLists();
@@ -1594,81 +1595,85 @@ public class OrdenVentaFragment extends Fragment {
 		claveMovil = "";
 		tipoDocumento = "";
     }
- 
+
+    public ClienteBuscarBean obtenerClienteSeleccionado(){
+		return mClienteSeleccionado;
+	}
     
     /**********************************************************
      ************************ EDICION *************************
      ***********************************************************/
     // SI SE QUIERE EDITAR CARGAR LOS DATOS INICIALES
     private void construirDataEditar() {
-		
-    	//Obtener la venta
-    	Select select = new Select(contexto);
-    	OrdenVentaBean bean = new OrdenVentaBean();
-    	bean = select.obtenerOrdenVenta(claveVenta);
-    	
-    	
-    	//Exponer los datos
-		searchResults.get(0).setData(bean.getNumero());
-		searchResults.get(1).setData(bean.getCodSN());
-		searchResults.get(2).setData(select.obtenerNombreSocioNegocio(bean.getCodSN()));
-		searchResults.get(3).setData(select.obtenerNombreContacto(bean.getCodSN(), bean.getContacto()));
-		
-		listaContactoSN = select.listaContactosOV(bean.getCodSN());
-		
-		for (MonedaBean moneda : listaMonedas) {
-			if(moneda.getCodigo().equals(bean.getMoneda())){
-				monSel = new MonedaBean();
-				monSel = moneda;
-				searchResults.get(4).setData(monSel.getDescripcion());
-				break;
+
+    	try{
+			//Obtener la venta
+			Select select = new Select(contexto);
+			OrdenVentaBean bean = new OrdenVentaBean();
+			bean = select.obtenerOrdenVenta(claveVenta);
+
+			mClienteSeleccionado = new ClienteDAO().buscarPorCodigo(bean.getCodSN());
+
+			//Exponer los datos
+			searchResults.get(0).setData(bean.getNumero());
+			searchResults.get(1).setData(bean.getCodSN());
+			searchResults.get(2).setData(select.obtenerNombreSocioNegocio(bean.getCodSN()));
+			searchResults.get(3).setData(select.obtenerNombreContacto(bean.getCodSN(), bean.getContacto()));
+
+			listaContactoSN = select.listaContactosOV(bean.getCodSN());
+
+			for (MonedaBean moneda : listaMonedas) {
+				if(moneda.getCodigo().equals(bean.getMoneda())){
+					monSel = new MonedaBean();
+					monSel = moneda;
+					searchResults.get(4).setData(monSel.getDescripcion());
+					break;
+				}
 			}
-		}
-		searchResults.get(5).setData(nombreEmpleado);
-		searchResults.get(6).setData(bean.getComentario());
-		searchResults.get(7).setData(StringDateCast.castStringtoDate(bean.getFecContable()));
-		searchResults.get(8).setData(StringDateCast.castStringtoDate(bean.getFecVen()));
-		searchResults.get(9).setData(bean.getReferencia());
-		
-		/***/
-		
-		ArticuloBean articulo = null;
-		GrupoUnidadMedidaBean gum = null;
-		for (OrdenVentaDetalleBean line : bean.getDetalles()) {
-			gum = new GrupoUnidadMedidaBean();
-			gum = select.selectGrupoUMArticulo(line.getCodArt());
-			
-			articulo = new ArticuloBean();
-			articulo.setCod(line.getCodArt());
-			articulo.setDesc(select.obtenerNombreArticulo(line.getCodArt()));
-			articulo.setGrupoArticulo(gum.getCodigo());
-			articulo.setNombreGrupoArt(gum.getNombre());
-			articulo.setCodUM(line.getCodUM());
-			articulo.setNombreUnidadMedida(select.selectnombreUMArticulo(line.getCodArt()));
-			articulo.setAlmacen(line.getAlmacen());
-			articulo.setCant(line.getCantidad());
-			articulo.setCodigoListaPrecio(line.getListaPrecio());
-			articulo.setDescripcionListaPrecio(select.selectnombreListaPrecioArticulo(line.getListaPrecio()));
-			articulo.setPre(line.getPrecio());
-			articulo.setDescuento(line.getDescuento());
-			articulo.setCodigoImpuesto(line.getCodImp());
+			searchResults.get(5).setData(nombreEmpleado);
+			searchResults.get(6).setData(bean.getComentario());
+			searchResults.get(7).setData(StringDateCast.castStringtoDate(bean.getFecContable()));
+			searchResults.get(8).setData(StringDateCast.castStringtoDate(bean.getFecVen()));
+			//searchResults.get(9).setData(bean.getReferencia());
 
-			double tasaImp = new ImpuestoDAO().obtenerTasa(line.getCodImp());
+			/***/
 
-			if(tasaImp == 0)
-				articulo.setImpuesto(0);
-			else
-				articulo.setImpuesto(line.getImp());
+			ArticuloBean articulo = null;
+			GrupoUnidadMedidaBean gum = null;
+			for (OrdenVentaDetalleBean line : bean.getDetalles()) {
+				gum = select.selectGrupoUMArticulo(line.getCodArt());
 
-			articulo.setUtilIcon(iconId);
-			articulo.setUtilLinea(line.getLinea());
-			listaDetalleArticulos.add(articulo);
-		}
-		llenarListaContenido();
-		
-		/***/
-		
-		//Direcci�n fiscal
+				articulo = new ArticuloBean();
+				articulo.setCod(line.getCodArt());
+				articulo.setDesc(select.obtenerNombreArticulo(line.getCodArt()));
+				articulo.setGrupoArticulo(gum.getCodigo());
+				articulo.setNombreGrupoArt(gum.getNombre());
+				articulo.setCodUM(line.getCodUM());
+				articulo.setNombreUnidadMedida(select.selectnombreUMArticulo(line.getCodArt()));
+				articulo.setAlmacen(line.getAlmacen());
+				articulo.setCant(line.getCantidad());
+				articulo.setCodigoListaPrecio(line.getListaPrecio());
+				articulo.setDescripcionListaPrecio(select.selectnombreListaPrecioArticulo(line.getListaPrecio()));
+				articulo.setPre(line.getPrecio());
+				articulo.setDescuento(line.getDescuento());
+				articulo.setCodigoImpuesto(line.getCodImp());
+
+				double tasaImp = new ImpuestoDAO().obtenerTasa(line.getCodImp());
+
+				if(tasaImp == 0)
+					articulo.setImpuesto(0);
+				else
+					articulo.setImpuesto(tasaImp);
+
+				articulo.setUtilIcon(iconId);
+				articulo.setUtilLinea(line.getLinea());
+				listaDetalleArticulos.add(articulo);
+			}
+			llenarListaContenido();
+
+			/***/
+
+			//Direcci�n fiscal
 	/*	direccionFiscalSel = new DireccionBean();
 		direccionFiscalSel.setIDDireccion(bean.getDirFiscal());
 		String[] descripcion = select.obtenerDescripcionDireccion(bean.getCodSN(), bean.getDirFiscal());
@@ -1683,69 +1688,79 @@ public class OrdenVentaFragment extends Fragment {
 				searchResults2.get(0).setData(direccionFiscalSel.getReferencia());
 			}
 		}
-		
-		//Direcci�n entrega
-		direccionEntregaSel = new DireccionBean();
-		direccionEntregaSel.setIDDireccion(bean.getDirEntrega());
-		String[] descripcionE = select.obtenerDescripcionDireccion(bean.getCodSN(), bean.getDirEntrega());
-		
-		if(descripcionE != null){
-			if(descripcionE[0] != null){
-				direccionEntregaSel.setCalle(descripcionE[0]);
-				direccionEntregaSel.setTipoDireccion("S");
-				searchResults2.get(1).setData(direccionEntregaSel.getCalle());
-			}else if(descripcionE[1] != null && !descripcionE[1].equals("")){
-				direccionEntregaSel.setReferencia(descripcionE[1]);
-				direccionEntregaSel.setTipoDireccion("S");
-				searchResults2.get(1).setData(direccionEntregaSel.getReferencia());
-			}
-		}
-		*/
+*/
+		//Direccion Fiscal
 
-		
-		listaDireccionSN = select.listaDireccionesOV(bean.getCodSN());
-		
-		/***/
-		
-		for (CondicionPagoBean cp : listaCondicionPago) {
-			if(cp.getNumeroCondicion().equals(bean.getCondPago())){
-				condPagoSel = cp;
-				searchResults4.get(0).setData(condPagoSel.getDescripcionCondicion());
-				break;
+
+
+		//Direcci�n entrega
+		for (DireccionBuscarBean d: mClienteSeleccionado.getDirecciones()) {
+			if(d.getTipo() != null){
+				if(d.getTipo().equals(Constantes.TIPO_DIRECCION_ENTREGA) &&
+						d.getCodigo().equals(bean.getDirEntrega())){
+					mDireccionEntregaSeleccionada = d;
+				}else if(d.getTipo().equals(Constantes.TIPO_DIRECCION_FISCAL) &&
+						d.getCodigo().equals(bean.getDirFiscal())){
+					mDireccionFiscalSeleccionada = d;
+				}
 			}
 		}
-		
-		for (IndicadorBean in : listaIndicadores) {
-			if(in.getCodigo().equals(bean.getIndicador())){
-				indicadorSel = in;
-				searchResults4.get(1).setData(indicadorSel.getNombre());
-				break;
-			}
+
+		if(mDireccionFiscalSeleccionada != null){
+			updateRowListDirecciones(0, mDireccionFiscalSeleccionada.getCalle());
+			lvDirecciones.invalidateViews();
 		}
-		
-		for (ListaPrecioBean lp : listaPrecios) {
-			if(lp.getCodigo().equals(bean.getListaPrecio())){
-				listaPrecioSel = lp;
-				//searchResults4.get(2).setData(listaPrecioSel.getNombre());
-				break;
-			}
+
+		if(mDireccionEntregaSeleccionada != null){
+			updateRowListDirecciones(1, mDireccionEntregaSeleccionada.getCalle());
+			lvDirecciones.invalidateViews();
 		}
-		
-		/***/
-		
-		totalAntesDescuento = Double.parseDouble(bean.getSubTotal());
-		porcentajeDescuento = bean.getPorcDesc();
-		totalDescuento = bean.getTotDesc();
-		totalImpuesto = Double.parseDouble(bean.getImpuesto());
-    	totalGeneral = Double.parseDouble(bean.getTotal());
-    	llenarListaTotales();
-    	claveMovil = bean.getClaveMovil();
-    	tipoDocumento = bean.getTipoDoc();
-    	nroOrd = bean.getNumero();
-    	estadoRegistroMovil = bean.getEstadoRegistroMovil();
-		
-		select.close();
-		
+
+			listaDireccionSN = select.listaDireccionesOV(bean.getCodSN());
+
+			/***/
+
+			for (CondicionPagoBean cp : listaCondicionPago) {
+				if(cp.getNumeroCondicion().equals(bean.getCondPago())){
+					condPagoSel = cp;
+					searchResults4.get(0).setData(condPagoSel.getDescripcionCondicion());
+					break;
+				}
+			}
+
+			for (IndicadorBean in : listaIndicadores) {
+				if(in.getCodigo().equals(bean.getIndicador())){
+					indicadorSel = in;
+					searchResults4.get(1).setData(indicadorSel.getNombre());
+					break;
+				}
+			}
+
+			for (ListaPrecioBean lp : listaPrecios) {
+				if(lp.getCodigo().equals(bean.getListaPrecio())){
+					listaPrecioSel = lp;
+					//searchResults4.get(2).setData(listaPrecioSel.getNombre());
+					break;
+				}
+			}
+
+			/***/
+
+			totalAntesDescuento = Double.parseDouble(bean.getSubTotal());
+			porcentajeDescuento = bean.getPorcDesc();
+			totalDescuento = bean.getTotDesc();
+			totalImpuesto = Double.parseDouble(bean.getImpuesto());
+			totalGeneral = Double.parseDouble(bean.getTotal());
+			llenarListaTotales();
+			claveMovil = bean.getClaveMovil();
+			tipoDocumento = bean.getTipoDoc();
+			nroOrd = bean.getNumero();
+			estadoRegistroMovil = bean.getEstadoRegistroMovil();
+
+			select.close();
+		}catch (Exception e){
+    		showToast("construirDataEditar() > " + e.getMessage());
+		}
 	}
 
 
@@ -1807,6 +1822,7 @@ public class OrdenVentaFragment extends Fragment {
 	private  void showToast(String message){
 		Toast.makeText(contexto, message, Toast.LENGTH_SHORT).show();
 	}
+
 
 	//region MAPS FUNCTIONS
 

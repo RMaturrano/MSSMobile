@@ -30,6 +30,9 @@ public class DireccionBean {
 	private String giro;
 	private String fechaInicioVisitas;
 	private String vendedor;
+	private String numeroUltimaCompra;
+	private String fechaUltimaCompra;
+	private String montoUltimaCompra;
 	private int utilId;
 	private boolean principal;
 
@@ -255,6 +258,30 @@ public class DireccionBean {
 
 	public void setVendedor(String vendedor) {
 		this.vendedor = vendedor;
+	}
+
+	public String getNumeroUltimaCompra() {
+		return numeroUltimaCompra;
+	}
+
+	public void setNumeroUltimaCompra(String numeroUltimaCompra) {
+		this.numeroUltimaCompra = numeroUltimaCompra;
+	}
+
+	public String getFechaUltimaCompra() {
+		return fechaUltimaCompra;
+	}
+
+	public void setFechaUltimaCompra(String fechaUltimaCompra) {
+		this.fechaUltimaCompra = fechaUltimaCompra;
+	}
+
+	public String getMontoUltimaCompra() {
+		return montoUltimaCompra;
+	}
+
+	public void setMontoUltimaCompra(String montoUltimaCompra) {
+		this.montoUltimaCompra = montoUltimaCompra;
 	}
 
 	public static JSONObject transformToJSON(DireccionBean direccionBean){

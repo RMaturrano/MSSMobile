@@ -22,6 +22,7 @@ public class FacturaBean implements Parcelable {
 	private String  fechaContable;
 	private String  fechaDocumento;
 	private String  fechaVencimiento;
+	private String dias;
 	private String  direccionFiscal;
 	private String  direccionEntrega;
 	private String  condicionPago;
@@ -334,6 +335,14 @@ public class FacturaBean implements Parcelable {
 		isSelected = selected;
 	}
 
+	public String getDias() {
+		return dias;
+	}
+
+	public void setDias(String dias) {
+		this.dias = dias;
+	}
+
 	protected FacturaBean(Parcel in) {
 		tipo = in.readString();
 		clave = in.readString();
@@ -350,6 +359,7 @@ public class FacturaBean implements Parcelable {
 		fechaContable = in.readString();
 		fechaDocumento = in.readString();
 		fechaVencimiento = in.readString();
+		dias = in.readString();
 		direccionFiscal = in.readString();
 		direccionEntrega = in.readString();
 		condicionPago = in.readString();
@@ -400,6 +410,7 @@ public class FacturaBean implements Parcelable {
 		dest.writeString(fechaContable);
 		dest.writeString(fechaDocumento);
 		dest.writeString(fechaVencimiento);
+		dest.writeString(dias);
 		dest.writeString(direccionFiscal);
 		dest.writeString(direccionEntrega);
 		dest.writeString(condicionPago);

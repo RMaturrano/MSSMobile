@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="GEO_NOSIGNAL_TITLE">GPS Signal</string>
+    <string name="GEO_NOSIGNAL_MESSAGE">No location info. Enable?</string>
+</resources>

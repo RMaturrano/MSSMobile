@@ -5,7 +5,7 @@ public class ArticuloBean {
     private String cod, desc, fabricante, grupoArticulo, codUM, unidadMedidaVenta,
             nroCatIC, peso, almacen, fecVen, gDet, marca,
             zona, codProv, stock, codigoImpuesto, utilLinea, codigoListaPrecio, descripcionListaPrecio,
-            almacenDefecto;
+            almacenDefecto, codigoBarras;
 
     private String nombreFabricante, nombreGrupoArt, nombreUnidadMedida, nombreUnidadMedidaVenta;
 
@@ -169,8 +169,9 @@ public class ArticuloBean {
     }
 
     public double getPre() {
-        double num = pre;
-        return Math.round(num * 100.0) / 100.0;
+        //double num = pre;
+        //return Math.round(num * 100.0) / 100.0;
+        return pre;
     }
 
     public void setPre(double pre) {
@@ -178,8 +179,9 @@ public class ArticuloBean {
     }
 
     public double getDescuento() {
-        double num = descuento / 100;
-        return Math.round(num * 100.0) / 100.0;
+        //double num = descuento / 100;
+        //return Math.round(num * 100.0) / 100.0;
+        return descuento;
     }
 
     public void setDescuento(double descuento) {
@@ -197,8 +199,8 @@ public class ArticuloBean {
 
     public double getPreBruto() {
 
-        preBruto = this.pre - (this.pre * getDescuento())
-                + ((this.pre - (this.pre * getDescuento())) * getImpuesto());
+        preBruto = this.pre - (this.pre * (getDescuento()/100))
+                + ((this.pre - (this.pre * (getDescuento()/100))) * getImpuesto());
         return Math.round(preBruto * 100.0) / 100.0;
 
     }
@@ -208,7 +210,7 @@ public class ArticuloBean {
     }
 
     public double getTotal() {
-        return Math.round(((pre * cant) - (pre * cant) * getDescuento()) * 100d) / 100d;
+        return Math.round(((pre * cant) - (pre * cant) * (getDescuento()/100)) * 100d) / 100d;
     }
 
     public double getCant() {
@@ -290,6 +292,14 @@ public class ArticuloBean {
 
     public void setArticuloMuestra(String articuloMuestra) {
         ArticuloMuestra = articuloMuestra;
+    }
+
+    public String getCodigoBarras() {
+        return codigoBarras;
+    }
+
+    public void setCodigoBarras(String codigoBarras) {
+        this.codigoBarras = codigoBarras;
     }
 
     public Boolean getArticuloMuestraBoolean() {

@@ -126,7 +126,13 @@ public class SyncRestMaestros {
 
             //region REQUEST SOCIOS DE NEGOCIO
             mProgressDialog.setMessage("Registrando socios de negocio...");
-            String urlGetBP = esCobrador.equals("N") ? "getBusinessPartner" : "getBusinessPartnerDispatcher";
+
+            String urlGetBP = "getBusinessPartner";
+            if(esCobrador.equals("Y"))
+                urlGetBP = "getBusinessPartnerDispatcher";
+            if(esSupervisor.equals("Y"))
+                urlGetBP = "getBusinessPartnerSupervisor";
+
             JsonObjectRequest mJSONRequest = new JsonObjectRequest(Request.Method.GET,
                     ruta + "businesspartner/"+urlGetBP+".xsjs?empId=" + sociedad +"&cove=" + codigoEmpleado, null,
                     listenerGetSocios, errorListenerGetSocios);
@@ -247,7 +253,11 @@ public class SyncRestMaestros {
                         bean.setFecUtimaCompra(jsonObj.getString("FechaUltimaCompra"));
                         bean.setMontoUltCompra(jsonObj.getString("MontoUltimaCompra"));
                         bean.setPersonaContacto(jsonObj.getString("PersonaContacto"));
+                        bean.setMoneda(jsonObj.has("Moneda") ? jsonObj.getString("Moneda"): "");
                         bean.setSaldoCuenta(jsonObj.getString("SaldoCuenta"));
+
+                        if(jsonObj.has("Descuento"))
+                            bean.setPorcentajeDescuento(jsonObj.getString("Descuento"));
 
                         JSONArray contacts = jsonObj.getJSONArray("Contactos");
                         ContactoBean detalle;
@@ -303,6 +313,16 @@ public class SyncRestMaestros {
                             direccionBean.setGiro(detail.getString("Giro"));
                             direccionBean.setFechaInicioVisitas(detail.getString("InicioVisitas"));
                             direccionBean.setVendedor(detail.getString("Vendedor"));
+
+                            if(detail.has("CodigoUltimaCompra"))
+                                direccionBean.setNumeroUltimaCompra(detail.getString("CodigoUltimaCompra"));
+
+                            if(detail.has("FechaUltimaCompra"))
+                                direccionBean.setFechaUltimaCompra(detail.getString("FechaUltimaCompra"));
+
+                            if(detail.has("MontoUltimaCompra"))
+                                direccionBean.setMontoUltimaCompra(detail.getString("MontoUltimaCompra"));
+
                             listDet2.add(direccionBean);
                         }
 
@@ -355,9 +375,14 @@ public class SyncRestMaestros {
                         bean.setGrupoArticulo(jsonObj.getString("GrupoArticulo"));
                         bean.setCodUM(jsonObj.getString("GrupoUnidadMedida"));
                         bean.setUnidadMedidaVenta(jsonObj.getString("UnidadMedidaVenta"));
-                        bean.setAlmacenDefecto(jsonObj.getString("AlmacenDefecto"));
-                        if(jsonObj.has("ArticuloMuestra"))
+                        if(jsonObj.has("CodigoBarras"))
+                            bean.setCodigoBarras(jsonObj.getString("CodigoBarras"));
+
+                        if (jsonObj.has("AlmacenDefecto"))
+                            bean.setAlmacenDefecto(jsonObj.getString("AlmacenDefecto"));
+                        if (jsonObj.has("ArticuloMuestra"))
                             bean.setArticuloMuestra(jsonObj.getString("ArticuloMuestra"));
+
                         mList.add(bean);
                     }
 
@@ -493,6 +518,8 @@ public class SyncRestMaestros {
                         bean = new ListaPrecioBean();
                         bean.setCodigo(jsonObj.getString("Codigo"));
                         bean.setNombre(jsonObj.getString("Nombre"));
+                        bean.setMoneda(jsonObj.has("Moneda")?
+                                        jsonObj.getString("Moneda"): "");
                         mList.add(bean);
                     }
 

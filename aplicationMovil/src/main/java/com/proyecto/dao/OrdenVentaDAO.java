@@ -41,6 +41,18 @@ public class OrdenVentaDAO {
         }
     }
 
+    public void eliminarOrdenVenta(String clave){
+        try{
+
+            DataBaseHelper.getHelper(null)
+                    .getDataBase()
+                    .delete("TB_ORDEN_VENTA", "Clave = ? AND EstadoMovil = 'L'", new String[]{clave});
+
+        }catch(Exception e){
+
+        }
+    }
+
     public void eliminarOrdenesNoLocales(){
         try{
             DataBaseHelper.getHelper(null)

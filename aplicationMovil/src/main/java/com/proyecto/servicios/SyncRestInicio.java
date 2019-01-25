@@ -29,6 +29,8 @@ import com.proyecto.bean.MotivoBean;
 import com.proyecto.bean.PaisBean;
 import com.proyecto.bean.ProvinciaBean;
 import com.proyecto.bean.ProyectoBean;
+import com.proyecto.bean.RutaBean;
+import com.proyecto.bean.TipoCambioBean;
 import com.proyecto.bean.UnidadMedidaBean;
 import com.proyecto.bean.ZonaBean;
 import com.proyecto.database.Insert;
@@ -72,6 +74,7 @@ public class SyncRestInicio {
             String port = mSharedPreferences.getString("puertoServidor", Constantes.DEFAULT_PORT);
             String sociedad = mSharedPreferences.getString("sociedades", "-1");
             String ruta = "http://" + ip + ":" + port + "/MSS_MOBILE/service/";
+            String codigoEmpleado = mSharedPreferences.getString(Variables.CODIGO_EMPLEADO, "-1");
 
             //region REQUEST COUNTRY
             mProgressDialog.setMessage("Registrando paises...");
@@ -105,8 +108,6 @@ public class SyncRestInicio {
             VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
             //endregion
 
-            //FALTA LATITUDES Y LONGITUDES
-
             //region REQUEST BANCOS
             mProgressDialog.setMessage("Registrando bancos...");
             mJSONRequest = new JsonObjectRequest(Request.Method.GET,
@@ -128,6 +129,14 @@ public class SyncRestInicio {
             mJSONRequest = new JsonObjectRequest(Request.Method.GET,
                     ruta + "currency/getCurrency.xsjs?empId=" + sociedad, null,
                     listenerGetMonedas, errorListenerGetMonedas);
+            VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
+            //endregion
+
+            //region REQUEST TIPOS CAMBIO
+            mProgressDialog.setMessage("Registrando tipos de cambio...");
+            mJSONRequest = new JsonObjectRequest(Request.Method.GET,
+                    ruta + "currency/getExchangeRate.xsjs?dbId=" + sociedad, null,
+                    listenerGetTipoCambio, errorListenerGetTipoCambio);
             VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
             //endregion
 
@@ -166,8 +175,16 @@ public class SyncRestInicio {
             //region REQUEST ZONAS (PROPIEDADES SN)
             mProgressDialog.setMessage("Registrando zonas...");
             mJSONRequest = new JsonObjectRequest(Request.Method.GET,
-                    ruta + "cardproperties/getCardProperty.xsjs?empId=" + sociedad, null,
+                    ruta + "zona/obtenerZona.xsjs?empId=" + sociedad + "&cove=" + codigoEmpleado, null,
                     listenerGetZona, errorListenerGetZona);
+            VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
+            //endregion
+
+            //region REQUEST RUTAS
+            mProgressDialog.setMessage("Registrando rutas...");
+            mJSONRequest = new JsonObjectRequest(Request.Method.GET,
+                    ruta + "ruta/obtenerRuta.xsjs?empId=" + sociedad + "&cove=" + codigoEmpleado, null,
+                    listenerGetRuta, errorListenerGetRuta);
             VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
             //endregion
 
@@ -545,6 +562,49 @@ public class SyncRestInicio {
     };
     //endregion
 
+    //region RESPONSE MONEDAS
+    Response.Listener listenerGetTipoCambio = new Response.Listener<JSONObject>(){
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                mProgressDialog.incrementProgressBy(1);
+
+                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
+                    JSONArray jsonArray = response.getJSONObject("Response")
+                            .getJSONObject("message")
+                            .getJSONArray("value");
+
+                    int size = jsonArray.length();
+                    List<TipoCambioBean> mList = new ArrayList<>();
+                    TipoCambioBean bean;
+
+                    for (int i = 0; i < size; i++ ) {
+                        JSONObject jsonObj = jsonArray.getJSONObject(i);
+                        bean = new TipoCambioBean();
+                        bean.setFecha(jsonObj.getString("Fecha"));
+                        bean.setMoneda(jsonObj.getString("Moneda"));
+                        bean.setTasa(jsonObj.getString("Tasa"));
+                        mList.add(bean);
+                    }
+
+                    mInsert.insertTipoCambio(mList);
+                }else{
+                    showToast("TIPO CAMBIO - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
+                }
+            }catch (Exception e){
+                showToast("listenerGetTipoCambio() > " + e.getMessage());
+            }
+        }
+    };
+
+    Response.ErrorListener errorListenerGetTipoCambio = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            showToast("TIPO CAMBIO - Ocurrio un error intentando conectar con el servidor, " + error.getMessage());
+        }
+    };
+    //endregion
+
     //region RESPONSE CONDICION PAGO
     Response.Listener listenerGetCondicionPago = new Response.Listener<JSONObject>(){
         @Override
@@ -761,6 +821,50 @@ public class SyncRestInicio {
     };
     //endregion
 
+    //region RESPONSE ZONAS
+    Response.Listener listenerGetRuta = new Response.Listener<JSONObject>(){
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                mProgressDialog.incrementProgressBy(1);
+
+                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
+                    JSONArray jsonArray = response.getJSONObject("Response")
+                            .getJSONObject("message")
+                            .getJSONArray("value");
+
+                    int size = jsonArray.length();
+                    List<RutaBean> mList = new ArrayList<>();
+                    RutaBean bean;
+
+                    for (int i = 0; i < size; i++ ) {
+                        JSONObject jsonObj = jsonArray.getJSONObject(i);
+                        bean = new RutaBean();
+                        bean.setCodigo(jsonObj.getString("Codigo"));
+                        bean.setNombre(jsonObj.getString("Nombre"));
+                        if(jsonObj.has("Zona"))
+                            bean.setZona(jsonObj.getString("Zona"));
+                        mList.add(bean);
+                    }
+
+                    mInsert.insertRutas(mList);
+                }else{
+                    showToast("RUTAS - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
+                }
+            }catch (Exception e){
+                showToast("listenerGetRuta() > " + e.getMessage());
+            }
+        }
+    };
+
+    Response.ErrorListener errorListenerGetRuta = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            showToast("RUTAS - Ocurrio un error intentando conectar con el servidor, " + error.getMessage());
+        }
+    };
+    //endregion
+
     //region RESPONSE FABRICANTES
     Response.Listener listenerGetFabricantes = new Response.Listener<JSONObject>(){
         @Override
@@ -957,6 +1061,10 @@ public class SyncRestInicio {
                         bean = new GiroBean();
                         bean.setCodigo(jsonObj.getString("Codigo"));
                         bean.setDescripcion(jsonObj.getString("Nombre"));
+
+                        if(jsonObj.has("Canal"))
+                            bean.setCanal(jsonObj.getString("Canal"));
+
                         mList.add(bean);
                     }
 

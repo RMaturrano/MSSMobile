@@ -31,6 +31,13 @@ public class Variables {
     public static final String DESCRIPCION_COMPANIA = "DescripcionCompania";
     public static final String SUPERVISOR = "EsSupervisor";
     public static final String COBRADOR = "EsCobrador";
+    public static final String MODO_RECEPCION_ORDEN = "ModoRecOrden";
+    public static final String MODO_RECEPCION_PAGO = "ModoRecPago";
+    public static final String MONEDA_LOCAL = "MonedaLocal";
+    public static final String MONEDA_SISTEMA = "MonedaSistema";
+    public static final String QTY_DECIMALES_IMPORTES = "QtyDecImportes";
+    public static final String QTY_DECIMALES_PRECIOS = "QtyDecPrecios";
+    public static final String QTY_DECIMALES_CANTIDADES = "QtyDecCantidades";
 
     public static final String MENU_SOCIOS_NEGOCIO = "Socios de negocio";
     public static final String FIELDS_SOCIOS_NEGOCIO = "Campos socios de negocio";

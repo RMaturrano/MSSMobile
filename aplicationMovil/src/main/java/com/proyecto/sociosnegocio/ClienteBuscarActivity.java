@@ -21,7 +21,7 @@ import com.proyecto.sociosnegocio.util.ClienteBuscarBean;
 public class ClienteBuscarActivity extends AppCompatActivity implements IRVAdapterBuscarCliente{
 
     public static String KEY_PARAM_CLIENTE = "cliente";
-    public static int REQUEST_CODE_BUSCAR_CLIENTE = 100;
+    public static final int REQUEST_CODE_BUSCAR_CLIENTE = 100;
 
     private RecyclerView rvBuscarClientes;
     private RVAdapterBuscarCliente mRVAdapterBuscarCliente;

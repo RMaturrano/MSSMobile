@@ -17,6 +17,9 @@ public class ClienteBuscarBean implements Parcelable {
     private String numeroDocumento;
     private String direccionFiscalCodigo;
     private String direccionFiscalNombre;
+    private String moneda;
+    private double porcentajeDescuento;
+    private String personaContacto;
     private ListaPrecioBean listaPrecio;
     private CondicionPagoBean condicionPago;
     private IndicadorBean indicador;
@@ -113,28 +116,52 @@ public class ClienteBuscarBean implements Parcelable {
         this.direccionFiscalNombre = direccionFiscalNombre;
     }
 
-    protected ClienteBuscarBean(Parcel in) {
-        codigo = in.readString();
-        nombre = in.readString();
-        telefono = in.readString();
-        numeroDocumento = in.readString();
-        direccionFiscalCodigo = in.readString();
-        direccionFiscalNombre = in.readString();
-        listaPrecio = (ListaPrecioBean) in.readValue(ListaPrecioBean.class.getClassLoader());
-        condicionPago = (CondicionPagoBean) in.readValue(CondicionPagoBean.class.getClassLoader());
-        indicador = (IndicadorBean) in.readValue(IndicadorBean.class.getClassLoader());
-        if (in.readByte() == 0x01) {
-            contactos = new ArrayList<ContactoBuscarBean>();
-            in.readList(contactos, ContactoBuscarBean.class.getClassLoader());
-        } else {
-            contactos = null;
+    public double getPorcentajeDescuento() {
+        return porcentajeDescuento;
+    }
+
+    public void setPorcentajeDescuento(double porcentajeDescuento) {
+        this.porcentajeDescuento = porcentajeDescuento;
+    }
+
+    public String getMoneda() {
+        return moneda;
+    }
+
+    public void setMoneda(String moneda) {
+        this.moneda = moneda;
+    }
+
+    public String getPersonaContacto() {
+        return personaContacto;
+    }
+
+    public void setPersonaContacto(String personaContacto) {
+        this.personaContacto = personaContacto;
+    }
+
+    //método propio
+    public DireccionBuscarBean getDireccionByCode(String code){
+        if(this.direcciones != null){
+            for (DireccionBuscarBean dir: this.direcciones) {
+                if(dir.getCodigo().equals(code)){
+                    return dir;
+                }
+            }
         }
-        if (in.readByte() == 0x01) {
-            direcciones = new ArrayList<DireccionBuscarBean>();
-            in.readList(direcciones, DireccionBuscarBean.class.getClassLoader());
-        } else {
-            direcciones = null;
+        return null;
+    }
+
+    //método propio
+    public ContactoBuscarBean getContactoByCode(String code){
+        if(this.contactos != null){
+            for (ContactoBuscarBean contacto: this.contactos) {
+                if(contacto.getNombre().equals(code)){
+                    return contacto;
+                }
+            }
         }
+        return null;
     }
 
     @Override
@@ -144,34 +171,43 @@ public class ClienteBuscarBean implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(codigo);
-        dest.writeString(nombre);
-        dest.writeString(telefono);
-        dest.writeString(numeroDocumento);
-        dest.writeString(direccionFiscalCodigo);
-        dest.writeString(direccionFiscalNombre);
-        dest.writeValue(listaPrecio);
-        dest.writeValue(condicionPago);
-        dest.writeValue(indicador);
-        if (contactos == null) {
-            dest.writeByte((byte) (0x00));
-        } else {
-            dest.writeByte((byte) (0x01));
-            dest.writeList(contactos);
-        }
-        if (direcciones == null) {
-            dest.writeByte((byte) (0x00));
-        } else {
-            dest.writeByte((byte) (0x01));
-            dest.writeList(direcciones);
-        }
+        dest.writeString(this.codigo);
+        dest.writeString(this.nombre);
+        dest.writeString(this.telefono);
+        dest.writeString(this.numeroDocumento);
+        dest.writeString(this.direccionFiscalCodigo);
+        dest.writeString(this.direccionFiscalNombre);
+        dest.writeString(this.moneda);
+        dest.writeDouble(this.porcentajeDescuento);
+        dest.writeString(this.personaContacto);
+        dest.writeParcelable(this.listaPrecio, flags);
+        dest.writeParcelable(this.condicionPago, flags);
+        dest.writeParcelable(this.indicador, flags);
+        dest.writeTypedList(this.contactos);
+        dest.writeTypedList(this.direcciones);
     }
 
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<ClienteBuscarBean> CREATOR = new Parcelable.Creator<ClienteBuscarBean>() {
+    protected ClienteBuscarBean(Parcel in) {
+        this.codigo = in.readString();
+        this.nombre = in.readString();
+        this.telefono = in.readString();
+        this.numeroDocumento = in.readString();
+        this.direccionFiscalCodigo = in.readString();
+        this.direccionFiscalNombre = in.readString();
+        this.moneda = in.readString();
+        this.porcentajeDescuento = in.readDouble();
+        this.personaContacto = in.readString();
+        this.listaPrecio = in.readParcelable(ListaPrecioBean.class.getClassLoader());
+        this.condicionPago = in.readParcelable(CondicionPagoBean.class.getClassLoader());
+        this.indicador = in.readParcelable(IndicadorBean.class.getClassLoader());
+        this.contactos = in.createTypedArrayList(ContactoBuscarBean.CREATOR);
+        this.direcciones = in.createTypedArrayList(DireccionBuscarBean.CREATOR);
+    }
+
+    public static final Creator<ClienteBuscarBean> CREATOR = new Creator<ClienteBuscarBean>() {
         @Override
-        public ClienteBuscarBean createFromParcel(Parcel in) {
-            return new ClienteBuscarBean(in);
+        public ClienteBuscarBean createFromParcel(Parcel source) {
+            return new ClienteBuscarBean(source);
         }
 
         @Override

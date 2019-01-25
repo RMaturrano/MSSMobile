@@ -9,6 +9,7 @@ public class ListaPrecioBean implements Parcelable {
 
 	private String codigo;
 	private String nombre;
+	private String moneda;
 	private ArrayList<PrecioBean> precio;
 
 	public ListaPrecioBean(){};
@@ -42,10 +43,18 @@ public class ListaPrecioBean implements Parcelable {
 		this.precio = precio;
 	}
 
+	public String getMoneda() {
+		return moneda;
+	}
+
+	public void setMoneda(String moneda) {
+		this.moneda = moneda;
+	}
 
 	protected ListaPrecioBean(Parcel in) {
 		codigo = in.readString();
 		nombre = in.readString();
+		moneda = in.readString();
 		if (in.readByte() == 0x01) {
 			precio = new ArrayList<PrecioBean>();
 			in.readList(precio, PrecioBean.class.getClassLoader());
@@ -63,6 +72,7 @@ public class ListaPrecioBean implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(codigo);
 		dest.writeString(nombre);
+		dest.writeString(moneda);
 		if (precio == null) {
 			dest.writeByte((byte) (0x00));
 		} else {

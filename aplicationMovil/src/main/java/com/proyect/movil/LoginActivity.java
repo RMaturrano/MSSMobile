@@ -346,8 +346,29 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString(Variables.SUPERVISOR, objUser.getString("Supervisor"));
                                 editor.putString(Variables.COBRADOR, objUser.getString("Cobrador"));
                                 editor.putInt(Variables.MAXIMO_LINEAS, objUser.getInt("MaxLineas"));
-                                editor.putString(Variables.DESCRIPCION_COMPANIA, !objUser.isNull("NombreCompania") ? objUser.getString("NombreCompania") : "No disponible");
+                                editor.putString(Variables.DESCRIPCION_COMPANIA, !objUser.isNull("NombreCompania") ?
+                                        objUser.getString("NombreCompania") : "No disponible");
 
+                                if(objUser.has("ModoRecPago"))
+                                    editor.putString(Variables.MODO_RECEPCION_ORDEN, objUser.getString("ModoRecOrden"));
+                                else
+                                    editor.putString(Variables.MODO_RECEPCION_ORDEN, "02");
+
+                                if(objUser.has("ModoRecPago"))
+                                    editor.putString(Variables.MODO_RECEPCION_PAGO, objUser.getString("ModoRecPago"));
+                                else
+                                    editor.putString(Variables.MODO_RECEPCION_PAGO, "02");
+
+                                editor.putString(Variables.MONEDA_LOCAL, objUser.has("MonedaLocal") ?
+                                        objUser.getString("MonedaLocal") : "");
+                                editor.putString(Variables.MONEDA_SISTEMA, objUser.has("MonedaSistema") ?
+                                        objUser.getString("MonedaSistema") : "");
+                                editor.putInt(Variables.QTY_DECIMALES_IMPORTES, objUser.has("DecimalesImportes") ?
+                                        objUser.getInt("DecimalesImportes") : 2);
+                                editor.putInt(Variables.QTY_DECIMALES_PRECIOS, objUser.has("DecimalesPrecios") ?
+                                        objUser.getInt("DecimalesPrecios") : 2);
+                                editor.putInt(Variables.QTY_DECIMALES_CANTIDADES, objUser.has("DecimalesCantidades") ?
+                                        objUser.getInt("DecimalesCantidades") : 2);
                                 editor.commit();
 
                                 Intent principal = new Intent(contexto, MainActivityDrawer.class);

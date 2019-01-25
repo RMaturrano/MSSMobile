@@ -11,6 +11,9 @@ public class Constantes {
     public static final String TIPO_DIRECCION_FISCAL = "B";
     public static final String TIPO_DIRECCION_ENTREGA = "S";
 
+    public static final String MODO_RECEPCION_AUTOMATICA = "02";
+    public static final String MODO_RECEPCION_MANUAL = "01";
+
     public static final String DENTRO_DE_RANGO = "01";
     public static final String FUERA_DE_RANGO = "02";
     public static final String RANGO_NO_DISPONIBLE = "03";

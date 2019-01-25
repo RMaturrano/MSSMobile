@@ -70,9 +70,11 @@
     <string name="ttlAgregarIncidencia">Nueva Incidencia</string>
     <string name="ttlAgregarDevolucion">Nueva Devolución</string>
     <string name="ttlAgregarNotaCredito">Nueva Nota de crédito</string>
+    <string name="ttlAgregarOrdenVenta">Nueva Orden de Venta</string>
     <string name="ttlBuscarFacturas">Buscar factura</string>
     <string name="ttlBuscarCliente">Buscar cliente</string>
     <string name="title_activity_maps">Seleccionar ubicación</string>
     <string name="title_activity_show_maps">Ubicación en el mapa</string>
 
+    <string name="pref_company">Sociedad: </string>
 </resources>

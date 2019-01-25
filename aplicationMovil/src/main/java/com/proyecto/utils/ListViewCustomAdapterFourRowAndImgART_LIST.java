@@ -78,7 +78,7 @@ public class ListViewCustomAdapterFourRowAndImgART_LIST extends BaseAdapter impl
         if(convertView==null)
         {
             holder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.custom_four_row_and_img_det_ord, null);
+            convertView = inflater.inflate(R.layout.custom_four_row_and_img_det_art, null);
  
             holder.txtViewTitle = (TextView) convertView.findViewById(R.id.txtViewTitle);
             holder.txtViewDescription = (TextView) convertView.findViewById(R.id.txtViewDescription);

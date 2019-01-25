@@ -80,6 +80,7 @@ public class CobranzaFragment extends Fragment{
 	private String clavePago = "";
 	private String estadoRegistroMovil = "";
 	private String claveMovil = "";
+	private String modoRecepcionEnSAP;
 	
 	//Preferencias
 	private SharedPreferences pref;
@@ -233,6 +234,7 @@ public class CobranzaFragment extends Fragment{
 			nombreEmpleado = pref.getString(Variables.NOMBRE_EMPLEADO, "");
 			idDispositivo = Secure.getString(getActivity().getContentResolver(),
 					Secure.ANDROID_ID);
+		modoRecepcionEnSAP = pref.getString(Variables.MODO_RECEPCION_PAGO, "02");
 
 	        //LLENAR EL LISTADO DE DATOS QUE COMPONEN EL PAGO
 	        llenarListaTitulo();
@@ -714,7 +716,12 @@ public class CobranzaFragment extends Fragment{
 
 								if (wifi || movil && isConnectionFast) {
 
-									sendIncomingPaymentToServer();
+									if(modoRecepcionEnSAP.equals(Constantes.MODO_RECEPCION_AUTOMATICA)){
+										showMessage("Enviando al servidor...");
+										sendIncomingPaymentToServer();
+									}else
+										showMessage("Debe enviar la orden al servidor manualmente.");
+
 									//new TareaRegistroPago().execute();
 
 								} else {

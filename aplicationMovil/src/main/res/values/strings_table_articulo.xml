@@ -11,5 +11,6 @@
     <string name="C_ART_UM_VENTA">UnidadMedidaVenta</string>
     <string name="C_ART_ALM_DEF">AlmacenDefecto</string>
     <string name="C_ART_MUESTRA">ArticuloMuestra</string>
+    <string name="C_ART_CODBARRAS">CodigoBarras</string>
     
 </resources>

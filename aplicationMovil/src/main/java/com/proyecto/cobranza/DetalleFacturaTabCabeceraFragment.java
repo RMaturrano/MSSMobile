@@ -68,13 +68,14 @@ public class DetalleFacturaTabCabeceraFragment extends Fragment implements OnIte
 		
 		
 		Cursor rs= db.rawQuery("select DISTINCT Tipo, Numero,Referencia,S.NombreRazonSocial, " +
-								"P.Nombre, Contacto,M.NOMBRE, EmpleadoVenta, Comentario, " +
-								"FechaContable,FechaVencimiento, SubTotal ,Descuento,Impuesto, Total,Saldo, " +
+								"P.Nombre, X0.Nombre,M.NOMBRE, EmpleadoVenta, Comentario, " +
+								"FechaContable,FechaVencimiento, SubTotal ,F.Descuento,Impuesto, Total,Saldo, Dias, " +
 								"F.SocioNegocio " +
 								"FROM TB_FACTURA F LEFT JOIN TB_SOCIO_NEGOCIO S " +
 								"ON F.SocioNegocio = S.Codigo LEFT JOIN TB_MONEDA M " +
 								"ON F.Moneda = M.CODIGO LEFT JOIN TB_LISTA_PRECIO P " +
-								"ON F.ListaPrecio = P.Codigo " +
+								"ON F.ListaPrecio = P.Codigo LEFT JOIN TB_SOCIO_NEGOCIO_CONTACTO X0 " +
+								"ON S.Codigo = X0.CodigoSocioNegocio AND F.Contacto = X0.Codigo " +
 								"WHERE F.Clave ='"+idFactura+"'", null);
 		while (rs.moveToNext()) {			
 			
@@ -131,6 +132,11 @@ public class DetalleFacturaTabCabeceraFragment extends Fragment implements OnIte
 		  	sr1.setTitulo("Fecha de vencimiento");
 		  	sr1.setData(StringDateCast.castStringtoDate(rs.getString(10)));
 		  	searchResults_0.add(sr1);
+
+			sr1 = new FormatCustomListView();
+			sr1.setTitulo("Dias de atraso");
+			sr1.setData(rs.getString(rs.getColumnIndex("Dias")));
+			searchResults_0.add(sr1);
 		  	
 		  	sr1 = new FormatCustomListView();
 		  	sr1.setTitulo("Sub Total");

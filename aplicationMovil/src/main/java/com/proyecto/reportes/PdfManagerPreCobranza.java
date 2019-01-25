@@ -32,6 +32,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.VerticalPositionMark;
+import com.proyect.movil.R;
 import com.proyecto.utils.Variables;
 
 public class PdfManagerPreCobranza {
@@ -150,13 +151,11 @@ public class PdfManagerPreCobranza {
         final String empresa = pref.getString(Variables.DESCRIPCION_COMPANIA, "No Found");
 
         Chunk glue = new Chunk(new VerticalPositionMark());
-        Paragraph p = new Paragraph("Compañia: " + empresa, subFont);
+        Paragraph p = new Paragraph(mContext.getResources().getString(R.string.pref_company)  + empresa, subFont);
         p.add(new Chunk(glue));
         p.add("Fecha de impresion: " + currentDate);
 
         preface.add(p);
-        preface.add(new Paragraph("Ruc: 20329432417", subFont));
-        preface.add(new Paragraph("Direccion: Calle Tacna N° 330-Iquitos-Maynas-Loreto", subFont));
 
         addEmptyLine(preface, 1);
 

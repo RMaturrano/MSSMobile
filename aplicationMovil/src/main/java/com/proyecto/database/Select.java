@@ -41,6 +41,7 @@ import com.proyecto.bean.PagoDetalleBean;
 import com.proyecto.bean.PaisBean;
 import com.proyecto.bean.ProvinciaBean;
 import com.proyecto.bean.ProyectoBean;
+import com.proyecto.bean.RutaBean;
 import com.proyecto.bean.SocioNegocioBean;
 import com.proyecto.bean.UnidadMedidaBean;
 import com.proyecto.bean.ZonaBean;
@@ -437,7 +438,13 @@ public class Select {
 								 " CreadMovil, " +
 								 " ClaveMovil, " +
 								 " EstadoMovil, " +
-								 " TransaccionMovil "+
+								 " TransaccionMovil, "+
+				" Latitud, "+
+				" Longitud, "+
+				" RangoCliente, "+
+				" HoraCreacion, "+
+				" ModoOffline," +
+				" IFNULL(Descuento, 0) as Descuento "+
 								 " FROM TB_ORDEN_VENTA " +
 								 " WHERE EstadoMovil = 'L'", null); 
 		
@@ -468,7 +475,13 @@ public class Select {
 				venta.setClaveMovil(data.getString(20));
 				venta.setEstadoRegistroMovil(data.getString(21));
 				venta.setTransaccionMovil(data.getString(22));
+				venta.setLatitud(data.getString(data.getColumnIndex("Latitud")));
+				venta.setLongitud(data.getString(data.getColumnIndex("Longitud")));
+				venta.setRangoDireccion(data.getString(data.getColumnIndex("RangoCliente")));
+				venta.setHoraCreacion(data.getString(data.getColumnIndex("HoraCreacion")));
+				venta.setModoOffLine(data.getString(data.getColumnIndex("ModoOffline")));
 				venta.setEmpVentas(codigoEmpleado);
+				venta.setPorcDesc(data.getDouble(data.getColumnIndex("Descuento")));
 				
 				Cursor dataDetails = db.rawQuery(" SELECT " +
 						 " Articulo, " +
@@ -541,7 +554,8 @@ public class Select {
 								 " CreadMovil, " +
 								 " ClaveMovil, " +
 								 " EstadoMovil, " +
-								 " TransaccionMovil "+
+								 " TransaccionMovil," +
+								 " IFNULL(Descuento, 0) AS Descuento "+
 								 " FROM TB_ORDEN_VENTA " +
 								 " WHERE Clave = '"+clave+"'", null); 
 		
@@ -572,6 +586,7 @@ public class Select {
 				venta.setClaveMovil(data.getString(20));
 				venta.setEstadoRegistroMovil(data.getString(21));
 				venta.setTransaccionMovil(data.getString(22));
+				venta.setPorcDesc(data.getDouble(data.getColumnIndex("Descuento")));
 				
 				Cursor dataDetails = db.rawQuery(" SELECT " +
 						 " Articulo, " +
@@ -1214,13 +1229,86 @@ public class Select {
 		List lst = new ArrayList<GiroBean>();
 		GiroBean objeto;
 
-		Cursor data= db.rawQuery("select CODIGO, DESCRIPCION from TB_GIRO" , null);
+		Cursor data= db.rawQuery("select T0.CODIGO, T0.DESCRIPCION, T0.CANAL, T1.DESCRIPCION as CanalDes " +
+				"from TB_GIRO T0 LEFT JOIN TB_CANAL T1 ON T0.CANAL = T1.CODIGO " , null);
 		if(data.getCount()>0)
 		{
 			while (data.moveToNext()) {
 				objeto = new GiroBean();
 				objeto.setCodigo(data.getString(data.getColumnIndex("CODIGO")));
 				objeto.setDescripcion(data.getString(data.getColumnIndex("DESCRIPCION")));
+				objeto.setCanal(data.getString(data.getColumnIndex("CANAL")));
+				objeto.setCanalDescripcion(data.getString(data.getColumnIndex("CanalDes")));
+				lst.add(objeto);
+			}
+
+			data.close();
+		}
+
+		return lst;
+	}
+
+	public List<ZonaBean> listaZonas(){
+
+		List lst = new ArrayList<ZonaBean>();
+		ZonaBean objeto;
+
+		Cursor data= db.rawQuery("select CODIGO, NOMBRE from TB_ZONA" , null);
+		if(data.getCount()>0)
+		{
+			while (data.moveToNext()) {
+				objeto = new ZonaBean();
+				objeto.setCodigo(data.getString(data.getColumnIndex("CODIGO")));
+				objeto.setNombre(data.getString(data.getColumnIndex("NOMBRE")));
+				lst.add(objeto);
+			}
+
+			data.close();
+		}
+
+		return lst;
+	}
+
+	public List<RutaBean> listaRutas(String zona){
+
+		List lst = new ArrayList<RutaBean>();
+		RutaBean objeto;
+
+		Cursor data= db.rawQuery("select CODIGO, NOMBRE, ZONA from TB_RUTA where ZONA = '"+zona+"'" ,
+				null);
+		if(data.getCount()>0)
+		{
+			while (data.moveToNext()) {
+				objeto = new RutaBean();
+				objeto.setCodigo(data.getString(data.getColumnIndex("CODIGO")));
+				objeto.setNombre(data.getString(data.getColumnIndex("NOMBRE")));
+				objeto.setZona(data.getString(data.getColumnIndex("ZONA")));
+				lst.add(objeto);
+			}
+
+			data.close();
+		}
+
+		return lst;
+	}
+
+	public List<RutaBean> listaRutas(){
+
+		List lst = new ArrayList<RutaBean>();
+		RutaBean objeto;
+
+		Cursor data= db.rawQuery("select T0.CODIGO, T0.NOMBRE, T0.ZONA, T1.NOMBRE AS ZonaNombre " +
+						"from TB_RUTA T0 LEFT JOIN TB_ZONA T1 " +
+						" ON T0.ZONA = T1.CODIGO " ,
+				null);
+		if(data.getCount()>0)
+		{
+			while (data.moveToNext()) {
+				objeto = new RutaBean();
+				objeto.setCodigo(data.getString(data.getColumnIndex("CODIGO")));
+				objeto.setNombre(data.getString(data.getColumnIndex("NOMBRE")));
+				objeto.setZona(data.getString(data.getColumnIndex("ZONA")));
+				objeto.setZonaDescripcion(data.getString(data.getColumnIndex("ZonaNombre")));
 				lst.add(objeto);
 			}
 
@@ -1817,8 +1905,8 @@ public class Select {
 							"IFNULL(D.NOMBRE,''), IFNULL(SN.Provincia,'')," +
 							"IFNULL(SN.Distrito,''), IFNULL(SN.Calle,'null'), IFNULL(SN.Referencia,'null'),"
 							+ " IFNULL(SN.Latitud,'') as \"Latitud\", IFNULL(SN.Longitud,'') as \"Longitud\", "
-							+ " IFNULL(SN.Zona, '') AS Zona, "
-							+ " IFNULL(SN.Ruta, '') AS Ruta, "
+							+ " IFNULL(X3.NOMBRE, SN.Zona) AS Zona, "
+							+ " IFNULL(X2.NOMBRE, SN.Ruta) AS Ruta, "
 							+ " IFNULL(X0.DESCRIPCION, '') AS Canal, "
 							+ " IFNULL(X1.DESCRIPCION, '') AS Giro, "
 							+ " IFNULL(SN.Vendedor, '') AS Vendedor "
@@ -1826,7 +1914,9 @@ public class Select {
 							+ " ON SN.Pais = P.CODIGO left join TB_DEPARTAMENTO D "
 							+ " ON SN.Departamento = D.CODIGO left join TB_CANAL X0 "
 							+ " ON SN.Canal = X0.CODIGO LEFT JOIN TB_GIRO X1 "
-							+ " ON SN.Giro = X1.CODIGO "
+							+ " ON SN.Giro = X1.CODIGO LEFT  JOIN TB_RUTA X2 " +
+								" ON SN.Ruta = X2.CODIGO LEFT JOIN TB_ZONA X3 " +
+								" ON SN.Zona = X3.CODIGO "
 							+ " WHERE SN.CodigoSocioNegocio ='" + param + "'",
 					null);
 			

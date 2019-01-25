@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -48,8 +50,10 @@ public class PdfManagerSaldosVendedor {
     private static Font italicFontBold ;
     
     private static BaseFont unicode;
+    private static NumberFormat mNF;
     
     public PdfManagerSaldosVendedor(Context context) throws IOException, DocumentException {
+        mNF = NumberFormat.getCurrencyInstance(Locale.US);
         mContext = context;
         //Creamos los distintos estilos para nuestro tipo de fuente.
         unicode = BaseFont.createFont(BaseFont.TIMES_ROMAN, "UTF-8", BaseFont.EMBEDDED);
@@ -154,7 +158,7 @@ public class PdfManagerSaldosVendedor {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);
         final String empresa = pref.getString(Variables.DESCRIPCION_COMPANIA, "No Found");
 
-        preface.add(new Paragraph("Compañia: " + empresa , subFont));// reportObject.getEmpresa(), subFont));
+        preface.add(new Paragraph(mContext.getResources().getString(R.string.pref_company) + empresa , subFont));// reportObject.getEmpresa(), subFont));
         //preface.add(new Paragraph("Direccion: " + reportObject.getDireccion(), subFont));
         preface.add(new Paragraph("Fecha de impresion: " + currentDate, subFont));
  
@@ -204,12 +208,13 @@ public class PdfManagerSaldosVendedor {
     private static void createInvoiceTable(Paragraph tableSection, java.util.List<ReportFormatObjectSaldosVendedorDetail> detallesReporte)
             throws DocumentException {
  
-        int TABLE_COLUMNS = 9;
+        int TABLE_COLUMNS = 8;
         //Instaciamos el objeto Pdf Table y creamos una tabla con las columnas definidas en TABLE_COLUMNS
         PdfPTable table = new PdfPTable(TABLE_COLUMNS);// number of table columns
  
         //Definimos el ancho que corresponde a cada una de las 10 columnas
-        float[] columnWidths = new float[]{70f, 140f, 120f, 50f, 220f,220f, 100f, 100f, 100f};
+        //float[] columnWidths = new float[]{70f, 140f, 120f, 50f, 220f,220f, 100f, 100f, 100f};
+        float[] columnWidths = new float[]{140f, 120f, 50f, 220f,220f, 100f, 100f, 100f};
         table.setWidths(columnWidths);
  
         //Definimos el ancho de nuestra tabla en %
@@ -227,12 +232,12 @@ public class PdfManagerSaldosVendedor {
         //Adicionamos el título de la primera columna
         //table.addCell(cell);
  
-        PdfPCell cell = new PdfPCell(new Phrase("Clave",smallBold));
+     /*   PdfPCell cell = new PdfPCell(new Phrase("Clave",smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         //Adicionamos el título de la segunda columna
-        table.addCell(cell);
- 
-        cell = new PdfPCell(new Phrase("Sunat",smallBold));
+        table.addCell(cell); */
+
+        PdfPCell cell = new PdfPCell(new Phrase("Nro Fiscal",smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         //Adicionamos el título de la tercera columna
         table.addCell(cell);
@@ -256,7 +261,7 @@ public class PdfManagerSaldosVendedor {
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
         
-        cell = new PdfPCell(new Phrase("Direccion",smallBold));
+            cell = new PdfPCell(new Phrase("Condicion Pago",smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
         
@@ -314,9 +319,9 @@ public class PdfManagerSaldosVendedor {
         //cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         //table.addCell(cell);
         
-        cell.setPhrase(new Phrase(reporteLine.getClave(),smallFont));
+       /* cell.setPhrase(new Phrase(reporteLine.getClave(),smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        table.addCell(cell);
+        table.addCell(cell);    */
  
         cell.setPhrase(new Phrase(reporteLine.getSunat(),smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -342,18 +347,17 @@ public class PdfManagerSaldosVendedor {
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
  
-        cell.setPhrase(new Phrase(reporteLine.getTotal(),smallFont));
+        cell.setPhrase(new Phrase(String.format("%,.2f",Double.parseDouble(reporteLine.getTotal())),smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
  
-        cell.setPhrase(new Phrase(reporteLine.getPagado(), smallFont));
+        cell.setPhrase(new Phrase(String.format("%,.2f",Double.parseDouble(reporteLine.getPagado())), smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
  
-        cell.setPhrase(new Phrase(reporteLine.getSaldo(), smallFont));
+        cell.setPhrase(new Phrase(String.format("%,.2f",Double.parseDouble(reporteLine.getSaldo())), smallFont));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
- 
     }
 
   //Procedimiento para crear los totales y subtotales del reporte en forma de tabla.
@@ -364,36 +368,52 @@ public class PdfManagerSaldosVendedor {
         int TABLE_COLUMNS = 4;
         PdfPTable table = new PdfPTable(TABLE_COLUMNS);
  
-        float[] columnWidths = new float[]{500f, 60f, 60f, 60f};
+        float[] columnWidths = new float[]{230f, 150f, 150f, 150f};
         table.setWidths(columnWidths);
         table.setWidthPercentage(100);
+
+        PdfPCell cell = new PdfPCell(new Phrase("",smallBold));
+        cell.setBorder(0);
+        table.addCell(cell);
+
+        cell = new PdfPCell(new Phrase("Total",smallBold));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
+
+        cell = new PdfPCell(new Phrase("Pagado",smallBold));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
+
+        cell = new PdfPCell(new Phrase("Saldo",smallBold));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
  
         //Adicionamos el título de la celda
-        PdfPCell cell = new PdfPCell(new Phrase("Total general: ",smallBold));
+        cell = new PdfPCell(new Phrase("Total general: ",smallBold));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
  
         double subTotal = orderHeaderModel.getTotal();
         //Adicionamos el contenido de la celda con el valor subtotal
-        cell = new PdfPCell(new Phrase(String.valueOf(subTotal)));
+        cell = new PdfPCell(new Phrase(String.format("%,.2f",subTotal)));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
- 
         table.addCell(cell);
         
         double pagado = orderHeaderModel.getPagado();
         //Adicionamos el contenido de la celda con el valor subtotal
-        cell = new PdfPCell(new Phrase(String.valueOf(pagado)));
+        cell = new PdfPCell(new Phrase(String.format("%,.2f",pagado)));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
  
         table.addCell(cell);
         
         double saldo = orderHeaderModel.getSaldo();
         //Adicionamos el contenido de la celda con el valor subtotal
-        cell = new PdfPCell(new Phrase(String.valueOf(saldo)));
+        cell = new PdfPCell(new Phrase(String.format("%,.2f",saldo)));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
  
         table.addCell(cell);
- 
+
+        table.setHeaderRows(1);
         tableSection.add(table);
  
     }

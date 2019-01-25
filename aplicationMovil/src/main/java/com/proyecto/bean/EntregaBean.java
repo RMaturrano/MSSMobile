@@ -18,6 +18,7 @@ public class EntregaBean implements Parcelable {
     private String ListaPrecioNombre;
     private int  Contacto;
     private String ContactoNombre;
+    private String ContactoTelefono;
     private String  Moneda;
     private String  EmpleadoVenta;
     private String  Comentario;
@@ -299,6 +300,14 @@ public class EntregaBean implements Parcelable {
         DireccionEntregaLongitud = direccionEntregaLongitud;
     }
 
+    public String getContactoTelefono() {
+        return ContactoTelefono;
+    }
+
+    public void setContactoTelefono(String contactoTelefono) {
+        ContactoTelefono = contactoTelefono;
+    }
+
     protected EntregaBean(Parcel in) {
         Tipo = in.readString();
         clave = in.readInt();
@@ -310,6 +319,7 @@ public class EntregaBean implements Parcelable {
         ListaPrecioNombre = in.readString();
         Contacto = in.readInt();
         ContactoNombre = in.readString();
+        ContactoTelefono = in.readString();
         Moneda = in.readString();
         EmpleadoVenta = in.readString();
         Comentario = in.readString();
@@ -356,6 +366,7 @@ public class EntregaBean implements Parcelable {
         dest.writeString(ListaPrecioNombre);
         dest.writeInt(Contacto);
         dest.writeString(ContactoNombre);
+        dest.writeString(ContactoTelefono);
         dest.writeString(Moneda);
         dest.writeString(EmpleadoVenta);
         dest.writeString(Comentario);

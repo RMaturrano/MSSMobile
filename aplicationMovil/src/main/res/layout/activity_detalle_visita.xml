@@ -272,6 +272,34 @@
                         android:layout_height="wrap_content"
                         android:textSize="15sp"/>
 
+                    <TextView
+                        android:text="Ruta"
+                        android:textColor="@color/list_item_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvDetVisitaRuta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"/>
+
+                    <TextView
+                        android:text="Zona"
+                        android:textColor="@color/list_item_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvDetVisitaZona"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"/>
+
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>

@@ -80,8 +80,8 @@ public class DireccionDAO {
                         "IFNULL(T1.Codigo,'') as CodigoCliente, "+
                         "IFNULL(T1.NombreRazonSocial,'') as NombreCliente," +
                         "IFNULL(T2.NOMBRE,'') AS DepartamentoNombre, " +
-                        "IFNULL(T3.NOMBRE,'') AS ProvinciaNombre," +
-                        "IFNULL(T4.NOMBRE,'') AS DistritoNombre, " +
+                        "IFNULL(T3.NOMBRE,T0.Provincia) AS ProvinciaNombre," +
+                        "IFNULL(T4.NOMBRE,T0.Distrito) AS DistritoNombre, " +
                         " IFNULL(T0.VisitaLunes,'N') AS VisitaLunes, " +
                         " IFNULL(T0.VisitaMartes,'N') AS VisitaMartes, " +
                         " IFNULL(T0.VisitaMiercoles,'N') AS VisitaMiercoles, " +
@@ -91,17 +91,21 @@ public class DireccionDAO {
                         " IFNULL(T0.VisitaDomingo,'N') AS VisitaDomingo, " +
                         " IFNULL(T0.InicioVisitas,'') AS InicioVisitas, " +
                         " IFNULL(T0.Frecuencia,'') AS Frecuencia, " +
-                        " IFNULL(T1.NumUltimaCompra,'') AS NumUltimaCompra, " +
-                        " IFNULL(T1.FechaUltimaCompra,'') AS FecUltimaCompra, " +
-                        " IFNULL(T1.MontoUltimaCompra,'') AS MonUltimaCompra, " +
+                        " IFNULL(T0.NumUltimaCompra,'') AS NumUltimaCompra, " +
+                        " IFNULL(T0.FechaUltimaCompra,'') AS FecUltimaCompra, " +
+                        " IFNULL(T0.MontoUltimaCompra,'') AS MonUltimaCompra, " +
                         " IFNULL(T5.Nombre,'') AS NombreContacto, " +
-                        " IFNULL(T5.TelefonoMovil,'') AS TelefonoContacto " +
+                        " IFNULL(T5.TelefonoMovil,'') AS TelefonoContacto, " +
+                        " IFNULL(T6.NOMBRE,'') AS Ruta, " +
+                        " IFNULL(T7.NOMBRE,'') AS Zona " +
                         " FROM TB_SOCIO_NEGOCIO_DIRECCION T0 JOIN TB_SOCIO_NEGOCIO T1 " +
                         " ON T0.CodigoSocioNegocio = T1.Codigo LEFT JOIN TB_DEPARTAMENTO T2 " +
                         " ON T0.Departamento = T2.CODIGO LEFT JOIN TB_PROVINCIA T3 " +
                         " ON T0.Provincia = T3.CODIGO LEFT JOIN TB_DISTRITO T4 " +
                         " ON T0.Distrito = T4.CODIGO LEFT JOIN TB_SOCIO_NEGOCIO_CONTACTO T5 " +
-                        " ON T1.PersonaContacto = T5.Nombre AND T1.Codigo = T5.CodigoSocioNegocio " +
+                        " ON T1.PersonaContacto = T5.Nombre AND T1.Codigo = T5.CodigoSocioNegocio LEFT JOIN TB_RUTA T6 " +
+                        " ON T0.Ruta = T6.CODIGO LEFT JOIN TB_ZONA T7 " +
+                        " ON T0.Zona = T7.CODIGO " +
                         " WHERE T0.InicioVisitas != '' " +
                         " AND IFNULL(cast(T0.InicioVisitas AS INT),29991230) <= " + currDate + whereCls, null);
 
@@ -170,6 +174,8 @@ public class DireccionDAO {
         bean.setMonUltimaCompra(cursor.getString(cursor.getColumnIndex("MonUltimaCompra")));
         bean.setPersonaContacto(cursor.getString(cursor.getColumnIndex("NombreContacto")));
         bean.setTelefonoContacto(cursor.getString(cursor.getColumnIndex("TelefonoContacto")));
+        bean.setRuta(cursor.getString(cursor.getColumnIndex("Ruta")));
+        bean.setZona(cursor.getString(cursor.getColumnIndex("Zona")));
 
         return bean;
     }

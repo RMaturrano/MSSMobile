@@ -43,6 +43,8 @@ import com.proyect.movil.R;
 import com.proyecto.bean.ArticuloBean;
 import com.proyecto.database.DataBaseHelper;
 import com.proyecto.inventario.DetalleArticuloMain;
+import com.proyecto.sociosnegocio.DetalleSocioNegocioMainFTabs;
+import com.proyecto.sociosnegocio.util.ClienteBuscarBean;
 import com.proyecto.utils.AlphabetListAdapterImgAndTwoLines;
 import com.proyecto.utils.AlphabetListAdapterImgAndTwoLines.Item;
 import com.proyecto.utils.AlphabetListAdapterImgAndTwoLines.Row;
@@ -73,6 +75,7 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
     private static float sideIndexX;
     private static float sideIndexY;
     private int indexListSize;
+    private ClienteBuscarBean mClienteSel = null;
 
     class SideIndexGestureListener extends
             GestureDetector.SimpleOnGestureListener {
@@ -110,6 +113,7 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
         getActivity().setTitle("Inventario");
 
         contexto = view.getContext();
+        obtenerCliente();
         llenarDatos();
 
         /************************************/
@@ -201,25 +205,49 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
         return view;
     }
 
+    private void obtenerCliente(){
+        try{
+            OrdenVentaFragment detailsFragment = (OrdenVentaFragment) getActivity().getFragmentManager()
+                    .findFragmentByTag(MainVentas.MAIN_FRAGMENT);
+            mClienteSel = detailsFragment.obtenerClienteSeleccionado();
+        }catch (Exception e){
+            Toast.makeText(contexto, "onStart() > " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @AddTrace(name = "llenarDatosTraceBuscarArtFragment", enabled = true)
     private void llenarDatos() {
 
-        listaAdapter = new ArrayList<FormatCustomListView>();
+        try {
+            listaAdapter = new ArrayList<FormatCustomListView>();
+            String query = "select DISTINCT A.Codigo,A.Nombre,A.Fabricante,A.GrupoArticulo, " +
+                    "A.GrupoUnidadMedida,A.UnidadMedidaVenta," +
+                    "GUM.Nombre,GA.NOMBRE as Grupo, A.AlmacenDefecto, A.ArticuloMuestra " +
+                    "from TB_ARTICULO A JOIN TB_GRUPO_UNIDAD_MEDIDA GUM " +
+                    "ON A.GrupoUnidadMedida = GUM.Codigo " +
+                    " JOIN TB_GRUPO_ARTICULO GA ON A.GrupoArticulo = GA.CODIGO " +
+                    " left join TB_PRECIO P ON P.Articulo = A.Codigo " +
+                    "AND P.CodigoLista IN(SELECT X0.ListaPrecio from TB_SOCIO_NEGOCIO X0)" +
+                    " GROUP BY A.Codigo, A.Nombre " +
+                    " having SUM(P.PrecioVenta) > 0 " +
+                    "ORDER BY GA.NOMBRE, A.Nombre";
 
-        Cursor rs = db
-                .rawQuery(
-                        "select DISTINCT A.Codigo,A.Nombre,A.Fabricante,A.GrupoArticulo, " +
-                                "A.GrupoUnidadMedida,A.UnidadMedidaVenta," +
-                                "GUM.Nombre,GA.NOMBRE as Grupo, A.AlmacenDefecto, A.ArticuloMuestra " +
-                                "from TB_ARTICULO A JOIN TB_GRUPO_UNIDAD_MEDIDA GUM " +
-                                "ON A.GrupoUnidadMedida = GUM.Codigo " +
-                                " JOIN TB_GRUPO_ARTICULO GA ON A.GrupoArticulo = GA.CODIGO " +
-                                " left join TB_PRECIO P ON P.Articulo = A.Codigo " +
-                                "AND P.CodigoLista IN(SELECT X0.ListaPrecio from TB_SOCIO_NEGOCIO X0)" +
-                                " GROUP BY A.Codigo, A.Nombre " +
-                                " having SUM(P.PrecioVenta) > 0 " +
-                                "ORDER BY GA.NOMBRE, A.Nombre",
-                        null);
+            if(mClienteSel != null){
+                query = "select DISTINCT A.Codigo,A.Nombre,A.Fabricante,A.GrupoArticulo, " +
+                        "A.GrupoUnidadMedida,A.UnidadMedidaVenta," +
+                        "GUM.Nombre,GA.NOMBRE as Grupo, A.AlmacenDefecto, A.ArticuloMuestra " +
+                        "from TB_ARTICULO A JOIN TB_GRUPO_UNIDAD_MEDIDA GUM " +
+                        "ON A.GrupoUnidadMedida = GUM.Codigo " +
+                        " JOIN TB_GRUPO_ARTICULO GA ON A.GrupoArticulo = GA.CODIGO " +
+                        " left join TB_PRECIO P ON P.Articulo = A.Codigo " +
+                        "AND P.CodigoLista  = "+ mClienteSel.getListaPrecio().getCodigo()+" " +
+                        " AND P.PrecioVenta > 0 " +
+                        " GROUP BY A.Codigo, A.Nombre " +
+                        "ORDER BY GA.NOMBRE, A.Nombre";
+            }
+
+            Cursor rs = db
+                    .rawQuery(query,null);
 //				.rawQuery(
 //						"select A.Codigo,A.Nombre,A.Fabricante,A.GrupoArticulo," +
 //								"A.GrupoUnidadMedida,A.UnidadMedidaVenta," +
@@ -234,35 +262,37 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
 //						null);
 
 
-        if (rs.getCount() > 0) {
-            Toast.makeText(contexto.getApplicationContext(), "Cargando " + rs.getCount() + " datos. Por favor espere..", Toast.LENGTH_SHORT).show();
-            while (rs.moveToNext()) {
+            if (rs.getCount() > 0) {
+                Toast.makeText(contexto.getApplicationContext(), "Cargando " + rs.getCount() + " datos. Por favor espere..", Toast.LENGTH_SHORT).show();
+                while (rs.moveToNext()) {
 
-                customListObjet = new FormatCustomListView();
-                customListObjet.setIcon(icon);
-                customListObjet.setGrupo(rs.getString(rs.getColumnIndex("Grupo")));
-                customListObjet.setAlmacenDefecto(rs.getString(rs.getColumnIndex("AlmacenDefecto")));
-                customListObjet.setArticuloMuestra(rs.getString(rs.getColumnIndex("ArticuloMuestra")));
+                    customListObjet = new FormatCustomListView();
+                    customListObjet.setIcon(icon);
+                    customListObjet.setGrupo(rs.getString(rs.getColumnIndex("Grupo")));
+                    customListObjet.setAlmacenDefecto(rs.getString(rs.getColumnIndex("AlmacenDefecto")));
+                    customListObjet.setArticuloMuestra(rs.getString(rs.getColumnIndex("ArticuloMuestra")));
 
-                if (!rs.getString(0).equals(""))
-                    customListObjet.setTitulo(rs.getString(0));
-                else
-                    customListObjet.setTitulo("# NO CODE, SINC AGAIN");
-                if (!rs.getString(1).equals(""))
-                    customListObjet.setData(rs.getString(1));
-                else
-                    customListObjet.setData("# NO NAME, SINC AGAIN");
+                    if (!rs.getString(0).equals(""))
+                        customListObjet.setTitulo(rs.getString(0));
+                    else
+                        customListObjet.setTitulo("# NO CODE, SINC AGAIN");
+                    if (!rs.getString(1).equals(""))
+                        customListObjet.setData(rs.getString(1));
+                    else
+                        customListObjet.setData("# NO NAME, SINC AGAIN");
 
-                customListObjet.setExtra(rs.getString(2) + "#" + rs.getString(3) + "#" + rs.getString(4) + "#" + rs.getString(5) + "#" + rs.getString(6));
+                    customListObjet.setExtra(rs.getString(2) + "#" + rs.getString(3) + "#" + rs.getString(4) + "#" + rs.getString(5) + "#" + rs.getString(6));
 //				customListObjet.setExtra2(rs.getString(7)+"�"+rs.getString(8)+"�"+rs.getString(9)+"�"+rs.getString(10));
 
-                listaAdapter.add(customListObjet);
+                    listaAdapter.add(customListObjet);
+                }
             }
-        }
 
-        rs.close();
+            rs.close();
 //		db.close();
-
+        }catch (Exception e){
+            Toast.makeText(contexto, "llenardatos() > " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

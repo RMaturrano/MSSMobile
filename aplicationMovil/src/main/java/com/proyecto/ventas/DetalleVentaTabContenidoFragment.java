@@ -68,7 +68,7 @@ public class DetalleVentaTabContenidoFragment extends Fragment implements  OnIte
 		
 		
 		Cursor rs= db.rawQuery("select A.Nombre,o.Articulo,Cantidad," +
-				"((PrecioUnitario*Cantidad)-(PrecioUnitario * cantidad) * PorcentajeDescuento) as Total " +
+				"((PrecioUnitario*Cantidad)-(PrecioUnitario * cantidad) * (PorcentajeDescuento/100)) as Total " +
 								"from TB_ORDEN_VENTA_DETALLE O LEFT JOIN TB_ARTICULO A " +
 								"on o.Articulo = A.Codigo " +
 								"WHERE O.ClaveMovil ='"+idOrdVen+"'", null);

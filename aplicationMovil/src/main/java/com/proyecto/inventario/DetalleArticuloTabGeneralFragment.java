@@ -18,13 +18,14 @@ import com.proyecto.database.DataBaseHelper;
 import com.proyecto.utils.DynamicHeight;
 import com.proyecto.utils.FormatCustomListView;
 import com.proyecto.utils.ListViewCustomAdapterTwoLinesAndImg;
+import com.proyecto.utils.ListViewCustomAdapterTwoLinesAndImgDetail;
 
 public class DetalleArticuloTabGeneralFragment extends Fragment{
 
 	
 	private ListView lv_0;
 	private ArrayList<FormatCustomListView> searchResults_0 = null;
-	private ListViewCustomAdapterTwoLinesAndImg adapter;
+	private ListViewCustomAdapterTwoLinesAndImgDetail adapter;
     private Context contexto;
     private View v;
     private String idArticulo = "";
@@ -69,7 +70,8 @@ public class DetalleArticuloTabGeneralFragment extends Fragment{
 								"F.NOMBRE," +
 								"G.NOMBRE, " +
 								"GUM.NOMBRE, " +
-								"UM.NOMBRE " +
+								"UM.NOMBRE, " +
+								"A.CodigoBarras " +
 								"FROM TB_ARTICULO A LEFT JOIN TB_FABRICANTE F " +
 								"ON F.CODIGO = A.Fabricante LEFT JOIN TB_GRUPO_ARTICULO G " +
 								"ON G.CODIGO = A.GrupoArticulo LEFT JOIN TB_GRUPO_UNIDAD_MEDIDA GUM " +
@@ -107,14 +109,18 @@ public class DetalleArticuloTabGeneralFragment extends Fragment{
 		  	sr1.setTitulo("Unidad medida de venta");
 		  	sr1.setData(rs.getString(5));
 		  	searchResults_0.add(sr1);
-		  	
+
+		  	sr1 = new FormatCustomListView();
+		  	sr1.setTitulo("Codigo de barras");
+		  	sr1.setData(rs.getString(rs.getColumnIndex("CodigoBarras")));
+		  	searchResults_0.add(sr1);
 		}
 		
 		rs.close();
 //		db.close();
 		
 		
-		adapter = new ListViewCustomAdapterTwoLinesAndImg( contexto, searchResults_0);      
+		adapter = new ListViewCustomAdapterTwoLinesAndImgDetail( contexto, searchResults_0);
 		lv_0.setAdapter(adapter);
 	  	DynamicHeight.setListViewHeightBasedOnChildren(lv_0);
 		

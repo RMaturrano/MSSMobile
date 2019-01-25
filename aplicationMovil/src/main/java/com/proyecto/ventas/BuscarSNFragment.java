@@ -167,7 +167,7 @@ public class BuscarSNFragment extends Fragment implements OnItemClickListener,
 		listaAdapter = new ArrayList<FormatCustomListView>();
 
 		Cursor rs = db.rawQuery("select UPPER(NombreRazonSocial),Codigo, "
-				+ "ListaPrecio,CondicionPago,Indicador, DireccionFiscal "
+				+ "ListaPrecio,CondicionPago,Indicador, DireccionFiscal, Descuento "
 				+ "from TB_SOCIO_NEGOCIO " 
 				+ "where ValidoenPedido = 'Y'"
 				+ "order by NombreRazonSocial ", 

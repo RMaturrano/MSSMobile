@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:contentPadding="@dimen/cv_add_item_content_padding"
+        card_view:cardElevation="@dimen/cv_add_item_card_elevation"
+        card_view:cardCornerRadius="@dimen/cv_add_item_card_corner_radius"
+        card_view:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/white">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvAddOrdrTitulo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Número de documento"
+                    android:textColor="@color/tv_item_tittle_background"
+                    android:textSize="@dimen/tv_item_tittle_text_size" />
+
+                <TextView
+                    android:id="@+id/tvAddOrdrDescripcion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/tv_item_description_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/ivAddOrdrPuntero"
+                    android:layout_width="@dimen/imgv_item_puntero_width"
+                    android:layout_height="@dimen/imgv_item_puntero_height"
+                    android:layout_marginRight="@dimen/imgv_item_puntero_marginRight"
+                    android:contentDescription="@string/app_name"
+                    android:layout_gravity="center_horizontal"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

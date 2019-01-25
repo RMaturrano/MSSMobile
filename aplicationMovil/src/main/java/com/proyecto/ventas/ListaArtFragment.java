@@ -84,6 +84,7 @@ public class ListaArtFragment extends Fragment implements OnItemClickListener{
 		            
 		            //SETTEAR LOS TOTALES
 		            calcularTotalAntesDescuento();
+		            calcularTotalConDescuento();
 		            
 	        		sr = new FormatCustomListView();
 		    		sr.setTitulo("Total antes del descuento");
@@ -94,7 +95,7 @@ public class ListaArtFragment extends Fragment implements OnItemClickListener{
 		    		sr = new FormatCustomListView();
 		        	sr = (FormatCustomListView)oPorDesc;
 		        	if(porcentajeDesc == 0)
-		        		sr.setData("0.00");
+		        		sr.setData("0");
 		        	else
 		        		sr.setData(String.valueOf(porcentajeDesc));
 		        	searchResults_c.set(1, sr);
@@ -103,19 +104,20 @@ public class ListaArtFragment extends Fragment implements OnItemClickListener{
 		    		sr = new FormatCustomListView();
 		        	sr = (FormatCustomListView)oDesc;
 		        	if(totalDesc == 0)
-		        		sr.setData("0.00");
+		        		sr.setData("0");
 		        	else
-		        		sr.setData(String.valueOf(totalDesc));
+		        		sr.setData(String.valueOf(DoubleRound.round(totalDesc, 2)));
 		        	searchResults_c.set(2, sr);
 		        	
-		        	impuesto = Math.round((impuesto - (impuesto * porcentajeDesc)) * 100.0)/100.0;
+		        	//impuesto = Math.round((impuesto - (impuesto * (porcentajeDesc/100))) * 100.0)/100.0;
+					impuesto = Math.round(impuesto * 100.0)/100.0;
 		        	Object oImp = lvCalculos.getItemAtPosition(3);
 		    		sr = new FormatCustomListView();
 		        	sr = (FormatCustomListView)oImp;
 		        	sr.setData(String.valueOf(impuesto));
 		        	searchResults_c.set(3, sr);
 		    		
-		        	totalFinal = Math.round((totalAntesDescuento + impuesto) * 100.0)/100.0;
+		        	totalFinal = Math.round((totalAntesDescuento + impuesto - totalDesc) * 100.0)/100.0;
 		    		Object oTotal = lvCalculos.getItemAtPosition(4);
 		    		sr = new FormatCustomListView();
 		        	sr = (FormatCustomListView)oTotal;
@@ -130,18 +132,31 @@ public class ListaArtFragment extends Fragment implements OnItemClickListener{
 	        }
 		 }
 	};
-	
+
+	private void calcularTotalConDescuento(){
+		try{
+			porcentajeDesc = OrdenVentaFragment.porcentajeDescuento;
+			totalDesc = (porcentajeDesc/100) * totalAntesDescuento;
+			OrdenVentaFragment.totalDescuento = totalDesc;
+			totalFinal = totalFinal - totalDesc;
+			OrdenVentaFragment.totalGeneral = totalFinal;
+		}catch (Exception e){
+			Toast.makeText(contexto, "calcularTotalConDescuento() > " + e.getMessage(), Toast.LENGTH_SHORT).show();
+		}
+	}
+
 	private void calcularTotalAntesDescuento(){
 		
 		totalAntesDescuento = 0;
 		impuesto= 0;
 		totalFinal = 0;
+		porcentajeDesc = OrdenVentaFragment.porcentajeDescuento;
 		if(OrdenVentaFragment.listaDetalleArticulos.size()>0){
 			for (ArticuloBean bean : OrdenVentaFragment.listaDetalleArticulos) {
-	        	
+
 				totalAntesDescuento += Math.round((bean.getTotal()) * 100.0)/100.0;
 				OrdenVentaFragment.totalAntesDescuento = totalAntesDescuento;
-				impuesto += Math.round(((bean.getImpuesto() * bean.getTotal())) * 100.0)/100.0;
+				impuesto += Math.round(((bean.getImpuesto() * (bean.getTotal() - (bean.getTotal() * (porcentajeDesc / 100))))) * 100.0)/100.0;
 				OrdenVentaFragment.totalImpuesto = impuesto;
 				totalFinal = Math.round((totalAntesDescuento + impuesto) * 100.0)/100.0;
 				OrdenVentaFragment.totalGeneral = totalFinal;
@@ -152,8 +167,6 @@ public class ListaArtFragment extends Fragment implements OnItemClickListener{
 			impuesto = 0;
 			OrdenVentaFragment.totalImpuesto = impuesto;
 		}
-		
-		
 	}
 	
 	
@@ -352,7 +365,7 @@ public class ListaArtFragment extends Fragment implements OnItemClickListener{
     		
     		sr = new FormatCustomListView();
     		sr.setTitulo("Total antes del descuento");
-    		sr.setData(String.valueOf(totalAntesDescuento));
+    		sr.setData(String.valueOf(DoubleRound.round(totalAntesDescuento, 2)));
     		searchResults_c.set(0, sr);
 
     		Object oDesc = lvCalculos.getItemAtPosition(1);
@@ -364,7 +377,7 @@ public class ListaArtFragment extends Fragment implements OnItemClickListener{
     		Object oTotDesc = lvCalculos.getItemAtPosition(2);
 	    	sr = new FormatCustomListView();
 	        sr = (FormatCustomListView)oTotDesc;
-	        sr.setData(String.valueOf(totalDesc));
+	        sr.setData(String.valueOf(DoubleRound.round(totalDesc, 2)));
 	        searchResults_c.set(2, sr);
 
     		Object oImp = lvCalculos.getItemAtPosition(3);

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="T_TIPO_CAMBIO">TB_TIPO_CAMBIO</string>
+
+    <string name="C_TC_FEC">FECHA</string>
+    <string name="C_TC_MON">MONEDA</string>
+    <string name="C_TC_TAS">TASA</string>
+</resources>

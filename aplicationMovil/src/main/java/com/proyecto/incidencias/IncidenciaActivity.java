@@ -108,6 +108,8 @@ public class IncidenciaActivity extends AppCompatActivity implements IRVAdapterA
     public final static String KEY_PAR_CLIENTE = "cliente";
     public final static String KEY_PAR_FACTURA = "factura";
     public final static String KEY_PAR_REFERENCIA = "referencia";
+    public final static String KEY_PAR_COD_DIRECCION = "direccion";
+    public final static String KEY_PAR_TIP_DIRECCION = "tipoDir";
 
     public final static String ORDEN = "Orden venta";
     public final static String ENTREGA = "Entrega mercancia";
@@ -233,6 +235,14 @@ public class IncidenciaActivity extends AppCompatActivity implements IRVAdapterA
                             mReferencia = getIntent().getExtras().getString(KEY_PAR_REFERENCIA);
                         if (getIntent().getExtras().containsKey(KEY_PAR_FACTURA))
                             mClaveEntrega = getIntent().getExtras().getString(KEY_PAR_FACTURA);
+                        if(getIntent().getExtras().containsKey(KEY_PAR_COD_DIRECCION) && mClienteSeleccionado != null)
+                        {
+                            for (DireccionBuscarBean bean: mClienteSeleccionado.getDirecciones()) {
+                                if(bean.getCodigo().equalsIgnoreCase(getIntent().getExtras().getString(KEY_PAR_COD_DIRECCION)) &&
+                                        bean.getTipo().equalsIgnoreCase(getIntent().getExtras().getString(KEY_PAR_TIP_DIRECCION)))
+                                    mDireccionSeleccionada = bean;
+                            }
+                        }
                         break;
                     case FACTURA:
                         if (getIntent().getExtras().containsKey(KEY_PAR_FACTURA)) {
@@ -243,6 +253,14 @@ public class IncidenciaActivity extends AppCompatActivity implements IRVAdapterA
                     case ORDEN:
                         if (getIntent().getExtras().containsKey(KEY_PAR_CLIENTE))
                             mClienteSeleccionado = new ClienteDAO().buscarPorCodigo(getIntent().getExtras().getString(KEY_PAR_CLIENTE));
+                        if(getIntent().getExtras().containsKey(KEY_PAR_COD_DIRECCION) && mClienteSeleccionado != null)
+                        {
+                            for (DireccionBuscarBean bean: mClienteSeleccionado.getDirecciones()) {
+                                if(bean.getCodigo().equalsIgnoreCase(getIntent().getExtras().getString(KEY_PAR_COD_DIRECCION)) &&
+                                        bean.getTipo().equalsIgnoreCase(getIntent().getExtras().getString(KEY_PAR_TIP_DIRECCION)))
+                                    mDireccionSeleccionada = bean;
+                            }
+                        }
                         break;
                     default:
                         break;
@@ -1121,9 +1139,14 @@ public class IncidenciaActivity extends AppCompatActivity implements IRVAdapterA
                                             if (response.getString("ResponseStatus").equals("Success")) {
                                                 new IncidenciaDAO().actualizarSincronizado(incidencia.getClaveMovil());
                                             } else {
+                                                String errorCode = response.getJSONObject("Response").getString("code");
+
+                                                if(errorCode.equalsIgnoreCase("-201"))
+                                                    new IncidenciaDAO().actualizarSincronizado(incidencia.getClaveMovil());
+
                                                 showMessage(response.getJSONObject("Response")
-                                                        .getJSONObject("message")
-                                                        .getString("value"));
+                                                    .getJSONObject("message")
+                                                    .getString("value"));
                                             }
 
                                         } catch (Exception e) {
@@ -1321,9 +1344,9 @@ public class IncidenciaActivity extends AppCompatActivity implements IRVAdapterA
 
     private void showInfoAlert() {
         new android.support.v7.app.AlertDialog.Builder(this)
-                .setTitle("Señal GPS")
-                .setMessage("No tienes señal GPS. Quieres habilitarla?")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setTitle("Ubicacion")
+                .setMessage("GPS Inactivo. Quieres habilitarlo?")
+                .setPositiveButton("SI", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //El GPS no está activado
@@ -1331,7 +1354,7 @@ public class IncidenciaActivity extends AppCompatActivity implements IRVAdapterA
                         startActivity(intent);
                     }
                 })
-                .setNegativeButton("CANCEL", null)
+                .setNegativeButton("NO", null)
                 .show();
     }
 

@@ -18,12 +18,12 @@ public class ArticuloDAO {
 
         if (listaPrecio != null && !listaPrecio.equals("") && !listaPrecio.equals("-1")) {
             //filterPriceList = " AND P.CodigoLista = " + listaPrecio;
-            filterPriceList = " AND T3.CodigoLista = " + listaPrecio;
+            filterPriceList = " AND X0.CodigoLista = " + listaPrecio;
         }
 
         if (almacen != null && !almacen.equals("") && !almacen.equals("-1")) {
             //filterAlmacen = " AND (SELECT COUNT(*) FROM TB_CANTIDAD WHERE ARTICULO = A.Codigo AND ALMACEN = '" + almacen + "') > 0 ";
-            filterAlmacen = " where T0.Almacen = '" + almacen + "' AND T0.Stock > 0 ";
+            filterAlmacen = "  T0.Almacen = '" + almacen + "' and ";
         }
 
         /*"select " +
@@ -41,15 +41,19 @@ public class ArticuloDAO {
                 "  having SUM(P.PrecioVenta) > 0 " +
                 " order by G.NOMBRE,A.Nombre" */
 
-        String query = "select T0.Articulo, T1.Nombre, SUM(T0.Stock) as Stock, T2.Nombre " +
+        String query = "select T0.Articulo as Articulo, " +
+                "T1.Nombre as Nombre, " +
+                "SUM(T0.Stock) as Stock, " +
+                "T2.Nombre as Grupo, " +
+                "T1.CodigoBarras " +
                 " from TB_CANTIDAD T0 join TB_ARTICULO T1 " +
                 " ON T0.Articulo = T1.Codigo join TB_GRUPO_ARTICULO T2 " +
-                " ON T1.GrupoArticulo = T2.Codigo left join TB_PRECIO T3 " +
-                " ON T1.Codigo = T3.Articulo AND T3.CodigoLista in (select X0.ListaPrecio from TB_SOCIO_NEGOCIO X0) " +
-                filterPriceList +
-                filterAlmacen +
-                " GROUP BY 1, 2 " +
-                " having SUM(T3.PrecioVenta) > 0 " +
+                " ON T1.GrupoArticulo = T2.Codigo " +
+                " where T0.Stock > 0 and " + filterAlmacen +
+                "(SELECT COUNT(X0.CodigoLista) FROM TB_PRECIO X0 where X0.Articulo = T0.Articulo " +
+                " and X0.PrecioVenta > 0 " + filterPriceList +
+                " and X0.CodigoLista in (select X0.ListaPrecio from TB_SOCIO_NEGOCIO X0)) > 0"+
+                " GROUP BY 1 " +
                 " order by T2.Nombre, T1.Nombre";
 
         Cursor cursor = DataBaseHelper
@@ -105,10 +109,11 @@ public class ArticuloDAO {
 
     private ArticuloBean transformCursorToArticulo(Cursor cursor) {
         ArticuloBean bean = new ArticuloBean();
-        bean.setCod(cursor.getString(0));
-        bean.setDesc(cursor.getString(1));
-        bean.setStock(cursor.getString(2));
-        bean.setGrupoArticulo(cursor.getString(3));
+        bean.setCod(cursor.getString(cursor.getColumnIndex("Articulo")));
+        bean.setDesc(cursor.getString(cursor.getColumnIndex("Nombre")));
+        bean.setStock(cursor.getString(cursor.getColumnIndex("Stock")));
+        bean.setGrupoArticulo(cursor.getString(cursor.getColumnIndex("Grupo")));
+        bean.setCodigoBarras(cursor.getString(cursor.getColumnIndex("CodigoBarras")));
         return bean;
     }
 

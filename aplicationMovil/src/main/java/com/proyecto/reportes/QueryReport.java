@@ -12,6 +12,7 @@ import com.proyecto.utils.DoubleRound;
 import com.proyecto.utils.StringDateCast;
 import com.proyecto.utils.Variables;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class QueryReport {
 								 " (julianday(CURRENT_DATE)-julianday(substr(F.FechaContable,1,4)||'-'||substr(F.FechaContable,5,2)||'-'||substr(F.FechaContable,7,2))) 'difference' ,"+
 								 " IFNULL((SELECT NumeroDocumento FROM TB_SOCIO_NEGOCIO WHERE Codigo = F.SocioNegocio),''), " +
 								 " IFNULL((SELECT NombreRazonSocial FROM TB_SOCIO_NEGOCIO WHERE Codigo = F.SocioNegocio),''), " +
-								 " IFNULL((SELECT IFNULL(P.NOMBRE,'') || ' - ' || DE.NOMBRE || ' - '|| PV.NOMBRE " +
+								/* " IFNULL((SELECT IFNULL(P.NOMBRE,'') || ' - ' || DE.NOMBRE || ' - '|| PV.NOMBRE " +
 								 					  "|| ' - '|| DT.NOMBRE || ' / ' || IFNULL(CA.NOMBRE,'') " +
 								 					  "FROM TB_SOCIO_NEGOCIO_DIRECCION D LEFT JOIN TB_PAIS P " +
 								 					  		"ON D.Pais = P.CODIGO LEFT JOIN TB_DEPARTAMENTO DE " +
@@ -60,11 +61,12 @@ public class QueryReport {
 								 					  		"ON D.Distrito = DT.CODIGO LEFT JOIN TB_CALLE CA " +
 								 					  		"ON D.Calle = CA.CODIGO " +
 								 		  "WHERE D.CodigoSocioNegocio = F.SocioNegocio " +
-								 		  "AND D.Codigo = F.DireccionFiscal ),''), " +
+								 		  "AND D.Codigo = F.DireccionFiscal ),''), " + */
+								 "	X0.NOMBRE, "+
 								 " F.Total, " +
 								 " ifnull((select sum(cast(X1.Importe as numeric)) from TB_PAGO_DETALLE X1 join TB_PAGO X2 ON X1.ClavePago = X2.Clave AND X2.Tipo = 'A'  where X1.FacturaCliente = F.Clave) +(F.Total - F.Saldo) , (F.Total - F.Saldo)) as 'Cobrado'," +
 								 " IFNULL((select F.Total - sum(cast(X1.Importe as numeric)) - (F.Total - F.Saldo)   from TB_PAGO_DETALLE X1 join TB_PAGO X2 ON X1.ClavePago = X2.Clave AND X2.Tipo = 'A'  where X1.FacturaCliente = F.Clave) ,F.Saldo) as 'Saldo' " +
-								 " FROM TB_FACTURA F " +
+								 " FROM TB_FACTURA F LEFT JOIN TB_CONDICION_PAGO X0 ON F.CondicionPago = X0.CODIGO " +
 								 " WHERE F.FechaContable between '"+
 								 StringDateCast.castDatetoDateWithoutSlash(fecIni)+
 								 "' and '"+
@@ -83,7 +85,8 @@ public class QueryReport {
 								"X0.Pagado," +
 								"X0.Saldo " +
 								"from TB_REPORTE_MODEL X0 where X0.Emision between '"+StringDateCast.castDatetoDateWithoutSlash(fecIni)+
-																			"' and '"+StringDateCast.castDatetoDateWithoutSlash(fecFin)+"'", null);
+																			"' and '"+StringDateCast.castDatetoDateWithoutSlash(fecFin)+"' " +
+				"order by 4, 3 ", null);
 
 		if(data.getCount()>0)
 		{
@@ -136,10 +139,14 @@ public class QueryReport {
 				detalles.add(detalle);
 				
 			}
-			
-			reporte.setTotal(DoubleRound.round(totalGen, 3));
-			reporte.setPagado(DoubleRound.round(totalPag, 3));
-			reporte.setSaldo(DoubleRound.round(totalSal, 3));
+
+			totalGen = DoubleRound.round(totalGen, 3);
+			totalPag = DoubleRound.round(totalPag, 3);
+			totalSal = DoubleRound.round(totalSal, 3);
+
+			reporte.setTotal(Double.valueOf(String.valueOf(totalGen)).longValue());
+			reporte.setPagado(Double.valueOf(String.valueOf(totalPag)).longValue());
+			reporte.setSaldo(Double.valueOf(String.valueOf(totalSal)).longValue());
 			reporte.setDetalles(detalles);
 			
 			//Cerrar el cursor
@@ -232,11 +239,20 @@ public class QueryReport {
 				detalles.add(detalle);
 				
 			}
-			
-			reporte.setTotal(DoubleRound.round(totalGen, 3));
+
+			totalGen = DoubleRound.round(totalGen, 3);
+			totalPag = DoubleRound.round(totalPag, 3);
+			totalSal = DoubleRound.round(totalSal, 3);
+			totalRecibo = DoubleRound.round(totalRecibo, 3);
+
+			reporte.setTotal(Double.valueOf(String.valueOf(totalGen)).longValue());
+			reporte.setPagado(Double.valueOf(String.valueOf(totalPag)).longValue());
+			reporte.setSaldo(Double.valueOf(String.valueOf(totalSal)).longValue());
+			reporte.setTotalRecibo(Double.valueOf(String.valueOf(totalRecibo)).longValue());
+		/*	reporte.setTotal(DoubleRound.round(totalGen, 3));
 			reporte.setPagado(DoubleRound.round(totalPag, 3));
 			reporte.setSaldo(DoubleRound.round(totalSal, 3));
-			reporte.setTotalRecibo(DoubleRound.round(totalRecibo, 4));
+			reporte.setTotalRecibo(DoubleRound.round(totalRecibo, 4)); */
 			reporte.setDetalles(detalles);
 			
 			//Cerrar el cursor
@@ -300,7 +316,10 @@ public class QueryReport {
 		List<ReportFormatObjectProductoXMarca_Marcas_Detalles> listaDetalles = null;
 		ReportFormatObjectProductoXMarca_Marcas_Detalles detalle = null;
 		
-		Cursor data= db.query("TB_FABRICANTE " ,new String[]{"CODIGO","NOMBRE"}, null, null, null,null, "NOMBRE");
+		Cursor data= db.rawQuery("SELECT CODIGO,NOMBRE, " +
+				" IFNULL((select Nombre from TB_LISTA_PRECIO WHERE CODIGO = 1),'') AS ListaPrecio1, "+
+				" IFNULL((select Nombre from TB_LISTA_PRECIO WHERE CODIGO = 2),'') AS ListaPrecio2 "+
+				" FROM TB_FABRICANTE ORDER BY NOMBRE ", null);
 		
 		if(data.getCount() > 0){
 			
@@ -312,6 +331,8 @@ public class QueryReport {
 				
 				marca = new ReportFormatObjectProductoXMarca_Marcas();
 				marca.setDescripcion(data.getString(1));
+				marca.setListaPrecio1(data.getString(data.getColumnIndex("ListaPrecio1")));
+				marca.setListaPrecio2(data.getString(data.getColumnIndex("ListaPrecio2")));
 				
 				listaDetalles = new ArrayList<ReportFormatObjectProductoXMarca_Marcas_Detalles>();
 				
@@ -330,7 +351,7 @@ public class QueryReport {
 						detalle = new ReportFormatObjectProductoXMarca_Marcas_Detalles();
 						detalle.setDescripcionProducto(data2.getString(0));
 						detalle.setStock(data2.getString(1));
-						
+
 						Cursor data3 = db.rawQuery("select " +
 														"PrecioVenta " +
 													"from TB_PRECIO " +

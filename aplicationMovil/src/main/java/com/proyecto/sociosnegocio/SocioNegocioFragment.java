@@ -86,7 +86,7 @@ public class SocioNegocioFragment extends Fragment {
 	private ListViewCustomAdapterTwoLinesAndImg adapter;
 	private ConstruirAlert alert = new ConstruirAlert();
 	private int iconId = Variables.idIconRightBlue36dp;
-	
+	private boolean editarGrupos = false, editarListaPrecio = false, editarCondicionPago = false;
 	
 	// OBJETO A REGISTRAR
 	private SocioNegocioBean objSN = null;
@@ -665,66 +665,67 @@ public class SocioNegocioFragment extends Fragment {
 
 				} else if (position == 7) {
 
-					posicion = position;
+					if(editarGrupos){
+						posicion = position;
 
-					// Capturar el objeto
-					Object o = lvPrincipal.getItemAtPosition(position);
-					fullObject = new FormatCustomListView();
-					fullObject = (FormatCustomListView) o;
+						// Capturar el objeto
+						Object o = lvPrincipal.getItemAtPosition(position);
+						fullObject = new FormatCustomListView();
+						fullObject = (FormatCustomListView) o;
 
-					AlertDialog.Builder alert = new AlertDialog.Builder(
-							contexto);
-					alert.setTitle("Grupo");
+						AlertDialog.Builder alert = new AlertDialog.Builder(
+								contexto);
+						alert.setTitle("Grupo");
 
-					// Spinner
-					final Spinner spnGrupo = new Spinner(contexto);
+						// Spinner
+						final Spinner spnGrupo = new Spinner(contexto);
 
-					ArrayAdapter<GrupoSocioNegocioBean> adapter = new ArrayAdapter<GrupoSocioNegocioBean>(
-							contexto, android.R.layout.simple_list_item_1,
-							listaGruposSocioNegocio);
-					spnGrupo.setAdapter(adapter);
-					spnGrupo.setOnItemSelectedListener(new OnItemSelectedListener() {
+						ArrayAdapter<GrupoSocioNegocioBean> adapter = new ArrayAdapter<GrupoSocioNegocioBean>(
+								contexto, android.R.layout.simple_list_item_1,
+								listaGruposSocioNegocio);
+						spnGrupo.setAdapter(adapter);
+						spnGrupo.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-						@Override
-						public void onItemSelected(AdapterView<?> parent,
-								View arg1, int pos, long arg3) {
-							// MONEDA SELECCIONADA
-							grupoSel = new GrupoSocioNegocioBean();
-							grupoSel = (GrupoSocioNegocioBean) parent
-									.getItemAtPosition(pos);
+							@Override
+							public void onItemSelected(AdapterView<?> parent,
+													   View arg1, int pos, long arg3) {
+								// MONEDA SELECCIONADA
+								grupoSel = new GrupoSocioNegocioBean();
+								grupoSel = (GrupoSocioNegocioBean) parent
+										.getItemAtPosition(pos);
 
-						}
+							}
 
-						@Override
-						public void onNothingSelected(AdapterView<?> arg0) {
+							@Override
+							public void onNothingSelected(AdapterView<?> arg0) {
 
-						}
-					});
+							}
+						});
 
-					alert.setView(spnGrupo);
+						alert.setView(spnGrupo);
 
-					alert.setPositiveButton("Ok",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+						alert.setPositiveButton("Ok",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+														int whichButton) {
 
-									// Do something with value!
-									fullObject.setData(grupoSel.toString());
-									searchResults.set(posicion, fullObject);
-									lvPrincipal.invalidateViews();
-								}
-							});
+										// Do something with value!
+										fullObject.setData(grupoSel.toString());
+										searchResults.set(posicion, fullObject);
+										lvPrincipal.invalidateViews();
+									}
+								});
 
-					alert.setNegativeButton("Cancel",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									// Canceled.
-								}
-							});
+						alert.setNegativeButton("Cancel",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+														int whichButton) {
+										// Canceled.
+									}
+								});
 
-					alert.show();
-
+						alert.show();
+					}
 				}
 
 			} else if (searchResults.size() == 13) {
@@ -1039,65 +1040,66 @@ public class SocioNegocioFragment extends Fragment {
 
 				} else if (position == 11) {
 
-					posicion = position;
+					if(editarGrupos){
+						posicion = position;
 
-					// Capturar el objeto
-					Object o = lvPrincipal.getItemAtPosition(position);
-					fullObject = new FormatCustomListView();
-					fullObject = (FormatCustomListView) o;
+						// Capturar el objeto
+						Object o = lvPrincipal.getItemAtPosition(position);
+						fullObject = new FormatCustomListView();
+						fullObject = (FormatCustomListView) o;
 
-					AlertDialog.Builder alert = new AlertDialog.Builder(
-							contexto);
-					alert.setTitle("Grupo");
+						AlertDialog.Builder alert = new AlertDialog.Builder(
+								contexto);
+						alert.setTitle("Grupo");
 
-					// Spinner
-					final Spinner spnGrupo = new Spinner(contexto);
+						// Spinner
+						final Spinner spnGrupo = new Spinner(contexto);
 
-					ArrayAdapter<GrupoSocioNegocioBean> adapter = new ArrayAdapter<GrupoSocioNegocioBean>(
-							contexto, android.R.layout.simple_list_item_1,
-							listaGruposSocioNegocio);
-					spnGrupo.setAdapter(adapter);
-					spnGrupo.setOnItemSelectedListener(new OnItemSelectedListener() {
+						ArrayAdapter<GrupoSocioNegocioBean> adapter = new ArrayAdapter<GrupoSocioNegocioBean>(
+								contexto, android.R.layout.simple_list_item_1,
+								listaGruposSocioNegocio);
+						spnGrupo.setAdapter(adapter);
+						spnGrupo.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-						@Override
-						public void onItemSelected(AdapterView<?> parent,
-								View arg1, int pos, long arg3) {
-							// MONEDA SELECCIONADA
-							grupoSel = new GrupoSocioNegocioBean();
-							grupoSel = (GrupoSocioNegocioBean) parent
-									.getItemAtPosition(pos);
-						}
+							@Override
+							public void onItemSelected(AdapterView<?> parent,
+													   View arg1, int pos, long arg3) {
+								// MONEDA SELECCIONADA
+								grupoSel = new GrupoSocioNegocioBean();
+								grupoSel = (GrupoSocioNegocioBean) parent
+										.getItemAtPosition(pos);
+							}
 
-						@Override
-						public void onNothingSelected(AdapterView<?> arg0) {
+							@Override
+							public void onNothingSelected(AdapterView<?> arg0) {
 
-						}
-					});
+							}
+						});
 
-					alert.setView(spnGrupo);
+						alert.setView(spnGrupo);
 
-					alert.setPositiveButton("Ok",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
+						alert.setPositiveButton("Ok",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+														int whichButton) {
 
-									// Do something with value!
-									fullObject.setData(grupoSel.toString());
-									searchResults.set(posicion, fullObject);
-									lvPrincipal.invalidateViews();
-								}
-							});
+										// Do something with value!
+										fullObject.setData(grupoSel.toString());
+										searchResults.set(posicion, fullObject);
+										lvPrincipal.invalidateViews();
+									}
+								});
 
-					alert.setNegativeButton("Cancel",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									// Canceled.
-								}
-							});
+						alert.setNegativeButton("Cancel",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+														int whichButton) {
+										// Canceled.
+									}
+								});
 
-					alert.show();
-
+						alert.show();
+					}
 				}
 
 			}
@@ -1224,35 +1226,38 @@ public class SocioNegocioFragment extends Fragment {
 			alert.show();
 
 		} else if (position == 5){
-			//Proyectos
-			posicion = position;
-			Object o = lvGeneral.getItemAtPosition(position);
-			fullObject = new FormatCustomListView();
-			fullObject = (FormatCustomListView) o;
+			try{
+				//Proyectos
+				posicion = position;
+				Object o = lvGeneral.getItemAtPosition(position);
+				fullObject = new FormatCustomListView();
+				fullObject = (FormatCustomListView) o;
 
-			ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(),
-					android.R.layout.select_dialog_singlechoice);
+				ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(),
+						android.R.layout.select_dialog_singlechoice);
 
-			for (ProyectoBean p: listaProyectos) {
-				arrayAdapter.add(p.getCodigo() + " - " + p.getDescripcion());
+				for (ProyectoBean p: listaProyectos) {
+					arrayAdapter.add(p.getCodigo() + " - " + p.getDescripcion());
+				}
+
+				final AlertDialog dialog;
+				final AlertDialog.Builder alert = new AlertDialog.Builder(
+						contexto);
+				alert.setTitle("Proyecto");
+				alert.setSingleChoiceItems(arrayAdapter, -1, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						proyectoSel = listaProyectos.get(which);
+						fullObject.setData(proyectoSel.getDescripcion());
+						searchResults3.set(posicion, fullObject);
+						lvGeneral.invalidateViews();
+						dialog.dismiss();
+					}
+				});
+				dialog = alert.show();
+			}catch (Exception e){
+				showMessage("No se obtuvo informacion sobre proyectos de SAP.");
 			}
-
-			final AlertDialog dialog;
-			final AlertDialog.Builder alert = new AlertDialog.Builder(
-					contexto);
-			alert.setTitle("Proyecto");
-			alert.setSingleChoiceItems(arrayAdapter, -1, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							proyectoSel = listaProyectos.get(which);
-							fullObject.setData(proyectoSel.getDescripcion());
-							searchResults3.set(posicion, fullObject);
-							lvGeneral.invalidateViews();
-							dialog.dismiss();
-						}
-					});
-			dialog = alert.show();
-
 		} else if (position == 6){
 			//tipo de registro
 			posicion = position;
@@ -1292,132 +1297,135 @@ public class SocioNegocioFragment extends Fragment {
 
 		if (position == 0) {
 
-			posicion = position;
-			// Capturar el objeto
-			Object o = lvCondicionesPago.getItemAtPosition(position);
-			fullObject = new FormatCustomListView();
-			fullObject = (FormatCustomListView) o;
-			//
+			if(editarCondicionPago){
+				posicion = position;
+				// Capturar el objeto
+				Object o = lvCondicionesPago.getItemAtPosition(position);
+				fullObject = new FormatCustomListView();
+				fullObject = (FormatCustomListView) o;
+				//
 
-			// Spinner
-			final Spinner spnCondPago = new Spinner(contexto);
+				// Spinner
+				final Spinner spnCondPago = new Spinner(contexto);
 
-			ArrayAdapter<CondicionPagoBean> adap = new ArrayAdapter<CondicionPagoBean>(
-					contexto, android.R.layout.simple_list_item_1, listaCondicionPago);
+				ArrayAdapter<CondicionPagoBean> adap = new ArrayAdapter<CondicionPagoBean>(
+						contexto, android.R.layout.simple_list_item_1, listaCondicionPago);
 
-			spnCondPago.setAdapter(adap);
+				spnCondPago.setAdapter(adap);
 
-			spnCondPago.setOnItemSelectedListener(new OnItemSelectedListener() {
+				spnCondPago.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View arg1,
-						int pos, long arg3) {
+					@Override
+					public void onItemSelected(AdapterView<?> parent, View arg1,
+											   int pos, long arg3) {
 
-					condPagoSel = new CondicionPagoBean();
-					condPagoSel = (CondicionPagoBean) parent
-							.getItemAtPosition(pos);
+						condPagoSel = new CondicionPagoBean();
+						condPagoSel = (CondicionPagoBean) parent
+								.getItemAtPosition(pos);
 
-				}
+					}
 
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
+					@Override
+					public void onNothingSelected(AdapterView<?> arg0) {
 
-				}
-			});
+					}
+				});
 
-			AlertDialog.Builder alert = new AlertDialog.Builder(contexto);
-			alert.setTitle("Condicion de Pago");
+				AlertDialog.Builder alert = new AlertDialog.Builder(contexto);
+				alert.setTitle("Condicion de Pago");
 
-			// Set an EditText view to get user input
-			alert.setView(spnCondPago);
+				// Set an EditText view to get user input
+				alert.setView(spnCondPago);
 
-			alert.setPositiveButton("Ok",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
+				alert.setPositiveButton("Ok",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+												int whichButton) {
 
-							// Do something with value!
-							fullObject.setData(condPagoSel
-									.getDescripcionCondicion());
-							searchResults2.set(posicion, fullObject);
-							lvCondicionesPago.invalidateViews();
-						}
-					});
+								// Do something with value!
+								fullObject.setData(condPagoSel
+										.getDescripcionCondicion());
+								searchResults2.set(posicion, fullObject);
+								lvCondicionesPago.invalidateViews();
+							}
+						});
 
-			alert.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							// Canceled.
-						}
-					});
+				alert.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+												int whichButton) {
+								// Canceled.
+							}
+						});
 
-			alert.show();
+				alert.show();
+			}
 
 		}else if (position == 1) {
 
-			posicion = position;
-			// Capturar el objeto
-			Object o = lvCondicionesPago.getItemAtPosition(position);
-			fullObject = new FormatCustomListView();
-			fullObject = (FormatCustomListView) o;
-			//
+			if(editarListaPrecio){
+				posicion = position;
+				// Capturar el objeto
+				Object o = lvCondicionesPago.getItemAtPosition(position);
+				fullObject = new FormatCustomListView();
+				fullObject = (FormatCustomListView) o;
+				//
 
-			// Spinner
-			final Spinner spn = new Spinner(contexto);
+				// Spinner
+				final Spinner spn = new Spinner(contexto);
 
-			ArrayAdapter<ListaPrecioBean> adap = new ArrayAdapter<ListaPrecioBean>(
-					contexto, android.R.layout.simple_list_item_1, listaPrecios);
+				ArrayAdapter<ListaPrecioBean> adap = new ArrayAdapter<ListaPrecioBean>(
+						contexto, android.R.layout.simple_list_item_1, listaPrecios);
 
-			spn.setAdapter(adap);
+				spn.setAdapter(adap);
 
-			spn.setOnItemSelectedListener(new OnItemSelectedListener() {
+				spn.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View arg1,
-						int pos, long arg3) {
+					@Override
+					public void onItemSelected(AdapterView<?> parent, View arg1,
+											   int pos, long arg3) {
 
-					listaPreSel = new ListaPrecioBean();
-					listaPreSel = (ListaPrecioBean) parent
-							.getItemAtPosition(pos);
+						listaPreSel = new ListaPrecioBean();
+						listaPreSel = (ListaPrecioBean) parent
+								.getItemAtPosition(pos);
 
-				}
+					}
 
-				@Override
-				public void onNothingSelected(AdapterView<?> arg0) {
+					@Override
+					public void onNothingSelected(AdapterView<?> arg0) {
 
-				}
-			});
+					}
+				});
 
-			AlertDialog.Builder alert = new AlertDialog.Builder(contexto);
-			alert.setTitle("Lista de precios");
+				AlertDialog.Builder alert = new AlertDialog.Builder(contexto);
+				alert.setTitle("Lista de precios");
 
-			// Set an EditText view to get user input
-			alert.setView(spn);
+				// Set an EditText view to get user input
+				alert.setView(spn);
 
-			alert.setPositiveButton("Ok",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
+				alert.setPositiveButton("Ok",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+												int whichButton) {
 
-							// Do something with value!
-							fullObject.setData(listaPreSel
-									.getNombre());
-							searchResults2.set(posicion, fullObject);
-							lvCondicionesPago.invalidateViews();
-						}
-					});
+								// Do something with value!
+								fullObject.setData(listaPreSel
+										.getNombre());
+								searchResults2.set(posicion, fullObject);
+								lvCondicionesPago.invalidateViews();
+							}
+						});
 
-			alert.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							// Canceled.
-						}
-					});
+				alert.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+												int whichButton) {
+								// Canceled.
+							}
+						});
 
-			alert.show();
-
+				alert.show();
+			}
 		}else if (position == 2) {
 
 			posicion = position;
@@ -1629,7 +1637,17 @@ public class SocioNegocioFragment extends Fragment {
 
 		sr1 = new FormatCustomListView();
 		sr1.setTitulo("Grupo");
-		sr1.setData(listaGruposSocioNegocio.get(0).getGroupName());
+		if(listaGruposSocioNegocio != null){
+			sr1.setData(listaGruposSocioNegocio.get(0).getGroupName());
+			for (GrupoSocioNegocioBean grupo: listaGruposSocioNegocio) {
+				if(grupo.getGroupName().toLowerCase().contains("detalle"))
+				{
+					sr1.setData(grupo.getGroupName());
+					grupoSel = grupo;
+					break;
+				}
+			}
+		}
 		sr1.setIcon(iconId);
 		sr1.setId(10);
 		searchResults.add(sr1);
@@ -1644,7 +1662,6 @@ public class SocioNegocioFragment extends Fragment {
 
 		lvPrincipal.setAdapter(adapter);
 		DynamicHeight.setListViewHeightBasedOnChildren(lvPrincipal);
-
 	}
 
 	private void llenarListaTitulo2() {
@@ -1721,7 +1738,17 @@ public class SocioNegocioFragment extends Fragment {
 		sr1 = new FormatCustomListView();
 		sr1.setTitulo("Grupo");
 		sr1.setId(10);
-		sr1.setData(listaGruposSocioNegocio.get(0).getGroupName());
+		if(listaGruposSocioNegocio != null){
+			sr1.setData(listaGruposSocioNegocio.get(0).getGroupName());
+			for (GrupoSocioNegocioBean grupo: listaGruposSocioNegocio) {
+				if(grupo.getGroupName().toLowerCase().contains("detalle"))
+				{
+					sr1.setData(grupo.getGroupName());
+					grupoSel = grupo;
+					break;
+				}
+			}
+		}
 		sr1.setIcon(iconId);
 		searchResults.add(sr1);
 
@@ -1839,42 +1866,73 @@ public class SocioNegocioFragment extends Fragment {
 
 	private void llenarListaCondPago() {
 
-		searchResults2 = new ArrayList<FormatCustomListView>();
+		try	{
+			searchResults2 = new ArrayList<FormatCustomListView>();
 
-		lvCondicionesPago = (ListView) v.findViewById(R.id.lvConPagSN);
+			lvCondicionesPago = (ListView) v.findViewById(R.id.lvConPagSN);
 
-		FormatCustomListView sr = new FormatCustomListView();
-		sr.setTitulo("Condicion de pago");
-		sr.setIcon(iconId);
-		sr.setId(17);
-		sr.setData(listaCondicionPago.get(0).getDescripcionCondicion());
-		searchResults2.add(sr);
+			FormatCustomListView sr = new FormatCustomListView();
+			sr.setTitulo("Condicion de pago");
+			sr.setIcon(iconId);
+			sr.setId(17);
+			if(listaCondicionPago != null){
+				sr.setData(listaCondicionPago.get(0).getDescripcionCondicion());
+				for (CondicionPagoBean cp: listaCondicionPago) {
+					if(cp.getDescripcionCondicion().equalsIgnoreCase("Pago adelantado")){
+						sr.setData(cp.getDescripcionCondicion());
+						condPagoSel = cp;
+						break;
+					}
+				}
+			}
+			searchResults2.add(sr);
 
-		sr = new FormatCustomListView();
-		sr.setTitulo("Lista de precios");
-		sr.setId(18);
-		sr.setData(listaPrecios.get(0).getNombre());
-		sr.setIcon(iconId);
-		searchResults2.add(sr);
+			sr = new FormatCustomListView();
+			sr.setTitulo("Lista de precios");
+			sr.setId(18);
+			if(listaPrecios != null && listaPrecios.size() > 0){
+				sr.setData(listaPrecios.get(0).getNombre());
+				for (ListaPrecioBean lp: listaPrecios) {
+					if(lp.getNombre().equalsIgnoreCase("General")){
+						sr.setData(lp.getNombre());
+						listaPreSel = lp;
+						break;
+					}
+				}
+			}
+			sr.setIcon(iconId);
+			searchResults2.add(sr);
 
-		sr = new FormatCustomListView();
-		sr.setTitulo("Indicador");
-		sr.setId(19);
-		sr.setIcon(iconId);
-		sr.setData(listaIndicadores.get(0).getNombre());
-		searchResults2.add(sr);
-		
+			sr = new FormatCustomListView();
+			sr.setTitulo("Indicador");
+			sr.setId(19);
+			sr.setIcon(iconId);
+			if(listaIndicadores != null && listaIndicadores.size() > 0){
+				sr.setData(listaIndicadores.get(0).getNombre());
+				for (IndicadorBean ind: listaIndicadores) {
+					if(ind.getNombre().toLowerCase().contains("factura elect")){
+						sr.setData(ind.getNombre());
+						indicadorSel = ind;
+						break;
+					}
+				}
+			}
+			searchResults2.add(sr);
+
 	/*	sr = new FormatCustomListView();
 		sr.setTitulo("Zona");
 		sr.setIcon(iconId);
 		sr.setData(listaZonas.get(0).getNombre());
 		searchResults2.add(sr); */
 
-		adapter = new ListViewCustomAdapterTwoLinesAndImg(contexto,
-				searchResults2);
-		lvCondicionesPago.setAdapter(adapter);
-		DynamicHeight.setListViewHeightBasedOnChildren(lvCondicionesPago);
+			adapter = new ListViewCustomAdapterTwoLinesAndImg(contexto,
+					searchResults2);
+			lvCondicionesPago.setAdapter(adapter);
+			DynamicHeight.setListViewHeightBasedOnChildren(lvCondicionesPago);
 
+		}catch (Exception e){
+			showMessage("llenarListaCondPago() > " + e.getMessage());
+		}
 	}
 
 	// METODOS PARA LLENAR LAS LISTAS DE "MENUS" EN LA PANTALLA PRINCIPAL DEL

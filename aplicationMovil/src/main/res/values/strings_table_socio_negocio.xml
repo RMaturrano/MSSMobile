@@ -31,6 +31,7 @@
     <string name="C_SN_VALIDO_EN_PEDIDO">ValidoenPedido</string>
     <string name="C_SN_POSEE_ACTIVOS">PoseeActivos</string>
     <string name="C_SN_CODIGO_EMPLEADO">CodigoEmpleado</string>
+    <string name="C_SN_MONEDA">Moneda</string>
     <string name="C_SN_PROYECTO">Proyecto</string>
     <string name="C_SN_TIPO_REGISTRO">TipoRegistro</string>
     <string name="C_SN_NUM_ULT_COMPRA">NumUltimaCompra</string>
@@ -38,6 +39,7 @@
     <string name="C_SN_MON_ULT_COMPRA">MontoUltimaCompra</string>
     <string name="C_SN_PERSONA_CONTACTO">PersonaContacto</string>
     <string name="C_SN_SALDO_CUENTA">SaldoCuenta</string>
+    <string name="C_SN_DESCUENTO">Descuento</string>
 
     <!-- CONTACTOS -->
     <string name="TD_CONTACTO_SOCIO_NEGOCIO">TB_SOCIO_NEGOCIO_CONTACTO</string>
@@ -85,5 +87,8 @@
     <string name="C_SN2_GIRO">Giro</string>
     <string name="C_SN2_FECHA_INICIO">InicioVisitas</string>
     <string name="C_SN2_VENDEDOR">Vendedor</string>
+    <string name="C_SN2_NUM_ULT_COMPRA">NumUltimaCompra</string>
+    <string name="C_SN2_FEC_ULT_COMPRA">FechaUltimaCompra</string>
+    <string name="C_SN2_MON_ULT_COMPRA">MontoUltimaCompra</string>
 
 </resources>

@@ -24,7 +24,7 @@ public class DetalleVisitaActivity extends AppCompatActivity {
     public static String KEY_PARAM_DIRECCION = "detDireccion";
     private TextView edtCodCliente, edtNomCliente, edtCodDireccion, edtDetDirecciom, edtCalle,
                     edtCoordenadas, edtFrecuencia, edtFechaInicio, edtNumUltimaCompra, edtFecUltimaCompra,
-                    edtMonUltimaCompra, edtNombreContacto, edtTelefonoContacto;
+                    edtMonUltimaCompra, edtNombreContacto, edtTelefonoContacto, edtZona, edtRuta;
     private CheckBox cbxLunes, cbxMartes, cbxMiercoles, cbxJueves, cbxViernes, cbxSabado, cbxDomingo;
     private DireccionBuscarBean direccion;
 
@@ -58,6 +58,8 @@ public class DetalleVisitaActivity extends AppCompatActivity {
         edtMonUltimaCompra = (TextView) findViewById(R.id.tvDetVisitaMonUltimaCompra);
         edtNombreContacto = (TextView) findViewById(R.id.tvDetVisitaNombreContacto);
         edtTelefonoContacto = (TextView) findViewById(R.id.tvDetVisitaTelefonoContacto);
+        edtZona = (TextView) findViewById(R.id.tvDetVisitaZona);
+        edtRuta = (TextView) findViewById(R.id.tvDetVisitaRuta);
 
         cbxLunes = (CheckBox) findViewById(R.id.cbxVisitaLun);
         cbxMartes = (CheckBox) findViewById(R.id.cbxVisitaMar);
@@ -110,10 +112,12 @@ public class DetalleVisitaActivity extends AppCompatActivity {
                 edtFrecuencia.setText(Constantes.obtenerDescripcionFrecuencia(direccion.getFrecuenciaVisita()));
                 edtFechaInicio.setText(StringDateCast.castStringtoDate(direccion.getFechaInicio()));
                 edtNumUltimaCompra.setText(direccion.getNumUltimaCompra());
-                edtFecUltimaCompra.setText(direccion.getFecUltimaCompra());
+                edtFecUltimaCompra.setText(StringDateCast.castStringtoDate(direccion.getFecUltimaCompra()));
                 edtMonUltimaCompra.setText(direccion.getMonUltimaCompra());
                 edtNombreContacto.setText(direccion.getPersonaContacto());
                 edtTelefonoContacto.setText(direccion.getTelefonoContacto());
+                edtZona.setText(direccion.getZona());
+                edtRuta.setText(direccion.getRuta());
 
                 cbxLunes.setChecked(direccion.getVisitaLunes().equals("Y") ? true: false);
                 cbxMartes.setChecked(direccion.getVisitaMartes().equals("Y") ? true: false);
@@ -152,6 +156,8 @@ public class DetalleVisitaActivity extends AppCompatActivity {
             Intent intent = new Intent(DetalleVisitaActivity.this, IncidenciaActivity.class);
             intent.putExtra(IncidenciaActivity.KEY_PAR_ORIGEN, IncidenciaActivity.ORDEN);
             intent.putExtra(IncidenciaActivity.KEY_PAR_CLIENTE, direccion.getCodigoCliente());
+            intent.putExtra(IncidenciaActivity.KEY_PAR_COD_DIRECCION, direccion.getCodigo());
+            intent.putExtra(IncidenciaActivity.KEY_PAR_TIP_DIRECCION, direccion.getTipo());
             startActivity(intent);
         }
     };

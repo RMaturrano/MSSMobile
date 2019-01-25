@@ -16,7 +16,8 @@ public class ListaPrecioDAO {
                 .getHelper(null)
                 .getDataBase()
                 .rawQuery("select T0.Codigo, " +
-                        "T0.Nombre " +
+                        "T0.Nombre, " +
+                        "T0.Moneda " +
                         " FROM TB_LISTA_PRECIO T0 where T0.Codigo IN " +
                         "(SELECT X0.ListaPrecio from TB_SOCIO_NEGOCIO X0)", null);
 
@@ -38,6 +39,7 @@ public class ListaPrecioDAO {
         ListaPrecioBean bean = new ListaPrecioBean();
         bean.setCodigo(cursor.getString(cursor.getColumnIndex("Codigo")));
         bean.setNombre(cursor.getString(cursor.getColumnIndex("Nombre")));
+        bean.setMoneda(cursor.getString(cursor.getColumnIndex("Moneda")));
         return bean;
     }
 

@@ -23,13 +23,17 @@ public class ClienteDAO {
             "T0.NombreRazonSocial, " +
             "T0.TelefonoMovil, " +
             "T0.NumeroDocumento," +
+            "T0.Moneda," +
             "IFNULL(T1.Codigo,'') AS ListaPrecioCodigo," +
             "IFNULL(T1.Nombre,'') AS ListaPrecioNombre," +
+            "IFNULL(T1.Moneda,'') AS ListaPrecioMoneda," +
             "IFNULL(T2.CODIGO,'') AS CondPagoCodigo," +
             "IFNULL(T2.NOMBRE,'') AS CondPagoNombre," +
             "IFNULL(T3.Codigo,'') AS IndicadorCodigo," +
             "IFNULL(T3.Nombre,'') AS IndicadorNombre, " +
             "IFNULL(T4.Codigo,'') AS DireccionFiscalCodigo, " +
+            "T0.Descuento, " +
+            "T0.PersonaContacto, " +
             "IFNULL(IFNULL(T4.Calle,T4.Referencia),'') AS DireccionFiscalNombre " +
             " FROM TB_SOCIO_NEGOCIO T0 " +
             " LEFT JOIN TB_LISTA_PRECIO T1 ON T0.ListaPrecio = T1.Codigo" +
@@ -107,16 +111,20 @@ public class ClienteDAO {
         bean.setNombre(cursor.getString(cursor.getColumnIndex("NombreRazonSocial")));
         bean.setTelefono(cursor.getString(cursor.getColumnIndex("TelefonoMovil")));
         bean.setNumeroDocumento(cursor.getString(cursor.getColumnIndex("NumeroDocumento")));
+        bean.setMoneda(cursor.getString(cursor.getColumnIndex("Moneda")));
+        bean.setPersonaContacto(cursor.getString(cursor.getColumnIndex("PersonaContacto")));
         bean.setDireccionFiscalCodigo(cursor.getString(cursor.getColumnIndex("DireccionFiscalCodigo")));
         bean.setDireccionFiscalNombre(cursor.getString(cursor.getColumnIndex("DireccionFiscalNombre")));
         bean.setContactos(new ContactoDAO().listar(bean.getCodigo()));
         bean.setDirecciones(new DireccionDAO().listar(bean.getCodigo()));
+        bean.setPorcentajeDescuento(cursor.getDouble(cursor.getColumnIndex("Descuento")));
 
         String codigoListaPrecio = cursor.getString(cursor.getColumnIndex("ListaPrecioCodigo"));
         if(!codigoListaPrecio.equals("")){
             ListaPrecioBean listaPrecioBean = new ListaPrecioBean();
             listaPrecioBean.setCodigo(codigoListaPrecio);
             listaPrecioBean.setNombre(cursor.getString(cursor.getColumnIndex("ListaPrecioNombre")));
+            listaPrecioBean.setMoneda(cursor.getString(cursor.getColumnIndex("ListaPrecioMoneda")));
             bean.setListaPrecio(listaPrecioBean);
         }
 

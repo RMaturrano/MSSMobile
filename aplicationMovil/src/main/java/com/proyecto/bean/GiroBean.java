@@ -5,7 +5,7 @@ package com.proyecto.bean;
  */
 
 public class GiroBean {
-    private String codigo, descripcion;
+    private String codigo, descripcion, canal, canalDescripcion;
 
     public String getCodigo() {
         return codigo;
@@ -21,5 +21,21 @@ public class GiroBean {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public String getCanal() {
+        return canal;
+    }
+
+    public void setCanal(String canal) {
+        this.canal = canal;
+    }
+
+    public String getCanalDescripcion() {
+        return canalDescripcion;
+    }
+
+    public void setCanalDescripcion(String canalDescripcion) {
+        this.canalDescripcion = canalDescripcion;
     }
 }

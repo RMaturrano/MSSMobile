@@ -136,6 +136,11 @@ public class ListaEntregaFragment extends Fragment implements IRVAdapterListInci
                                             if (response.getString("ResponseStatus").equals("Success")) {
                                                 new IncidenciaDAO().actualizarSincronizado(incidencia.getClaveMovil());
                                             } else {
+                                                String errorCode = response.getJSONObject("Response").getString("code");
+
+                                                if(errorCode.equalsIgnoreCase("-201"))
+                                                    new IncidenciaDAO().actualizarSincronizado(incidencia.getClaveMovil());
+
                                                 showMessage(response.getJSONObject("Response")
                                                         .getJSONObject("message")
                                                         .getString("value"));

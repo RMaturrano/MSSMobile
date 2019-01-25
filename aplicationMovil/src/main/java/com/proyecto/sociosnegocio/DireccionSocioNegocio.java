@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.backup.FullBackupDataOutput;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,7 +38,9 @@ import com.proyecto.bean.DistritoBean;
 import com.proyecto.bean.GiroBean;
 import com.proyecto.bean.PaisBean;
 import com.proyecto.bean.ProvinciaBean;
+import com.proyecto.bean.RutaBean;
 import com.proyecto.bean.TipoDireccionBean;
+import com.proyecto.bean.ZonaBean;
 import com.proyecto.database.Select;
 import com.proyecto.geolocalizacion.MapsActivity;
 import com.proyecto.utils.ConstruirAlert;
@@ -49,6 +52,11 @@ import com.proyecto.utils.Variables;
 public class DireccionSocioNegocio extends Fragment{
 
 	public static final String TAG_AGREGAR_DIRECCION = "frgmnt_agregar_direccion";
+
+	private static int POS_ZONA = 11;
+	private static int POS_RUTA = 10;
+	private static int POS_CANAL = 13;
+	private static int POS_GIRO = 12;
 
 	private View v;
 	private Context contexto;
@@ -72,6 +80,8 @@ public class DireccionSocioNegocio extends Fragment{
 	private ArrayList<CalleBean> listaCalles = null;
 	private List<CanalBean> listaCanales = null;
 	private List<GiroBean> listaGiros = null;
+	private List<ZonaBean> listaZonas = null;
+	private List<RutaBean> listaRutas = null;
 	
 	private PaisBean paisSel = null;
 	private DepartamentoBean departamentoSel = null;
@@ -82,6 +92,8 @@ public class DireccionSocioNegocio extends Fragment{
 	private LatLng mUbicacion = null;
 	private CanalBean canalSel = null;
 	private GiroBean giroSel = null;
+	private ZonaBean zonaSel = null;
+	private RutaBean rutaSel = null;
 	
 	//Si es una direccion a actualizar:
 	private int utilId;
@@ -192,8 +204,10 @@ public class DireccionSocioNegocio extends Fragment{
 				departamentoSel = listaDepartamentos.get(0);
 			}
 
-			listaCanales = select.listaCanales();
+			//listaCanales = select.listaCanales();
 			listaGiros = select.listaGiro();
+			listaRutas = select.listaRutas();
+			//listaZonas = select.listaZonas();
 
 			select.close();
 		}catch (Exception e){
@@ -270,7 +284,7 @@ public class DireccionSocioNegocio extends Fragment{
 
 			sr = new FormatCustomListView();
 			sr.setId(21);
-			sr.setTitulo("Departamento");
+			sr.setTitulo("Departamento/Region");
 			sr.setIcon(iconId);
 			if(direccion != null && direccion.getDepartamento() !=null){
 				for (DepartamentoBean depa : listaDepartamentos) {
@@ -286,7 +300,7 @@ public class DireccionSocioNegocio extends Fragment{
 			searchResults.add(sr);
 
 			sr = new FormatCustomListView();
-			sr.setTitulo("Provincia");
+			sr.setTitulo("Provincia/Ciudad");
 			sr.setId(22);
 			sr.setIcon(iconId);
 			if(direccion != null && direccion.getProvincia()!=null){
@@ -307,7 +321,7 @@ public class DireccionSocioNegocio extends Fragment{
 			searchResults.add(sr);
 
 			sr = new FormatCustomListView();
-			sr.setTitulo("Distrito");
+			sr.setTitulo("Distrito/Comuna");
 			sr.setId(23);
 			sr.setIcon(iconId);
 			if(direccion != null && direccion.getDistrito() != null){
@@ -371,15 +385,47 @@ public class DireccionSocioNegocio extends Fragment{
 			sr.setTitulo("Ruta");
 			sr.setId(27);
 			if(direccion != null && direccion.getRuta() != null)
-				sr.setData(direccion.getRuta());
+			{
+				for (RutaBean c: listaRutas) {
+					if(c.getCodigo().equals(direccion.getRuta())){
+						rutaSel = c;
+						sr.setData(rutaSel.getNombre());
+						break;
+					}
+				}
+			}
 			sr.setIcon(iconId);
 			searchResults.add(sr);
 
 			sr = new FormatCustomListView();
 			sr.setTitulo("Zona");
 			sr.setId(28);
-			if(direccion != null && direccion.getZona() != null)
-				sr.setData(direccion.getZona());
+			if(direccion != null && direccion.getZona() != null){
+				for (ZonaBean c: listaZonas) {
+					if(c.getCodigo().equals(direccion.getZona())){
+						zonaSel = c;
+						sr.setData(zonaSel.getNombre());
+						break;
+					}
+				}
+			}
+			sr.setIcon(iconId);
+			searchResults.add(sr);
+
+
+			sr = new FormatCustomListView();
+			sr.setTitulo("Giro");
+			sr.setId(30);
+			if(direccion != null && direccion.getGiro() != null &&
+					!direccion.getGiro().equals("")) {
+				for (GiroBean g: listaGiros) {
+					if(g.getCodigo().equals(direccion.getGiro())){
+						giroSel = g;
+						sr.setData(giroSel.getDescripcion());
+						break;
+					}
+				}
+			}
 			sr.setIcon(iconId);
 			searchResults.add(sr);
 
@@ -392,22 +438,6 @@ public class DireccionSocioNegocio extends Fragment{
 					if(c.getCodigo().equals(direccion.getCanal())){
 						canalSel = c;
 						sr.setData(canalSel.getDescripcion());
-						break;
-					}
-				}
-			}
-			sr.setIcon(iconId);
-			searchResults.add(sr);
-
-			sr = new FormatCustomListView();
-			sr.setTitulo("Giro");
-			sr.setId(30);
-			if(direccion != null && direccion.getGiro() != null &&
-					!direccion.getGiro().equals("")) {
-				for (GiroBean g: listaGiros) {
-					if(g.getCodigo().equals(direccion.getGiro())){
-						giroSel = g;
-						sr.setData(giroSel.getDescripcion());
 						break;
 					}
 				}
@@ -605,7 +635,7 @@ public class DireccionSocioNegocio extends Fragment{
 					
 					
 					AlertDialog.Builder alert = new AlertDialog.Builder(contexto);
-		    		alert.setTitle("Departamento");
+		    		alert.setTitle("Departamento/Region");
 
 		    		alert.setView(spn);
 		    		
@@ -698,7 +728,7 @@ public class DireccionSocioNegocio extends Fragment{
 
 
 						AlertDialog.Builder alert = new AlertDialog.Builder(contexto);
-						alert.setTitle("Provincia");
+						alert.setTitle("Provincia/Ciudad");
 
 						alert.setView(spn);
 
@@ -796,7 +826,7 @@ public class DireccionSocioNegocio extends Fragment{
 						});
 
 						AlertDialog.Builder alert = new AlertDialog.Builder(contexto);
-						alert.setTitle("Distrito");
+						alert.setTitle("Distrito/Comuna");
 
 						alert.setView(spn);
 
@@ -856,17 +886,89 @@ public class DireccionSocioNegocio extends Fragment{
 				
 				ConstruirAlert alert = new ConstruirAlert();
 				alert.construirAlert(contexto, position, "Referencia", searchResults, lvPrincipal, "text",100);
-			}else if(position == 10){
+			}else if(position == POS_RUTA){
+					//Rutas
+					posicion = position;
+					Object o = lvPrincipal.getItemAtPosition(position);
+					fullObject = new FormatCustomListView();
+					fullObject = (FormatCustomListView) o;
 
-				ConstruirAlert alert = new ConstruirAlert();
-				alert.construirAlert(contexto, position, "Ruta", searchResults, lvPrincipal, "text",100);
-			}else if(position == 11){
+					ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(),
+							android.R.layout.select_dialog_singlechoice);
 
-				ConstruirAlert alert = new ConstruirAlert();
-				alert.construirAlert(contexto, position, "Zona", searchResults, lvPrincipal, "text",100);
-			}else if(position == 12){
+					for (RutaBean p: listaRutas) {
+						arrayAdapter.add(p.getCodigo() + " - " + p.getNombre());
+					}
+
+					final AlertDialog dialog;
+					final AlertDialog.Builder alert = new AlertDialog.Builder(
+							contexto);
+					alert.setTitle("Ruta");
+					alert.setSingleChoiceItems(arrayAdapter, -1, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							rutaSel = listaRutas.get(which);
+							fullObject.setData(rutaSel.getNombre());
+							searchResults.set(posicion, fullObject);
+
+							if(rutaSel.getZona() != null && !rutaSel.getZona().equals("")){
+								zonaSel = new ZonaBean();
+								zonaSel.setCodigo(rutaSel.getZona());
+								zonaSel.setNombre(rutaSel.getZonaDescripcion());
+
+								fullObject = searchResults.get(POS_ZONA);
+								fullObject.setData(zonaSel.getNombre());
+								searchResults.set(POS_ZONA, fullObject);
+							}else
+								zonaSel = null;
+
+							lvPrincipal.invalidateViews();
+							dialog.dismiss();
+						}
+					});
+					dialog = alert.show();
+			}else if(position == POS_ZONA){
+				//Zonas
+				/*posicion = position;
+				Object o = lvPrincipal.getItemAtPosition(position);
+				fullObject = new FormatCustomListView();
+				fullObject = (FormatCustomListView) o;
+
+				ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(),
+						android.R.layout.select_dialog_singlechoice);
+
+				for (ZonaBean p: listaZonas) {
+					arrayAdapter.add(p.getCodigo() + " - " + p.getNombre());
+				}
+
+				final AlertDialog dialog;
+				final AlertDialog.Builder alert = new AlertDialog.Builder(
+						contexto);
+				alert.setTitle("Zona");
+				alert.setSingleChoiceItems(arrayAdapter, -1, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						zonaSel = listaZonas.get(which);
+						fullObject.setData(zonaSel.getNombre());
+						searchResults.set(posicion, fullObject);
+						lvPrincipal.invalidateViews();
+
+						Select select = new Select(contexto);
+						listaRutas = select.listaRutas(zonaSel.getCodigo());
+						rutaSel = null;
+
+						fullObject = (FormatCustomListView) lvPrincipal.getItemAtPosition(POS_RUTA);
+						fullObject.setData("");
+						searchResults.set(POS_RUTA, fullObject);
+						lvPrincipal.invalidateViews();
+
+						dialog.dismiss();
+					}
+				});
+				dialog = alert.show();	 */
+			}else if(position == POS_CANAL){
 				//Canales
-				posicion = position;
+				/*posicion = position;
 				Object o = lvPrincipal.getItemAtPosition(position);
 				fullObject = new FormatCustomListView();
 				fullObject = (FormatCustomListView) o;
@@ -892,8 +994,8 @@ public class DireccionSocioNegocio extends Fragment{
 						dialog.dismiss();
 					}
 				});
-				dialog = alert.show();
-			}else if(position == 13){
+				dialog = alert.show(); */
+			}else if(position == POS_GIRO){
 				//Giros
 				posicion = position;
 				Object o = lvPrincipal.getItemAtPosition(position);
@@ -917,6 +1019,18 @@ public class DireccionSocioNegocio extends Fragment{
 						giroSel = listaGiros.get(which);
 						fullObject.setData(giroSel.getDescripcion());
 						searchResults.set(posicion, fullObject);
+
+						if(giroSel.getCanal() != null && !giroSel.getCanal().equals("")){
+							canalSel = new CanalBean();
+							canalSel.setCodigo(giroSel.getCanal());
+							canalSel.setDescripcion(giroSel.getCanalDescripcion());
+
+							fullObject = searchResults.get(POS_CANAL);
+							fullObject.setData(canalSel.getDescripcion());
+							searchResults.set(POS_CANAL, fullObject);
+						}else
+							canalSel = null;
+
 						lvPrincipal.invalidateViews();
 						dialog.dismiss();
 					}
@@ -982,11 +1096,11 @@ public class DireccionSocioNegocio extends Fragment{
 			    	    if(departamentoSel != null)
 			    	    	bean.setDepartamento(departamentoSel.getCodigo());
 			    	    if(provinciaSel != null)
-			    	    	bean.setProvincia(provinciaSel.getCodigo());
+			    	    	bean.setProvincia(provinciaSel.getNombre());
 			    	    else
 			    	    	bean.setProvincia(searchResults.get(4).getData());
 			    	    if(distritoSel != null)
-			    	    	bean.setDistrito(distritoSel.getCodigo());
+			    	    	bean.setDistrito(distritoSel.getNombre());
 			    	    else
 			    	    	bean.setDistrito(searchResults.get(5).getData());
 			    	    /*if(calleSel != null){

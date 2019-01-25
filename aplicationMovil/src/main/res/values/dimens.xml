@@ -35,4 +35,15 @@
     <dimen name="cardviewHintTextSize">11sp</dimen>
     <dimen name="cardviewTitleTextSize">18sp</dimen>
 
+    <dimen name="cv_add_item_content_padding">12dp</dimen>
+    <dimen name="cv_add_item_card_elevation">2dp</dimen>
+    <dimen name="cv_add_item_card_corner_radius">4dp</dimen>
+
+    <dimen name="tv_item_tittle_text_size">17sp</dimen>
+    <dimen name="tv_item_description_text_size">18sp</dimen>
+
+    <dimen name="imgv_item_puntero_width">32dp</dimen>
+    <dimen name="imgv_item_puntero_height">42dp</dimen>
+    <dimen name="imgv_item_puntero_marginRight">5dp</dimen>
+
 </resources>

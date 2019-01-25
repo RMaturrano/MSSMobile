@@ -18,13 +18,14 @@ import com.proyect.movil.R;
 import com.proyecto.database.DataBaseHelper;
 import com.proyecto.utils.FormatCustomListView;
 import com.proyecto.utils.ListViewCustomAdapterTwoLinesAndImg;
+import com.proyecto.utils.ListViewCustomAdapterTwoLinesAndImgOV;
 
 public class DetalleVentaLinea extends AppCompatActivity{
 	
 	//LIST VIEW PRINCIPAL QUE CONTIENE A TODO
 	private ListView lvPrincipal = null;
 	private ArrayList<FormatCustomListView> searchResults = null;
-	private ListViewCustomAdapterTwoLinesAndImg adapter;
+	private ListViewCustomAdapterTwoLinesAndImgOV adapter;
 	private FormatCustomListView customListObject = null;
 	private String idDetalle, idArticulo;
 	private Context contexto;
@@ -119,7 +120,7 @@ public class DetalleVentaLinea extends AppCompatActivity{
 			customListObject.setData(rs.getString(5));
 			searchResults.add(customListObject);
 			
-			double porcentajeDescuento = Double.parseDouble(rs.getString(6)) * 100;
+			double porcentajeDescuento = Double.parseDouble(rs.getString(6));
 			customListObject = new FormatCustomListView();
 			customListObject.setTitulo("Porcentaje de descuento");
 			customListObject.setData(porcentajeDescuento+" %");
@@ -129,13 +130,12 @@ public class DetalleVentaLinea extends AppCompatActivity{
 			customListObject.setTitulo("Impuesto");
 			customListObject.setData(rs.getString(7));
 			searchResults.add(customListObject);
-
 		}
 
 		rs.close();
 //		db.close();
 		
-		adapter = new ListViewCustomAdapterTwoLinesAndImg(contexto, searchResults);      
+		adapter = new ListViewCustomAdapterTwoLinesAndImgOV(contexto, searchResults);
 		lvPrincipal.setAdapter(adapter);
 	  	//DynamicHeight.setListViewHeightBasedOnChildren(lvPrincipal);
 
