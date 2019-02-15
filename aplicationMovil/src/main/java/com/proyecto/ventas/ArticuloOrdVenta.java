@@ -1124,7 +1124,11 @@ public class ArticuloOrdVenta extends Fragment {
             //Descuento Escala
             List<DescuentoEscalarBean> lstDescuentoEscalar = new DescuentoEscalarDAO().listar();
 
-            if (descuentoBase > 0)
+            if (descuentoBase > 0) {
+                
+                if (descuentoBase > 40)
+                    descuentoBase = 0;
+
                 for (DescuentoEscalarBean item : lstDescuentoEscalar) {
 
                     if (item.getDetalle() != null)
@@ -1163,11 +1167,11 @@ public class ArticuloOrdVenta extends Fragment {
 
                             }
                         }
-
                 }
+            }
 
             //Descuento Regular
-            if (descuentoEscala != 0) {
+            if (descuentoEscala == 0) {
                 List<DescuentoRegularBean> lstDescuentoRegular = new DescuentoRegularDAO().listar();
                 for (DescuentoRegularBean item : lstDescuentoRegular) {
                     if (item.getDetalle() != null)
