@@ -7,7 +7,7 @@
             android:title="Servidor"
             android:summary="Dirección IP o URL del servidor web"
             android:dialogTitle="Servidor" 
-            android:defaultValue="200.10.84.66"/>
+            android:defaultValue="170.231.83.235"/>
         
         <EditTextPreference
             android:key="puertoServidor"

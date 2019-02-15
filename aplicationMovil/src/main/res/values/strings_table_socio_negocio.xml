@@ -40,6 +40,7 @@
     <string name="C_SN_PERSONA_CONTACTO">PersonaContacto</string>
     <string name="C_SN_SALDO_CUENTA">SaldoCuenta</string>
     <string name="C_SN_DESCUENTO">Descuento</string>
+    <string name="C_SN_DESCUENTO_BASE">DescuentoBase</string>
 
     <!-- CONTACTOS -->
     <string name="TD_CONTACTO_SOCIO_NEGOCIO">TB_SOCIO_NEGOCIO_CONTACTO</string>

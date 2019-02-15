@@ -14,7 +14,7 @@ public class SocioNegocioBean {
 			tipoCliente, empleadoVentas, limCre, prioridad, listaPrecio, indicador, zona,
 			creadoMovil, claveMovil, estadoRegistroMovil, direccionFiscal, TransaccionMovil,ValidoenPedido,
 			poseeActivos, codProyecto, tipoRegistro, numUltimaCompra, fecUtimaCompra, montoUltCompra, saldoCuenta,
-			porcentajeDescuento;
+			porcentajeDescuento,porcentajeDescuentoBase;
 
 	public SocioNegocioBean(){
 		this.contactos = new ArrayList<>();
@@ -363,6 +363,13 @@ public class SocioNegocioBean {
 		this.porcentajeDescuento = porcentajeDescuento;
 	}
 
+	public String getPorcentajeDescuentoBase() {
+		return porcentajeDescuentoBase;
+	}
+
+	public void setPorcentajeDescuentoBase(String porcentajeDescuentoBase) {
+		this.porcentajeDescuentoBase = porcentajeDescuentoBase;
+	}
 	public static JSONObject transformBPToJSON(SocioNegocioBean ov, String sociedad){
 		try	{
 

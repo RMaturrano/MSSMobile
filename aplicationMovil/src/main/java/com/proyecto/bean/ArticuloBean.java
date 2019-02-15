@@ -1,5 +1,7 @@
 package com.proyecto.bean;
 
+import com.proyecto.utils.DoubleRound;
+
 public class ArticuloBean {
 
     private String cod, desc, fabricante, grupoArticulo, codUM, unidadMedidaVenta,
@@ -9,8 +11,13 @@ public class ArticuloBean {
 
     private String nombreFabricante, nombreGrupoArt, nombreUnidadMedida, nombreUnidadMedidaVenta;
 
-    private  String ArticuloMuestra;
+    private String ArticuloMuestra;
+    private String Division;
     private Double descuentoAlmacenSeleccionado;
+
+    private Double DescuentoBase;
+    private Double DescuentoRegular;
+    private Double DescuentoEscala;
 
     public String getCodigoListaPrecio() {
         return codigoListaPrecio;
@@ -197,20 +204,8 @@ public class ArticuloBean {
         this.impuesto = impuesto;
     }
 
-    public double getPreBruto() {
-
-        preBruto = this.pre - (this.pre * (getDescuento()/100))
-                + ((this.pre - (this.pre * (getDescuento()/100))) * getImpuesto());
-        return Math.round(preBruto * 100.0) / 100.0;
-
-    }
-
     public void setPreBruto(double preBruto) {
         this.preBruto = preBruto;
-    }
-
-    public double getTotal() {
-        return Math.round(((pre * cant) - (pre * cant) * (getDescuento()/100)) * 100d) / 100d;
     }
 
     public double getCant() {
@@ -303,18 +298,18 @@ public class ArticuloBean {
     }
 
     public Boolean getArticuloMuestraBoolean() {
-        if(ArticuloMuestra != null){
-            if(ArticuloMuestra == "S"){
+        if (ArticuloMuestra != null) {
+            if (ArticuloMuestra == "S") {
                 return true;
             }
         }
-        return  false;
+        return false;
     }
 
     public void setArticuloMuestraBoolean(boolean articuloMuestra) {
-        if(articuloMuestra){
+        if (articuloMuestra) {
             ArticuloMuestra = "S";
-        }else{
+        } else {
             ArticuloMuestra = "N";
         }
     }
@@ -326,5 +321,71 @@ public class ArticuloBean {
 
     public void setDescuentoAlmacenSeleccionado(Double descuentoAlmacenSeleccionado) {
         this.descuentoAlmacenSeleccionado = descuentoAlmacenSeleccionado;
+    }
+
+    public String getDivision() {
+        return Division;
+    }
+
+    public void setDivision(String division) {
+        Division = division;
+    }
+
+    public Double getDescuentoBase() {
+        return DescuentoBase;
+    }
+
+    public void setDescuentoBase(Double descuentoBase) {
+        DescuentoBase = descuentoBase;
+    }
+
+    public Double getDescuentoRegular() {
+        return DescuentoRegular;
+    }
+
+    public void setDescuentoRegular(Double descuentoRegular) {
+        DescuentoRegular = descuentoRegular;
+    }
+
+    public Double getDescuentoEscala() {
+        return DescuentoEscala;
+    }
+
+    public void setDescuentoEscala(Double descuentoEscala) {
+        DescuentoEscala = descuentoEscala;
+    }
+
+    public Double getPrecioConDescuentoBase() {
+        double result = (this.pre * this.cant) * (1 - (this.DescuentoBase / 100));
+        return result;
+    }
+
+    public void ReCalcularMontos() {
+        double totalDescuento = this.pre * this.descuento;
+        double precioMenosDescuento = this.pre - totalDescuento;
+        double totalImpuesto = precioMenosDescuento * (impuesto / 100);
+        double total = DoubleRound.round(((this.pre * this.cant) - (this.pre * this.cant) * this.descuento), 6);
+
+        this.preBruto = DoubleRound.round(precioMenosDescuento, 6);
+
+        double descuentoPrevio = (this.DescuentoBase + (1 - this.DescuentoBase / 100) * this.DescuentoRegular);
+        double descuentoCalculado = descuentoPrevio
+                + (1 - descuentoPrevio / 100)
+                * this.DescuentoEscala;
+
+        this.descuento = descuentoCalculado;
+
+    }
+
+    public double getTotal() {
+        return Math.round(((pre * cant) - (pre * cant) * (getDescuento() / 100)) * 100d) / 100d;
+    }
+
+    public double getPreBruto() {
+
+        preBruto = this.pre - (this.pre * (getDescuento() / 100))
+                + ((this.pre - (this.pre * (getDescuento() / 100))) * getImpuesto());
+        return Math.round(preBruto * 100.0) / 100.0;
+
     }
 }

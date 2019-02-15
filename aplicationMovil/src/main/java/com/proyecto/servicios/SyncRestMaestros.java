@@ -16,6 +16,10 @@ import com.proyecto.bean.AlmacenBean;
 import com.proyecto.bean.ArticuloBean;
 import com.proyecto.bean.CantidadBean;
 import com.proyecto.bean.ContactoBean;
+import com.proyecto.bean.DescuentoEscalarBean;
+import com.proyecto.bean.DescuentoEscalarDetalleBean;
+import com.proyecto.bean.DescuentoRegularBean;
+import com.proyecto.bean.DescuentoRegularDetalleBean;
 import com.proyecto.bean.DireccionBean;
 import com.proyecto.bean.ListaPrecioBean;
 import com.proyecto.bean.PaisBean;
@@ -44,13 +48,13 @@ public class SyncRestMaestros {
     private SharedPreferences mSharedPreferences;
     private int MY_SOCKET_TIMEOUT_MS = 50000;
 
-    public SyncRestMaestros(Context contexto, ProgressDialog progressDialog){
+    public SyncRestMaestros(Context contexto, ProgressDialog progressDialog) {
         mProgressDialog = progressDialog;
         mContext = contexto;
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(contexto);
     }
 
-    public boolean syncFromServer(){
+    public boolean syncFromServer() {
 
         boolean result = true;
 
@@ -72,10 +76,10 @@ public class SyncRestMaestros {
             //region socios_nuevos
             List<SocioNegocioBean> listToSend = mSelect.listaSocioNegocio();
 
-            if(listToSend.size() > 0){
+            if (listToSend.size() > 0) {
                 mProgressDialog.setMessage("Enviando socios de negocio...");
 
-                for (final SocioNegocioBean sn : listToSend){
+                for (final SocioNegocioBean sn : listToSend) {
                     try {
 
                         JSONObject jsonObject = SocioNegocioBean.transformBPToJSON(sn, sociedad);
@@ -86,23 +90,24 @@ public class SyncRestMaestros {
                                         new Response.Listener<JSONObject>() {
                                             @Override
                                             public void onResponse(JSONObject response) {
-                                                try
-                                                {
-                                                    if(response.getString("ResponseStatus").equals("Success")){
+                                                try {
+                                                    if (response.getString("ResponseStatus").equals("Success")) {
                                                         mInsert.updateEstadoSocioNegocio(sn.getClaveMovil());
-                                                    }else{
+                                                    } else {
                                                         showToast(response.getJSONObject("Response")
                                                                 .getJSONObject("message")
                                                                 .getString("value"));
                                                     }
 
-                                                }catch (Exception e){}
+                                                } catch (Exception e) {
+                                                }
                                             }
                                         },
                                         new Response.ErrorListener() {
                                             @Override
-                                            public void onErrorResponse(VolleyError error) {}
-                                        }){
+                                            public void onErrorResponse(VolleyError error) {
+                                            }
+                                        }) {
                                     @Override
                                     public Map<String, String> getHeaders() throws AuthFailureError {
                                         HashMap<String, String> headers = new HashMap<String, String>();
@@ -112,7 +117,7 @@ public class SyncRestMaestros {
                                 };
                         VolleySingleton.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
 
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         showToast("Enviando socios de negocio: " + ex.getMessage());
                     }
                 }
@@ -128,13 +133,13 @@ public class SyncRestMaestros {
             mProgressDialog.setMessage("Registrando socios de negocio...");
 
             String urlGetBP = "getBusinessPartner";
-            if(esCobrador.equals("Y"))
+            if (esCobrador.equals("Y"))
                 urlGetBP = "getBusinessPartnerDispatcher";
-            if(esSupervisor.equals("Y"))
+            if (esSupervisor.equals("Y"))
                 urlGetBP = "getBusinessPartnerSupervisor";
 
             JsonObjectRequest mJSONRequest = new JsonObjectRequest(Request.Method.GET,
-                    ruta + "businesspartner/"+urlGetBP+".xsjs?empId=" + sociedad +"&cove=" + codigoEmpleado, null,
+                    ruta + "businesspartner/" + urlGetBP + ".xsjs?empId=" + sociedad + "&cove=" + codigoEmpleado, null,
                     listenerGetSocios, errorListenerGetSocios);
             mJSONRequest.setRetryPolicy(new DefaultRetryPolicy(
                     MY_SOCKET_TIMEOUT_MS,
@@ -158,7 +163,7 @@ public class SyncRestMaestros {
             //region REQUEST ALMACENES
             mProgressDialog.setMessage("Registrando almacenes...");
             mJSONRequest = new JsonObjectRequest(Request.Method.GET,
-                    ruta + "warehouse/getWarehouse.xsjs?empId=" + sociedad + "&uid=" +codigoEmpleado, null,
+                    ruta + "warehouse/getWarehouse.xsjs?empId=" + sociedad + "&uid=" + codigoEmpleado, null,
                     listenerGetAlmacen, errorListenerGetAlmacen);
             VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
             //endregion
@@ -195,7 +200,31 @@ public class SyncRestMaestros {
             VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
             //endregion
 
-        }catch (Exception e){
+            //region REQUEST DESCUENTO ESCALAR
+            mProgressDialog.setMessage("Registrando descuento escalar...");
+            mJSONRequest = new JsonObjectRequest(Request.Method.GET,
+                    ruta + "discountscalar/getDiscountScalar.xsjs?empId=" + sociedad + "&cove=" + codigoEmpleado, null,
+                    listenerGetDescuentoEscalar, errorListenerGetDescuentoEscalar);
+            mJSONRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    MY_SOCKET_TIMEOUT_MS,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
+            //endregion
+
+            //region REQUEST DESCUENTO REGULAR
+            mProgressDialog.setMessage("Registrando descuento regular...");
+            mJSONRequest = new JsonObjectRequest(Request.Method.GET,
+                    ruta + "discountregular/getDiscountRegular.xsjs?empId=" + sociedad + "&cove=" + codigoEmpleado, null,
+                    listenerGetDescuentoRegular, errorListenerGetDescuentoRegular);
+            mJSONRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    MY_SOCKET_TIMEOUT_MS,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            VolleySingleton.getInstance(mContext).addToRequestQueue(mJSONRequest);
+            //endregion
+
+        } catch (Exception e) {
             result = false;
         }
 
@@ -203,13 +232,13 @@ public class SyncRestMaestros {
     }
 
     //region RESPONSE SOCIOS DE NEGOCIO
-    Response.Listener listenerGetSocios = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetSocios = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -218,7 +247,7 @@ public class SyncRestMaestros {
                     ArrayList<SocioNegocioBean> lstResults = new ArrayList<>();
                     SocioNegocioBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new SocioNegocioBean();
                         bean.setCodigo(jsonObj.getString("Codigo"));
@@ -253,17 +282,20 @@ public class SyncRestMaestros {
                         bean.setFecUtimaCompra(jsonObj.getString("FechaUltimaCompra"));
                         bean.setMontoUltCompra(jsonObj.getString("MontoUltimaCompra"));
                         bean.setPersonaContacto(jsonObj.getString("PersonaContacto"));
-                        bean.setMoneda(jsonObj.has("Moneda") ? jsonObj.getString("Moneda"): "");
+                        bean.setMoneda(jsonObj.has("Moneda") ? jsonObj.getString("Moneda") : "");
                         bean.setSaldoCuenta(jsonObj.getString("SaldoCuenta"));
 
-                        if(jsonObj.has("Descuento"))
+                        if (jsonObj.has("Descuento"))
                             bean.setPorcentajeDescuento(jsonObj.getString("Descuento"));
+
+                        if (jsonObj.has("DescuentoBase"))
+                            bean.setPorcentajeDescuentoBase(jsonObj.getString("DescuentoBase"));
 
                         JSONArray contacts = jsonObj.getJSONArray("Contactos");
                         ContactoBean detalle;
                         ArrayList<ContactoBean> listDet1 = new ArrayList<>();
 
-                        for (int j = 0; j < contacts.length(); j++){
+                        for (int j = 0; j < contacts.length(); j++) {
                             JSONObject detail = contacts.getJSONObject(j);
                             detalle = new ContactoBean();
                             detalle.setIdCon(detail.getString("Codigo"));
@@ -286,7 +318,7 @@ public class SyncRestMaestros {
                         DireccionBean direccionBean;
                         ArrayList<DireccionBean> listDet2 = new ArrayList<>();
 
-                        for (int j = 0; j < directions.length(); j++){
+                        for (int j = 0; j < directions.length(); j++) {
                             JSONObject detail = directions.getJSONObject(j);
                             direccionBean = new DireccionBean();
                             direccionBean.setIDDireccion(detail.getString("Codigo"));
@@ -314,13 +346,13 @@ public class SyncRestMaestros {
                             direccionBean.setFechaInicioVisitas(detail.getString("InicioVisitas"));
                             direccionBean.setVendedor(detail.getString("Vendedor"));
 
-                            if(detail.has("CodigoUltimaCompra"))
+                            if (detail.has("CodigoUltimaCompra"))
                                 direccionBean.setNumeroUltimaCompra(detail.getString("CodigoUltimaCompra"));
 
-                            if(detail.has("FechaUltimaCompra"))
+                            if (detail.has("FechaUltimaCompra"))
                                 direccionBean.setFechaUltimaCompra(detail.getString("FechaUltimaCompra"));
 
-                            if(detail.has("MontoUltimaCompra"))
+                            if (detail.has("MontoUltimaCompra"))
                                 direccionBean.setMontoUltimaCompra(detail.getString("MontoUltimaCompra"));
 
                             listDet2.add(direccionBean);
@@ -333,10 +365,10 @@ public class SyncRestMaestros {
 
                     mInsert.insertSocioNegocio(lstResults, "ALL");
 
-                }else{
+                } else {
                     showToast("SOCIOS - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetSocios() > " + e.getMessage());
             }
         }
@@ -351,13 +383,13 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE ARTICULOS
-    Response.Listener listenerGetItem = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetItem = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -366,7 +398,7 @@ public class SyncRestMaestros {
                     List<ArticuloBean> mList = new ArrayList<>();
                     ArticuloBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new ArticuloBean();
                         bean.setCod(jsonObj.getString("Codigo"));
@@ -375,23 +407,25 @@ public class SyncRestMaestros {
                         bean.setGrupoArticulo(jsonObj.getString("GrupoArticulo"));
                         bean.setCodUM(jsonObj.getString("GrupoUnidadMedida"));
                         bean.setUnidadMedidaVenta(jsonObj.getString("UnidadMedidaVenta"));
-                        if(jsonObj.has("CodigoBarras"))
+                        if (jsonObj.has("CodigoBarras"))
                             bean.setCodigoBarras(jsonObj.getString("CodigoBarras"));
 
                         if (jsonObj.has("AlmacenDefecto"))
                             bean.setAlmacenDefecto(jsonObj.getString("AlmacenDefecto"));
                         if (jsonObj.has("ArticuloMuestra"))
                             bean.setArticuloMuestra(jsonObj.getString("ArticuloMuestra"));
+                        if (jsonObj.has("Division"))
+                            bean.setDivision(jsonObj.getString("Division"));
 
                         mList.add(bean);
                     }
 
                     mInsert.insertArticulo(mList);
 
-                }else{
+                } else {
                     showToast("ARTICULOS - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetItem() > " + e.getMessage());
             }
         }
@@ -406,13 +440,13 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE ALMACENES
-    Response.Listener listenerGetAlmacen = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetAlmacen = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -421,22 +455,22 @@ public class SyncRestMaestros {
                     List<AlmacenBean> mList = new ArrayList<>();
                     AlmacenBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new AlmacenBean();
                         bean.setCodigo(jsonObj.getString("Codigo"));
                         bean.setDescripcion(jsonObj.getString("Nombre"));
-                        if(jsonObj.has("Descuento"))
+                        if (jsonObj.has("Descuento"))
                             bean.setDescuento(jsonObj.getDouble("Descuento"));
                         mList.add(bean);
                     }
 
                     mInsert.insertAlmacen(mList);
 
-                }else{
+                } else {
                     showToast("ALMACENES - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetAlmacen() > " + e.getMessage());
             }
         }
@@ -451,13 +485,13 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE CANTIDADES
-    Response.Listener listenerGetCantidad = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetCantidad = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -466,7 +500,7 @@ public class SyncRestMaestros {
                     List<CantidadBean> mList = new ArrayList<>();
                     CantidadBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new CantidadBean();
                         bean.setAlmacen(jsonObj.getString("Almacen"));
@@ -480,10 +514,10 @@ public class SyncRestMaestros {
 
                     mInsert.insertCantidad(mList);
 
-                }else{
+                } else {
                     showToast("CANTIDADES - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetCantidad() > " + e.getMessage());
             }
         }
@@ -498,13 +532,13 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE LISTAS DE PRECIO
-    Response.Listener listenerGetListaPrecio = new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetListaPrecio = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -513,22 +547,22 @@ public class SyncRestMaestros {
                     List<ListaPrecioBean> mList = new ArrayList<>();
                     ListaPrecioBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new ListaPrecioBean();
                         bean.setCodigo(jsonObj.getString("Codigo"));
                         bean.setNombre(jsonObj.getString("Nombre"));
-                        bean.setMoneda(jsonObj.has("Moneda")?
-                                        jsonObj.getString("Moneda"): "");
+                        bean.setMoneda(jsonObj.has("Moneda") ?
+                                jsonObj.getString("Moneda") : "");
                         mList.add(bean);
                     }
 
                     mInsert.insertListaPrecio(mList);
 
-                }else{
+                } else {
                     showToast("LISTA PRECIO - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetListaPrecio() > " + e.getMessage());
             }
         }
@@ -543,14 +577,14 @@ public class SyncRestMaestros {
     //endregion
 
     //region RESPONSE PRECIOS
-    Response.Listener listenerGetPrecios= new Response.Listener<JSONObject>(){
+    Response.Listener listenerGetPrecios = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             try {
                 mProgressDialog.incrementProgressBy(1);
                 mProgressDialog.dismiss();
 
-                if(response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)){
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
                     JSONArray jsonArray = response.getJSONObject("Response")
                             .getJSONObject("message")
                             .getJSONArray("value");
@@ -559,7 +593,7 @@ public class SyncRestMaestros {
                     List<PrecioBean> mList = new ArrayList<>();
                     PrecioBean bean;
 
-                    for (int i = 0; i < size; i++ ) {
+                    for (int i = 0; i < size; i++) {
                         JSONObject jsonObj = jsonArray.getJSONObject(i);
                         bean = new PrecioBean();
                         bean.setListaPrecio(jsonObj.getString("ListaPrecio"));
@@ -571,10 +605,10 @@ public class SyncRestMaestros {
 
                     mInsert.insertPrecios(mList);
 
-                }else{
+                } else {
                     showToast("PRECIOS - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast("listenerGetPrecios() > " + e.getMessage());
             }
         }
@@ -588,7 +622,203 @@ public class SyncRestMaestros {
     };
     //endregion
 
-    private  void showToast(String message){
+    //region RESPONSE DESCUENTO ESCALAR
+    Response.Listener listenerGetDescuentoEscalar = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                mProgressDialog.incrementProgressBy(1);
+
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
+                    JSONArray jsonArray = response.getJSONObject("Response")
+                            .getJSONObject("message")
+                            .getJSONArray("value");
+
+                    int size = jsonArray.length();
+                    ArrayList<DescuentoEscalarBean> mList = new ArrayList<>();
+                    DescuentoEscalarBean bean;
+
+                    for (int i = 0; i < size; i++) {
+                        JSONObject jsonObj = jsonArray.getJSONObject(i);
+                        bean = new DescuentoEscalarBean();
+
+                        if (jsonObj.has("Code"))
+                            bean.setCode(jsonObj.getString("Code"));
+
+                        if (jsonObj.has("Name") && !jsonObj.isNull("Name"))
+                            bean.setName(jsonObj.getString("Name"));
+
+                        if (jsonObj.has("U_MSS_FEINI") && !jsonObj.isNull("U_MSS_FEINI"))
+                            bean.setFechaInicio(jsonObj.getString("U_MSS_FEINI"));
+
+                        if (jsonObj.has("U_MSS_FEFI") && !jsonObj.isNull("U_MSS_FEFI"))
+                            bean.setFechaFin(jsonObj.getString("U_MSS_FEFI"));
+
+                        if (jsonObj.has("U_MSS_OBSERV") && !jsonObj.isNull("U_MSS_OBSERV"))
+                            bean.setObservacion(jsonObj.getString("U_MSS_OBSERV"));
+
+                        if (jsonObj.has("U_MSS_TIPO") && !jsonObj.isNull("U_MSS_TIPO"))
+                            bean.setObservacion(jsonObj.getString("U_MSS_TIPO"));
+
+                        JSONArray detalleJson = jsonObj.getJSONArray("MSS_DESC1");
+                        DescuentoEscalarDetalleBean detalle;
+                        ArrayList<DescuentoEscalarDetalleBean> listDet1 = new ArrayList<>();
+
+                        for (int j = 0; j < detalleJson.length(); j++) {
+                            JSONObject detail = detalleJson.getJSONObject(j);
+                            detalle = new DescuentoEscalarDetalleBean();
+
+                            if (detail.has("Code"))
+                                detalle.setCode(detail.getString("Code"));
+
+                            if (detail.has("LineId"))
+                                detalle.setLineId(String.valueOf(detail.getInt("LineId")));
+
+                            if (detail.has("U_MSS_COAR") && !detail.isNull("U_MSS_COAR"))
+                                detalle.setCodigoArticulo(detail.getString("U_MSS_COAR"));
+
+                            if (detail.has("U_MSS_DEAR") && !detail.isNull("U_MSS_DEAR"))
+                                detalle.setNombreArticulo(detail.getString("U_MSS_DEAR"));
+
+                            if (detail.has("U_MSS_ESCA1") && !detail.isNull("U_MSS_ESCA1"))
+                                detalle.setEscala1(String.valueOf(detail.getInt("U_MSS_ESCA1")));
+
+                            if (detail.has("U_MSS_DESC1") && !detail.isNull("U_MSS_DESC1"))
+                                detalle.setDescuento1(String.valueOf(detail.getDouble("U_MSS_DESC1")));
+
+                            if (detail.has("U_MSS_ESCA2") && !detail.isNull("U_MSS_ESCA2"))
+                                detalle.setEscala2(String.valueOf(detail.getInt("U_MSS_ESCA2")));
+
+                            if (detail.has("U_MSS_DESC2") && !detail.isNull("U_MSS_DESC2"))
+                                detalle.setDescuento2(String.valueOf(detail.getDouble("U_MSS_DESC2")));
+
+                            if (detail.has("U_MSS_ESCA3") && !detail.isNull("U_MSS_ESCA3"))
+                                detalle.setEscala3(String.valueOf(detail.getInt("U_MSS_ESCA3")));
+
+                            if (detail.has("U_MSS_DESC3") && !detail.isNull("U_MSS_DESC3"))
+                                detalle.setDescuento3(String.valueOf(detail.getDouble("U_MSS_DESC3")));
+
+                            if (detail.has("U_MSS_DIVISION") && !detail.isNull("U_MSS_DIVISION"))
+                                detalle.setDivision(detail.getString("U_MSS_DIVISION"));
+
+                            listDet1.add(detalle);
+                        }
+
+                        bean.setDetalle(listDet1);
+
+                        mList.add(bean);
+                    }
+
+                    mInsert.insertDescuentoEscalar(mList);
+
+                } else {
+                    showToast("DESCUENTO ESCALAR - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
+                }
+            } catch (Exception e) {
+                showToast("listenerGetDescuentoEscalar() > " + e.getMessage());
+            }
+        }
+    };
+
+    Response.ErrorListener errorListenerGetDescuentoEscalar = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            showToast("DESCUENTO ESCALAR - Ocurrio un error intentando conectar con el servidor, " + error.getMessage());
+        }
+    };
+
+    //endregion
+
+    //region RESPONSE DESCUENTO REGULAR
+    Response.Listener listenerGetDescuentoRegular = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                mProgressDialog.incrementProgressBy(1);
+
+                if (response.getString("ResponseStatus").equals(Variables.RESPONSE_SUCCESS)) {
+                    JSONArray jsonArray = response.getJSONObject("Response")
+                            .getJSONObject("message")
+                            .getJSONArray("value");
+
+                    int size = jsonArray.length();
+                    ArrayList<DescuentoRegularBean> mList = new ArrayList<>();
+                    DescuentoRegularBean bean;
+
+                    for (int i = 0; i < size; i++) {
+                        JSONObject jsonObj = jsonArray.getJSONObject(i);
+                        bean = new DescuentoRegularBean();
+
+                        if (jsonObj.has("Code"))
+                            bean.setCode(jsonObj.getString("Code"));
+
+                        if (jsonObj.has("Name") && !jsonObj.isNull("Name"))
+                            bean.setName(jsonObj.getString("Name"));
+
+                        if (jsonObj.has("U_MSS_FEINI") && !jsonObj.isNull("U_MSS_FEINI"))
+                            bean.setFechaInicio(jsonObj.getString("U_MSS_FEINI"));
+
+                        if (jsonObj.has("U_MSS_FEFI") && !jsonObj.isNull("U_MSS_FEFI"))
+                            bean.setFechaFin(jsonObj.getString("U_MSS_FEFI"));
+
+                        if (jsonObj.has("U_MSS_OBSERV") && !jsonObj.isNull("U_MSS_OBSERV"))
+                            bean.setObservacion(jsonObj.getString("U_MSS_OBSERV"));
+
+                        if (jsonObj.has("U_MSS_TIPO") && !jsonObj.isNull("U_MSS_TIPO"))
+                            bean.setObservacion(jsonObj.getString("U_MSS_TIPO"));
+
+                        JSONArray detalleJson = jsonObj.getJSONArray("MSS_DESC1");
+                        DescuentoRegularDetalleBean detalle;
+                        ArrayList<DescuentoRegularDetalleBean> listDet1 = new ArrayList<>();
+
+                        for (int j = 0; j < detalleJson.length(); j++) {
+                            JSONObject detail = detalleJson.getJSONObject(j);
+                            detalle = new DescuentoRegularDetalleBean();
+
+                            if (detail.has("Code"))
+                                detalle.setCode(detail.getString("Code"));
+
+                            if (detail.has("LineId") && !detail.isNull("LineId"))
+                                detalle.setLineId(String.valueOf(detail.getInt("LineId")));
+
+                            if (detail.has("U_MSS_COAR") && !detail.isNull("U_MSS_COAR"))
+                                detalle.setCodigoArticulo(detail.getString("U_MSS_COAR"));
+
+                            if (detail.has("U_MSS_DEAR") && !detail.isNull("U_MSS_DEAR"))
+                                detalle.setNombreArticulo(detail.getString("U_MSS_DEAR"));
+
+                            if (detail.has("U_MSS_DESC1") && !detail.isNull("U_MSS_DESC1"))
+                                detalle.setDescuento1(String.valueOf(detail.getDouble("U_MSS_DESC1")));
+
+                            listDet1.add(detalle);
+                        }
+
+                        bean.setDetalle(listDet1);
+
+                        mList.add(bean);
+                    }
+
+                    mInsert.insertDescuentoRegular(mList);
+
+                } else {
+                    showToast("DESCUENTO REGULAR - " + response.getJSONObject("Response").getJSONObject("message").getString("value"));
+                }
+            } catch (Exception e) {
+                showToast("listenerGetDescuentoRegular() > " + e.getMessage());
+            }
+        }
+    };
+
+    Response.ErrorListener errorListenerGetDescuentoRegular = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            showToast("DESCUENTO REGULAR - Ocurrio un error intentando conectar con el servidor, " + error.getMessage());
+        }
+    };
+
+    //endregion
+
+    private void showToast(String message) {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
 

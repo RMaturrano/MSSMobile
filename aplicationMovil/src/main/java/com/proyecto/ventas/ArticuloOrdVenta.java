@@ -35,10 +35,17 @@ import android.widget.Toast;
 import com.proyect.movil.R;
 import com.proyecto.bean.AlmacenBean;
 import com.proyecto.bean.ArticuloBean;
+import com.proyecto.bean.DescuentoEscalarBean;
+import com.proyecto.bean.DescuentoEscalarDetalleBean;
+import com.proyecto.bean.DescuentoRegularBean;
+import com.proyecto.bean.DescuentoRegularDetalleBean;
 import com.proyecto.bean.GrupoUnidadMedidaBean;
 import com.proyecto.bean.ImpuestoBean;
 import com.proyecto.bean.ListaPrecioBean;
+import com.proyecto.bean.OrdenVentaDetalleBean;
 import com.proyecto.bean.UnidadMedidaBean;
+import com.proyecto.dao.DescuentoEscalarDAO;
+import com.proyecto.dao.DescuentoRegularDAO;
 import com.proyecto.dao.ImpuestoDAO;
 import com.proyecto.database.Select;
 import com.proyecto.utils.DoubleRound;
@@ -50,6 +57,7 @@ import com.proyecto.utils.Variables;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ArticuloOrdVenta extends Fragment {
 
@@ -87,8 +95,10 @@ public class ArticuloOrdVenta extends Fragment {
     private double descuento = 0;
     private double impuesto = 0;
     private double cantidad = 0;
+    private double descuentoEscala = 0, descuentoRegular = 0;
 
     Boolean articuloMuestraBoolean = false;
+    private String _Division = "";
 
     //Precio venta original
     private String precioVenta;
@@ -116,9 +126,12 @@ public class ArticuloOrdVenta extends Fragment {
                     String almacenDefecto = bundle.getString("almacen");
                     String[] extras = bundle.getString("extras").toString().split("#");
 
+                    _Division = bundle.getString("division");
+
+
                     Double descuentoAlmacen = 0.0;
                     //String articuloMuestra = bundle.getString("muestraString");
-                     articuloMuestraBoolean = bundle.getBoolean("muestraBoolean");
+                    articuloMuestraBoolean = bundle.getBoolean("muestraBoolean");
 
                     if (!extras[2].equals("") && !extras[2].equalsIgnoreCase("anytype{}") &&
                             !extras[4].equals("") && !extras[4].equalsIgnoreCase("anytype{}")) {
@@ -178,15 +191,15 @@ public class ArticuloOrdVenta extends Fragment {
                     fullObject.setData(descp);
                     searchResults.set(1, fullObject);
 
-                    if(almacenDefecto != null && !almacenDefecto.equals("")){
-                        for (AlmacenBean a: listaAlmacen) {
-                            if(a.getCodigo().equals(almacenDefecto)){
+                    if (almacenDefecto != null && !almacenDefecto.equals("")) {
+                        for (AlmacenBean a : listaAlmacen) {
+                            if (a.getCodigo().equals(almacenDefecto)) {
                                 almacenSel = a;
                                 break;
                             }
                         }
 
-                        if(almacenSel != null) {
+                        if (almacenSel != null) {
                             fullObject = new FormatCustomListView();
                             fullObject = (FormatCustomListView) lvPrincipal.getItemAtPosition(4);
                             fullObject.setData(almacenSel.toString());
@@ -217,13 +230,14 @@ public class ArticuloOrdVenta extends Fragment {
                     fullObject = (FormatCustomListView) o6;
                     fullObject.setData("0.00");
 
-                    if(descuentoAlmacen > 0 && !articuloMuestraBoolean){
+                    if (descuentoAlmacen > 0 && !articuloMuestraBoolean) {
                         fullObject.setData(String.valueOf(descuentoAlmacen));
                     }
 
-                    if(articuloMuestraBoolean){
+                    if (articuloMuestraBoolean) {
                         fullObject.setData("100");
                     }
+
                     //fullObject.setData("0.00");
                     searchResults.set(8, fullObject);
 
@@ -246,7 +260,7 @@ public class ArticuloOrdVenta extends Fragment {
 
         pref = PreferenceManager
                 .getDefaultSharedPreferences(contexto);
-         String permisosMenu = pref.getString(Variables.MENU_PEDIDOS, "");
+        String permisosMenu = pref.getString(Variables.MENU_PEDIDOS, "");
         if (permisosMenu != null) {
             try {
                 JSONObject permisos = new JSONObject(permisosMenu);
@@ -260,11 +274,11 @@ public class ArticuloOrdVenta extends Fragment {
         cargarListas();
 
         if (MainVentas.position != -1) {
-            if(MainVentas.position < OrdenVentaFragment.listaDetalleArticulos.size()) {
+            if (MainVentas.position < OrdenVentaFragment.listaDetalleArticulos.size()) {
                 articuloActualizar = OrdenVentaFragment.listaDetalleArticulos.get(MainVentas.position);
                 actualizar = "True";
 
-                if(articuloActualizar != null){
+                if (articuloActualizar != null) {
                     articuloMuestraBoolean = articuloActualizar.getArticuloMuestraBoolean();
                 }
 
@@ -277,7 +291,7 @@ public class ArticuloOrdVenta extends Fragment {
                     break;
                 }
             } */
-            }else
+            } else
                 showMessage("Indice fuera de rango.");
         }
 
@@ -303,13 +317,13 @@ public class ArticuloOrdVenta extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        try{
+        try {
             //Registrar los avisos
             IntentFilter filter = new IntentFilter("buscar_art");
             LocalBroadcastManager
                     .getInstance(contexto)
                     .registerReceiver(myLocalBroadcastReceiver, filter);
-        }catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(contexto, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -317,18 +331,18 @@ public class ArticuloOrdVenta extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        try{
+        try {
             //Registrar los avisos
             LocalBroadcastManager
                     .getInstance(contexto)
                     .unregisterReceiver(myLocalBroadcastReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(contexto, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void cargarListas() {
-        try{
+        try {
             listaAlmacen = new ArrayList<AlmacenBean>();
             listaImpuesto = new ArrayList<ImpuestoBean>();
             listaUnidadesMedida = new ArrayList<UnidadMedidaBean>();
@@ -337,47 +351,47 @@ public class ArticuloOrdVenta extends Fragment {
             Select select = new Select(contexto);
             listaAlmacen = select.listaAlmacen();
 
-            if(listaAlmacen != null && listaAlmacen.size() > 0)
+            if (listaAlmacen != null && listaAlmacen.size() > 0)
                 almacenSel = listaAlmacen.get(0);
             else
                 showMessage("No se encontraron almacenes registrados...");
 
             listaImpuesto = select.listaImpuesto();
-            if(listaImpuesto != null && listaImpuesto.size() > 0)
+            if (listaImpuesto != null && listaImpuesto.size() > 0)
                 listaImpuestoSel = listaImpuesto.get(0);
             else
                 showMessage("No se encontraron indicadores de impuesto...");
 
             listaUnidadesMedida = select.listaUnidadesDeMedida();
-            if(listaUnidadesMedida != null && listaUnidadesMedida.size()>0)
+            if (listaUnidadesMedida != null && listaUnidadesMedida.size() > 0)
                 unidadMedidaSelOriginal = listaUnidadesMedida.get(0);
 
             listaPrecios = select.listaPrecios();
-        }catch(Exception e){
+        } catch (Exception e) {
             showMessage(e.getMessage());
         }
     }
 
     private void cargarListasUMManual(String param) {
 
-        try{
+        try {
             listaUnidadesMedidaManual = new ArrayList<UnidadMedidaBean>();
             Select select = new Select(contexto);
             listaUnidadesMedidaManual = select.listaUnidadesDeMedida(param);
             select.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             showMessage(e.getMessage());
         }
     }
 
     private String cargarPrecioManual(String listaPrecio, String codigoArticulo) {
 
-        try{
+        try {
             Select select = new Select(contexto);
             String precioVenta = select.selectPrecioArticulo(listaPrecio, codigoArticulo);
             select.close();
             return precioVenta;
-        }catch (Exception e){
+        } catch (Exception e) {
             showMessage("cargarPrecioManual() > " + e.getMessage());
             return "0";
         }
@@ -385,7 +399,7 @@ public class ArticuloOrdVenta extends Fragment {
 
     private void llenarListPrincipal() {
 
-        try{
+        try {
             searchResults = new ArrayList<FormatCustomListView>();
 
             lvPrincipal = (ListView) v.findViewById(R.id.lvArticuloPedido);
@@ -442,7 +456,7 @@ public class ArticuloOrdVenta extends Fragment {
                         sr.setData(almacenSel.getDescripcion());
                     }
                 }
-            } else if(almacenSel != null)
+            } else if (almacenSel != null)
                 sr.setData(almacenSel.getDescripcion());
             searchResults.add(sr);
 
@@ -457,12 +471,12 @@ public class ArticuloOrdVenta extends Fragment {
             sr.setTitulo("Lista de precios");
             if (permisoEscogerPrecio.equalsIgnoreCase("Y"))
                 sr.setIcon(iconId);
-            if(articuloActualizar != null){
+            if (articuloActualizar != null) {
                 listaPreSel = new ListaPrecioBean();
                 listaPreSel.setCodigo(articuloActualizar.getCodigoListaPrecio());
                 listaPreSel.setNombre(articuloActualizar.getDescripcionListaPrecio());
                 sr.setData(articuloActualizar.getDescripcionListaPrecio());
-            }else{
+            } else {
                 sr.setData(OrdenVentaFragment.listaPrecioSel.getNombre());
                 listaPreSel = new ListaPrecioBean();
                 listaPreSel.setCodigo(OrdenVentaFragment.listaPrecioSel.getCodigo());
@@ -510,14 +524,14 @@ public class ArticuloOrdVenta extends Fragment {
 
             adapter = new ListViewCustomAdapterTwoLinesAndImgOV(contexto, searchResults);
             lvPrincipal.setAdapter(adapter);
-        }catch (Exception e){
+        } catch (Exception e) {
             showMessage("llenarListPrincipal() > " + e.getMessage() + " > " + e.getStackTrace()[0].getLineNumber());
         }
     }
 
     private void construirAlert(int position) {
 
-        try{
+        try {
             if (position == 0) {
 
                 if (actualizar.equalsIgnoreCase("false")) {
@@ -533,7 +547,7 @@ public class ArticuloOrdVenta extends Fragment {
 
             } else if (position == 3) {
 
-                try{
+                try {
                     if (grupoUnidadMedidaSel != null && !grupoUnidadMedidaSel.getCodigo().equals("-1")) {
 
                         String[] parts = grupoUnidadMedidaSel.getNombre().split(":");
@@ -594,7 +608,7 @@ public class ArticuloOrdVenta extends Fragment {
                                 fullObject.setData(unidadMedidaSel.toString());
                                 searchResults.set(posicion, fullObject);
 
-                                if(!unidadMedidaSel.getCodigo().equals(unidadMedidaSelOriginal.getCodigo())) {
+                                if (!unidadMedidaSel.getCodigo().equals(unidadMedidaSelOriginal.getCodigo())) {
 
                                     if (unidadMedidaSel.toString().equals(um2)) {
                                         double pre = Double.parseDouble(searchResults.get(7).getData().toString());
@@ -630,7 +644,7 @@ public class ArticuloOrdVenta extends Fragment {
 
                         alert.show();
                     }
-                }catch(Exception e){
+                } catch (Exception e) {
                     Toast.makeText(contexto, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             } else if (position == 4) {
@@ -687,15 +701,15 @@ public class ArticuloOrdVenta extends Fragment {
                         lvPrincipal.invalidateViews();
 
                         //TODO: Cambiar el descuento aplicado según almacen seleccionado
-                        if(almacenSel.getDescuento() > 0 && !articuloMuestraBoolean){
+                        if (almacenSel.getDescuento() > 0 && !articuloMuestraBoolean) {
                             fullObjectDescuento.setData(String.valueOf(almacenSel.getDescuento()));
                         }
 
-                        if(articuloMuestraBoolean){
+                        if (articuloMuestraBoolean) {
                             fullObjectDescuento.setData("100");
                         }
 
-                        if(almacenSel.getDescuento() == 0 && !articuloMuestraBoolean){
+                        if (almacenSel.getDescuento() == 0 && !articuloMuestraBoolean) {
                             fullObjectDescuento.setData("0");
                         }
                         //fullObjectDescuento.setData(almacenSel.getDescuento().toString());
@@ -731,7 +745,7 @@ public class ArticuloOrdVenta extends Fragment {
 
                 edtCantidad.setFocusableInTouchMode(true);
                 edtCantidad.requestFocus();
-                edtCantidad.setRawInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                edtCantidad.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 edtCantidad.setMaxLines(1);
                 alert.setView(edtCantidad);
 
@@ -744,6 +758,7 @@ public class ArticuloOrdVenta extends Fragment {
                         fullObject.setData(edtCantidad.getText().toString());
                         searchResults.set(posicion, fullObject);
                         lvPrincipal.invalidateViews();
+
 
                         doMaths();
 
@@ -821,7 +836,7 @@ public class ArticuloOrdVenta extends Fragment {
                                     if (precioVenta.equals("") || precioVenta == null)
                                         precioVenta = "0.00";
 
-                                    if(grupoUnidadMedidaSel != null && !grupoUnidadMedidaSel.getCodigo().equals("-1")){
+                                    if (grupoUnidadMedidaSel != null && !grupoUnidadMedidaSel.getCodigo().equals("-1")) {
                                         String[] parts = grupoUnidadMedidaSel.getNombre().split(":");
 
                                         // Parte UNO de la unidad de medida , ejem: 1-CAJA
@@ -833,7 +848,7 @@ public class ArticuloOrdVenta extends Fragment {
                                         final String um2 = part_2[1];
                                         final int nroDividir = Integer.parseInt(part_2[0]);
 
-                                        if(unidadMedidaSel != null) {
+                                        if (unidadMedidaSel != null) {
 
                                             if (unidadMedidaSel.toString().equals(um2)) {
                                                 if (Double.parseDouble(precioVenta) > 0) {
@@ -887,7 +902,7 @@ public class ArticuloOrdVenta extends Fragment {
                 //Capturar el objeto (row - fila)
                 Object o = lvPrincipal.getItemAtPosition(position);
                 fullObject = new FormatCustomListView();
-                fullObject = (FormatCustomListView)o;
+                fullObject = (FormatCustomListView) o;
 
                 //Spinner
                 final EditText edtDescuento = new EditText(contexto);
@@ -907,16 +922,16 @@ public class ArticuloOrdVenta extends Fragment {
                         imm.hideSoftInputFromWindow(edtDescuento.getWindowToken(), 0);
 
                         String dcto = edtDescuento.getText().toString();
-                        if(dcto != null && !dcto.trim().equals("")){
-                            if(Integer.parseInt(dcto) == 0 || Integer.parseInt(dcto) == 100){
+                        if (dcto != null && !dcto.trim().equals("")) {
+                            if (Integer.parseInt(dcto) == 0 || Integer.parseInt(dcto) == 100) {
                                 fullObject.setData(dcto + ".00");
                                 searchResults.set(posicion, fullObject);
                                 lvPrincipal.invalidateViews();
                                 doMaths();
-                            }else{
+                            } else {
                                 Toast.makeText(getActivity(), "Ingrese un descuento de cero o 100.", Toast.LENGTH_LONG).show();
                             }
-                        }else{
+                        } else {
                             Toast.makeText(getActivity(), "Ingrese un descuento valido", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -999,7 +1014,7 @@ public class ArticuloOrdVenta extends Fragment {
 
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             showMessage("construirAlert() > " + e.getMessage());
         }
     }
@@ -1007,7 +1022,9 @@ public class ArticuloOrdVenta extends Fragment {
 
     private void doMaths() {
 
-        try{
+        try {
+            doDiscount();
+
             preBruto = 0;
             total = 0;
             precio = 0;
@@ -1039,10 +1056,10 @@ public class ArticuloOrdVenta extends Fragment {
                 descuento = (Double.parseDouble(fullObject.getData()) / 100);
             }
 
-            if(listaImpuestoSel != null){
+            if (listaImpuestoSel != null) {
                 impuesto = new ImpuestoDAO().obtenerTasa(listaImpuestoSel.getCodigo());
                 impuesto = impuesto / 100;
-            }else
+            } else
                 impuesto = 0;
 
             double totalDescuento = precio * descuento;
@@ -1062,11 +1079,119 @@ public class ArticuloOrdVenta extends Fragment {
             fullObject = (FormatCustomListView) oTotal;
             fullObject.setData(String.valueOf(total));
             searchResults.set(11, fullObject);
-        }catch(Exception e){
+        } catch (Exception e) {
             showMessage("doMaths() > " + e.getMessage());
         }
     }
 
+    private void doDiscount() {
+        try {
+            Object o = lvPrincipal.getItemAtPosition(5); // 5 posicón del campo cantidad
+            fullObject = new FormatCustomListView();
+            fullObject = (FormatCustomListView) o;
+            double cantidad = Double.parseDouble(fullObject.getData());
+
+            o = lvPrincipal.getItemAtPosition(0); // 5 posicón del campo códgio de articulo
+            fullObject = new FormatCustomListView();
+            fullObject = (FormatCustomListView) o;
+            String codArticulo = fullObject.getData();
+
+            double precio = 0;
+            if (searchResults.get(7).getData() != null && !searchResults.get(7).getData().equals(""))
+                precio = Double.parseDouble(searchResults.get(7).getData());
+
+            o = lvPrincipal.getItemAtPosition(8); // 8 posicón del campo descuento
+            fullObject = new FormatCustomListView();
+            fullObject = (FormatCustomListView) o;
+
+
+            double descuentoCalculado = Double.parseDouble(fullObject.getData());
+            double descuentoBase = OrdenVentaFragment.mClienteSeleccionado.getPorcentajeDescuentoBase();
+            double precioCDesBase = (precio * cantidad) * (1 - (descuentoBase / 100));
+
+            //region    LOGICA DESCUENTO EFILA
+            if (descuentoBase != 0)
+                descuentoCalculado = descuentoBase;
+
+
+            for (ArticuloBean model : OrdenVentaFragment.listaDetalleArticulos) {
+                if (_Division != null && model.getDivision() != null)
+                    if (model.getDivision().equals(_Division)) {
+                        precioCDesBase += model.getPrecioConDescuentoBase();
+                    }
+            }
+
+            //Descuento Escala
+            List<DescuentoEscalarBean> lstDescuentoEscalar = new DescuentoEscalarDAO().listar();
+
+            if (descuentoBase > 0)
+                for (DescuentoEscalarBean item : lstDescuentoEscalar) {
+
+                    if (item.getDetalle() != null)
+                        for (DescuentoEscalarDetalleBean _item : item.getDetalle()) {
+
+                            if (_item.getCodigoArticulo() != null) {
+                                //Evaluar articulo actual
+                                if (_item.getCodigoArticulo().equals(codArticulo)) {
+
+                                    if (_item.getEscala1Double() <= precioCDesBase)
+                                        descuentoEscala = _item.getDescuento1Double();
+
+                                    if (_item.getEscala2Double() <= precioCDesBase)
+                                        descuentoEscala = _item.getDescuento2Double();
+
+                                    if (_item.getEscala3Double() <= precioCDesBase)
+                                        descuentoEscala = _item.getDescuento3Double();
+                                }
+
+                                //Evaluar articulos ya agregados al pedido
+                                for (ArticuloBean detalleOrden : OrdenVentaFragment.listaDetalleArticulos) {
+                                    if (_item.getCodigoArticulo().equals(detalleOrden.getCod())) {
+
+                                        if (_item.getEscala1Double() <= precioCDesBase)
+                                            detalleOrden.setDescuentoEscala(_item.getDescuento1Double());
+
+                                        if (_item.getEscala2Double() <= precioCDesBase)
+                                            detalleOrden.setDescuentoEscala(_item.getDescuento2Double());
+
+                                        if (_item.getEscala3Double() <= precioCDesBase)
+                                            detalleOrden.setDescuentoEscala(_item.getDescuento3Double());
+
+                                        detalleOrden.ReCalcularMontos();
+                                    }
+                                }
+
+                            }
+                        }
+
+                }
+
+            //Descuento Regular
+            if (descuentoEscala != 0) {
+                List<DescuentoRegularBean> lstDescuentoRegular = new DescuentoRegularDAO().listar();
+                for (DescuentoRegularBean item : lstDescuentoRegular) {
+                    if (item.getDetalle() != null)
+                        for (DescuentoRegularDetalleBean _item : item.getDetalle()) {
+                            if (_item.getCodigoArticulo() != null)
+                                if (_item.getCodigoArticulo().equals(codArticulo))
+                                    descuentoRegular = _item.getDescuento1Double();
+                        }
+                }
+            }
+            //endregion
+
+            double descuentoPrevio = (descuentoBase + (1 - descuentoBase / 100) * descuentoRegular);
+            descuentoCalculado = descuentoPrevio
+                    + (1 - descuentoPrevio / 100)
+                    * descuentoEscala;
+
+            fullObject.setData(String.valueOf(descuentoCalculado));
+
+            searchResults.set(8, fullObject);
+        } catch (Exception e) {
+            String error = e.toString();
+        }
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -1100,7 +1225,7 @@ public class ArticuloOrdVenta extends Fragment {
 
             case R.id.action_aceptar:
 
-                try{
+                try {
                     if (searchResults.get(0).getData() != "" && searchResults.get(0).getData() != null &&
                             searchResults.get(5).getData() != "" && searchResults.get(5).getData() != null) {
 
@@ -1115,52 +1240,56 @@ public class ArticuloOrdVenta extends Fragment {
                         art_bean = new ArticuloBean();
                         art_bean.setCod(searchResults.get(0).getData());
                         art_bean.setDesc(searchResults.get(1).getData());
-                        if(grupoUnidadMedidaSel != null) {
+                        if (grupoUnidadMedidaSel != null) {
                             art_bean.setGrupoArticulo(grupoUnidadMedidaSel.getCodigo());
                             art_bean.setNombreGrupoArt(grupoUnidadMedidaSel.getNombre());
                         }
-                        if (unidadMedidaSel != null){
+                        if (unidadMedidaSel != null) {
                             art_bean.setCodUM(unidadMedidaSel.getCodigo());
                             art_bean.setNombreUnidadMedida(unidadMedidaSel.getNombre());
                         }
 
-                        if(almacenSel != null)
+                        if (almacenSel != null)
                             art_bean.setAlmacen(almacenSel.getCodigo());
 
-                        if(Double.parseDouble(searchResults.get(5).getData()) > 0)
+                        if (Double.parseDouble(searchResults.get(5).getData()) > 0)
                             art_bean.setCant(Double.parseDouble(searchResults.get(5).getData()));
-                        else{
-                            Toast.makeText(contexto,"La cantidad debe ser mayor a cero.",Toast.LENGTH_SHORT).show();
+                        else {
+                            Toast.makeText(contexto, "La cantidad debe ser mayor a cero.", Toast.LENGTH_SHORT).show();
                             return true;
                         }
-                        if(searchResults.get(7).getData() != null && !searchResults.get(7).getData().equals(""))
+                        if (searchResults.get(7).getData() != null && !searchResults.get(7).getData().equals(""))
                             art_bean.setPre(Double.parseDouble(searchResults.get(7).getData()));
-                        else{
-                            Toast.makeText(contexto,"El articulo no tiene precio",Toast.LENGTH_SHORT).show();
+                        else {
+                            Toast.makeText(contexto, "El articulo no tiene precio", Toast.LENGTH_SHORT).show();
                             return true;
                         }
                         String datoMark = searchResults.get(8).getData();
                         art_bean.setDescuento(Double.parseDouble(searchResults.get(8).getData()));
+                        //+ OrdenVentaFragment.mClienteSeleccionado.getPorcentajeDescuentoBase()
 
-                        if(listaImpuestoSel != null){
+                        if (listaImpuestoSel != null) {
                             impuesto = new ImpuestoDAO().obtenerTasa(listaImpuestoSel.getCodigo());
-                        }else
+                        } else
                             impuesto = 0;
 
                         art_bean.setImpuesto(impuesto);
                         art_bean.setCodigoImpuesto(listaImpuestoSel.getCodigo());
                         art_bean.setUtilIcon(iconId);
-                        if(listaPreSel != null) {
+                        if (listaPreSel != null) {
                             art_bean.setCodigoListaPrecio(listaPreSel.getCodigo());
                             art_bean.setDescripcionListaPrecio(listaPreSel.getNombre());
-                        }else{
-                            Toast.makeText(contexto,"Seleccione la lista de precios",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(contexto, "Seleccione la lista de precios", Toast.LENGTH_SHORT).show();
                             return true;
                         }
 
                         //TODO: Artículo Descuentos almacenados en el arreglo
                         art_bean.setArticuloMuestraBoolean(articuloMuestraBoolean);
-
+                        art_bean.setDivision(_Division);
+                        art_bean.setDescuentoBase(OrdenVentaFragment.mClienteSeleccionado.getPorcentajeDescuentoBase());
+                        art_bean.setDescuentoEscala(descuentoEscala);
+                        art_bean.setDescuentoRegular(descuentoRegular);
 
                         if (MainVentas.codigoArticulo.equals(""))
                             OrdenVentaFragment.listaDetalleArticulos.add(art_bean);
@@ -1195,7 +1324,7 @@ public class ArticuloOrdVenta extends Fragment {
                     } else {
                         Toast.makeText(contexto, "Seleccione el articulo o ingrese el precio correspondiente", Toast.LENGTH_LONG).show();
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     showMessage(e.getMessage());
                 }
                 return true;
@@ -1206,7 +1335,7 @@ public class ArticuloOrdVenta extends Fragment {
 
     }
 
-    private void showMessage(String message){
+    private void showMessage(String message) {
         Toast.makeText(contexto, message, Toast.LENGTH_LONG).show();
     }
 }

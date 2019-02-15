@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- DESCUENTO ESCALA - EFILA -->
+    <string name="TB_DESCUENTO_ESCALA">TD_DESCUENTO_ESCALA</string>
+
+    <string name="C_DESC_ESCALA_CODE">CODE</string>
+    <string name="C_DESC_ESCALA_NAME">NAME</string>
+    <string name="C_DESC_ESCALA_U_MSS_FEINI">U_MSS_FEINI</string>
+    <string name="C_DESC_ESCALA_U_MSS_FEFI">U_MSS_FEFI</string>
+    <string name="C_DESC_ESCALA_U_MSS_OBSERV">U_MSS_OBSERV</string>
+    <string name="C_DESC_ESCALA_U_MSS_TIPO">U_MSS_TIPO</string>
+
+    <!-- DESCUENTO ESCALA DETALLE1 - EFILA -->
+    <string name="TD_DESCUENTO_ESCALA_1">TD_DESCUENTO_ESCALA_1</string>
+    
+    <string name="C_DESC_ESCALA_1_CODE">CODE</string>
+    <string name="C_DESC_ESCALA_1_LINEID">LINEID</string>
+    <string name="C_DESC_ESCALA_1_U_MSS_COAR">U_MSS_COAR</string>
+    <string name="C_DESC_ESCALA_1_U_MSS_DEAR">U_MSS_DEAR</string>
+    <string name="C_DESC_ESCALA_1_U_MSS_ESCA1">U_MSS_ESCA1</string>
+    <string name="C_DESC_ESCALA_1_U_MSS_DESC1">U_MSS_DESC1</string>
+    <string name="C_DESC_ESCALA_1_U_MSS_ESCA2">U_MSS_ESCA2</string>
+    <string name="C_DESC_ESCALA_1_U_MSS_DESC2">U_MSS_DESC2</string>
+    <string name="C_DESC_ESCALA_1_U_MSS_ESCA3">U_MSS_ESCA3</string>
+    <string name="C_DESC_ESCALA_1_U_MSS_DESC3">U_MSS_DESC3</string>
+    <string name="C_DESC_ESCALA_1_U_MSS_DIVISION">U_MSS_DIVISION</string>
+
+</resources>

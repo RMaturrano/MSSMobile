@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- DESCUENTO REGULAR - EFILA -->
+    <string name="TB_DESCUENTO_REGULAR">TD_DESCUENTO_REGULAR</string>
+
+    <string name="C_DESC_REGULAR_CODE">CODE</string>
+    <string name="C_DESC_REGULAR_NAME">NAME</string>
+    <string name="C_DESC_REGULAR_U_MSS_FEINI">U_MSS_FEINI</string>
+    <string name="C_DESC_REGULAR_U_MSS_FEFI">U_MSS_FEFI</string>
+    <string name="C_DESC_REGULAR_U_MSS_OBSERV">U_MSS_OBSERV</string>
+    <string name="C_DESC_REGULAR_U_MSS_TIPO">U_MSS_TIPO</string>
+
+    <!-- DESCUENTO REGULAR DETALLE1 - EFILA -->
+    <string name="TD_DESCUENTO_REGULAR_1">TD_DESCUENTO_REGULAR_1</string>
+    
+    <string name="C_DESC_REGULAR_1_CODE">CODE</string>
+    <string name="C_DESC_REGULAR_1_LINEID">LINEID</string>
+    <string name="C_DESC_REGULAR_1_U_MSS_COAR">U_MSS_COAR</string>
+    <string name="C_DESC_REGULAR_1_U_MSS_DEAR">U_MSS_DEAR</string>
+    <string name="C_DESC_REGULAR_1_U_MSS_DESC1">U_MSS_DESC1</string>
+
+</resources>

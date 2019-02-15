@@ -33,6 +33,7 @@ public class ClienteDAO {
             "IFNULL(T3.Nombre,'') AS IndicadorNombre, " +
             "IFNULL(T4.Codigo,'') AS DireccionFiscalCodigo, " +
             "T0.Descuento, " +
+            "T0.DescuentoBase, " +
             "T0.PersonaContacto, " +
             "IFNULL(IFNULL(T4.Calle,T4.Referencia),'') AS DireccionFiscalNombre " +
             " FROM TB_SOCIO_NEGOCIO T0 " +
@@ -118,6 +119,7 @@ public class ClienteDAO {
         bean.setContactos(new ContactoDAO().listar(bean.getCodigo()));
         bean.setDirecciones(new DireccionDAO().listar(bean.getCodigo()));
         bean.setPorcentajeDescuento(cursor.getDouble(cursor.getColumnIndex("Descuento")));
+        bean.setPorcentajeDescuentoBase(cursor.getDouble(cursor.getColumnIndex("DescuentoBase")));
 
         String codigoListaPrecio = cursor.getString(cursor.getColumnIndex("ListaPrecioCodigo"));
         if(!codigoListaPrecio.equals("")){

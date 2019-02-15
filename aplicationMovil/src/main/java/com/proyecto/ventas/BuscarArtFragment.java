@@ -205,12 +205,12 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
         return view;
     }
 
-    private void obtenerCliente(){
-        try{
+    private void obtenerCliente() {
+        try {
             OrdenVentaFragment detailsFragment = (OrdenVentaFragment) getActivity().getFragmentManager()
                     .findFragmentByTag(MainVentas.MAIN_FRAGMENT);
             mClienteSel = detailsFragment.obtenerClienteSeleccionado();
-        }catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(contexto, "onStart() > " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -222,7 +222,7 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
             listaAdapter = new ArrayList<FormatCustomListView>();
             String query = "select DISTINCT A.Codigo,A.Nombre,A.Fabricante,A.GrupoArticulo, " +
                     "A.GrupoUnidadMedida,A.UnidadMedidaVenta," +
-                    "GUM.Nombre,GA.NOMBRE as Grupo, A.AlmacenDefecto, A.ArticuloMuestra " +
+                    "GUM.Nombre,GA.NOMBRE as Grupo, A.AlmacenDefecto, A.ArticuloMuestra,A.Division " +
                     "from TB_ARTICULO A JOIN TB_GRUPO_UNIDAD_MEDIDA GUM " +
                     "ON A.GrupoUnidadMedida = GUM.Codigo " +
                     " JOIN TB_GRUPO_ARTICULO GA ON A.GrupoArticulo = GA.CODIGO " +
@@ -232,22 +232,22 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
                     " having SUM(P.PrecioVenta) > 0 " +
                     "ORDER BY GA.NOMBRE, A.Nombre";
 
-            if(mClienteSel != null){
+            if (mClienteSel != null) {
                 query = "select DISTINCT A.Codigo,A.Nombre,A.Fabricante,A.GrupoArticulo, " +
                         "A.GrupoUnidadMedida,A.UnidadMedidaVenta," +
-                        "GUM.Nombre,GA.NOMBRE as Grupo, A.AlmacenDefecto, A.ArticuloMuestra " +
+                        "GUM.Nombre,GA.NOMBRE as Grupo, A.AlmacenDefecto, A.ArticuloMuestra,A.Division " +
                         "from TB_ARTICULO A JOIN TB_GRUPO_UNIDAD_MEDIDA GUM " +
                         "ON A.GrupoUnidadMedida = GUM.Codigo " +
                         " JOIN TB_GRUPO_ARTICULO GA ON A.GrupoArticulo = GA.CODIGO " +
                         " left join TB_PRECIO P ON P.Articulo = A.Codigo " +
-                        "AND P.CodigoLista  = "+ mClienteSel.getListaPrecio().getCodigo()+" " +
+                        "AND P.CodigoLista  = " + mClienteSel.getListaPrecio().getCodigo() + " " +
                         " AND P.PrecioVenta > 0 " +
                         " GROUP BY A.Codigo, A.Nombre " +
                         "ORDER BY GA.NOMBRE, A.Nombre";
             }
 
             Cursor rs = db
-                    .rawQuery(query,null);
+                    .rawQuery(query, null);
 //				.rawQuery(
 //						"select A.Codigo,A.Nombre,A.Fabricante,A.GrupoArticulo," +
 //								"A.GrupoUnidadMedida,A.UnidadMedidaVenta," +
@@ -271,6 +271,7 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
                     customListObjet.setGrupo(rs.getString(rs.getColumnIndex("Grupo")));
                     customListObjet.setAlmacenDefecto(rs.getString(rs.getColumnIndex("AlmacenDefecto")));
                     customListObjet.setArticuloMuestra(rs.getString(rs.getColumnIndex("ArticuloMuestra")));
+                    customListObjet.setDivision(rs.getString(rs.getColumnIndex("Division")));
 
                     if (!rs.getString(0).equals(""))
                         customListObjet.setTitulo(rs.getString(0));
@@ -290,7 +291,7 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
 
             rs.close();
 //		db.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(contexto, "llenardatos() > " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -439,7 +440,7 @@ public class BuscarArtFragment extends Fragment implements OnItemClickListener {
             arguments.putInt("position", position);
             arguments.putString("muestraString", item.element.getArticuloMuestra());
             arguments.putBoolean("muestraBoolean", item.element.getArticuloMuestraBoolean());
-
+            arguments.putString("division", item.element.getDivision());
             //	openBottomSheet(view, item);
 
         }

@@ -19,6 +19,7 @@ public class ClienteBuscarBean implements Parcelable {
     private String direccionFiscalNombre;
     private String moneda;
     private double porcentajeDescuento;
+    private double porcentajeDescuentoBase;
     private String personaContacto;
     private ListaPrecioBean listaPrecio;
     private CondicionPagoBean condicionPago;
@@ -124,6 +125,14 @@ public class ClienteBuscarBean implements Parcelable {
         this.porcentajeDescuento = porcentajeDescuento;
     }
 
+    public double getPorcentajeDescuentoBase() {
+        return porcentajeDescuentoBase;
+    }
+
+    public void setPorcentajeDescuentoBase(double porcentajeDescuentoBase) {
+        this.porcentajeDescuentoBase = porcentajeDescuentoBase;
+    }
+
     public String getMoneda() {
         return moneda;
     }
@@ -179,6 +188,7 @@ public class ClienteBuscarBean implements Parcelable {
         dest.writeString(this.direccionFiscalNombre);
         dest.writeString(this.moneda);
         dest.writeDouble(this.porcentajeDescuento);
+        dest.writeDouble(this.porcentajeDescuentoBase);
         dest.writeString(this.personaContacto);
         dest.writeParcelable(this.listaPrecio, flags);
         dest.writeParcelable(this.condicionPago, flags);
@@ -196,6 +206,7 @@ public class ClienteBuscarBean implements Parcelable {
         this.direccionFiscalNombre = in.readString();
         this.moneda = in.readString();
         this.porcentajeDescuento = in.readDouble();
+        this.porcentajeDescuentoBase = in.readDouble();
         this.personaContacto = in.readString();
         this.listaPrecio = in.readParcelable(ListaPrecioBean.class.getClassLoader());
         this.condicionPago = in.readParcelable(CondicionPagoBean.class.getClassLoader());

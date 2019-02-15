@@ -19,6 +19,7 @@ public class FormatCustomListView {
 	private int icon, id;
 	private boolean chck;
 	private String articuloMuestra;
+	private String Division;
 
 	public String formatData(){
 		return String.valueOf(Double.parseDouble(data) * 100);
@@ -164,4 +165,11 @@ public class FormatCustomListView {
 		return false;
 	}
 
+	public String getDivision() {
+		return Division;
+	}
+
+	public void setDivision(String division) {
+		Division = division;
+	}
 }

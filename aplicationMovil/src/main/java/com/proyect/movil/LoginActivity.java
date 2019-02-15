@@ -290,7 +290,7 @@ public class LoginActivity extends AppCompatActivity {
         final SharedPreferences pref = PreferenceManager
                 .getDefaultSharedPreferences(contexto);
 
-        final String ip = pref.getString("ipServidor", "200.10.84.66");
+        final String ip = pref.getString("ipServidor", "170.231.83.235");
         final String port = pref.getString("puertoServidor", "80");
         final String sociedad = pref.getString("sociedades", "-1");
         final String ws_ruta = "http://" + ip + ":" + port +
